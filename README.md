@@ -1,4 +1,10 @@
-# Đồ án NodeJS Project Management
+# Đồ án NodeJS TaskMaster (Project Management)
+
+## Sinh viên thực hiện:
+- **Phạm Vũ Tiến - 2180608746**
+- **Trần Công Thuận - 2180608740**
+- **Nguyễn Thị Thuỳ Duyên - 2180608794**
+- **Trần Trọng Tuấn - 2180608187**
 
 ## Dự án này sử dụng các công cụ và framework mới nhất cho phát triển hiện đại:
 - **Node.js**
