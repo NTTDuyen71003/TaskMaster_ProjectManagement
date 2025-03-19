@@ -6,20 +6,21 @@
 - **Nguyễn Thị Thuỳ Duyên - 2180608794**
 - **Trần Trọng Tuấn - 2180608187**
 
-## Dự án này sử dụng các công cụ và framework mới nhất cho phát triển hiện đại:
+## Dự án này sử dụng các công cụ và framework mới nhất cho phát triển ngôn ngữ mới:
 - **Node.js**
 - **React.js**
+- **Express.js**
 - **MongoDB & Mongoose**
-- **Google OAuth**
+- **Module Passport Authentication(OAth2 và Local)**
 - **TypeScript** 
 - **TailwindCSS & Shadcn UI**
-
+- **Thư viện ZOD (type validation)**
 ### Cấu hình Biến Môi Trường
 Tạo một tệp .env trong thư mục gốc của dự án và cấu hình các biến sau:
 
 PORT=8000  
 NODE_ENV=development  
-MONGO_URI="mongodb+srv://<username>:<password>@<>.mongodb.net/teamsync_db"  
+MONGO_URI="mongodb+srv://<username>:<password>@<>.mongodb.net/doannodejs_db"  
 
 SESSION_SECRET="session_secret_key"
 

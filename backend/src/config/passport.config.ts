@@ -56,6 +56,7 @@ passport.use(
         }
     )
 );
-
+// Lưu toàn bộ thông tin user vào session
 passport.serializeUser((user: any, done) => done(null, user));
+// Lấy thông tin user từ session để sử dụng cho Request hoặc các middleware khác
 passport.deserializeUser((user: any, done) => done(null, user));
