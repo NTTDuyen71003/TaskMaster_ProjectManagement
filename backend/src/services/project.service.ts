@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { TaskStatusEnum } from "../enums/task.enum";
 import ProjectModel from "../models/project.model";
 import TaskModel from "../models/task.model";
-import { NotFoundException } from "../utils/appError";
+import { BadRequestException, NotFoundException } from "../utils/appError";
 
 export const createProjectService = async (
     userId: string,
@@ -122,26 +122,25 @@ export const updateProjectService = async (
         description?: string;
     }
 ) => {
-    const { name, emoji, description } = body;
+    const project = await ProjectModel.findById(projectId);
 
-    const project = await ProjectModel.findOne({
-        _id: projectId,
-        workspace: workspaceId,
-    });
-
-    if (!project) {
+    if (!project || project.workspace.toString() !== workspaceId.toString()) {
         throw new NotFoundException(
-            "Project not found or does not belong to the specified workspace"
+            "Project not found or does not belong to this workspace"
         );
     }
 
-    if (emoji) project.emoji = emoji;
-    if (name) project.name = name;
-    if (description) project.description = description;
-
-    await project.save();
-
-    return { project };
+    const updatedProject = await ProjectModel.findByIdAndUpdate(
+        projectId,
+        {
+            ...body,
+        },
+        { new: true }
+    );
+    if (!updatedProject) {
+        throw new BadRequestException("Failed to update project");
+    }
+    return { updatedProject };
 };
 
 export const deleteProjectService = async (

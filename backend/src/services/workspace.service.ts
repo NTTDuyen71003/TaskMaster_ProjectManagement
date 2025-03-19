@@ -165,21 +165,28 @@ export const changeMemberRoleService = async (
 
 export const updateWorkspaceByIdService = async (
     workspaceId: string,
-    name: string,
-    description?: string
+    body: {
+        name: string;
+        description?: string;
+    }
 ) => {
     const workspace = await WorkspaceModel.findById(workspaceId);
     if (!workspace) {
         throw new NotFoundException("Workspace not found");
     }
-
-    //Cập nhật thông tin của workspace
-    if (name) workspace.name = name;
-    if (description) workspace.description = description;
-    await workspace.save();
+    const updatedWorkspace = await WorkspaceModel.findByIdAndUpdate(
+        workspaceId,
+        {
+            ...body,
+        },
+        { new: true }
+    );
+    if (!updatedWorkspace) {
+        throw new BadRequestException("Failed to update workspace");
+    }
 
     return {
-        workspace,
+        updatedWorkspace,
     };
 };
 

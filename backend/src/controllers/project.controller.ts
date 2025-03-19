@@ -122,7 +122,7 @@ export const updateProjectController = asyncHandler(
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.EDIT_PROJECT]);
 
-        const { project } = await updateProjectService(
+        const { updatedProject } = await updateProjectService(
             workspaceId,
             projectId,
             body
@@ -130,7 +130,7 @@ export const updateProjectController = asyncHandler(
 
         return res.status(HTTPSTATUS.OK).json({
             message: "Project updated successfully",
-            project,
+            updatedProject,
         });
     }
 );

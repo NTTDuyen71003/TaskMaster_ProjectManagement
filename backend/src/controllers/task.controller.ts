@@ -7,8 +7,8 @@ import { getMemberRoleInWorkspace } from "../services/member.service";
 import { roleGuard } from "../utils/roleGuard";
 
 import { HTTPSTATUS } from "../config/http.config";
-import { createTaskSchema, taskIdSchema } from "../validation/task.validation";
-import { createTaskService, getAllTasksService, getTaskByIdService } from "../services/task.service";
+import { createTaskSchema, taskIdSchema, updateTaskSchema } from "../validation/task.validation";
+import { createTaskService, deleteTaskService, getAllTasksService, getTaskByIdService, updateTaskService } from "../services/task.service";
 
 export const createTaskController = asyncHandler(
     async (req: Request, res: Response) => {
@@ -89,6 +89,51 @@ export const getTaskByIdController = asyncHandler(
         return res.status(HTTPSTATUS.OK).json({
             message: "Task fetched successfully",
             task,
+        });
+    }
+);
+
+export const updateTaskController = asyncHandler(
+    async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+
+        const body = updateTaskSchema.parse(req.body);
+
+        const taskId = taskIdSchema.parse(req.params.id);
+        const projectId = projectIdSchema.parse(req.params.projectId);
+        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+
+        const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
+        roleGuard(role, [Permissions.EDIT_TASK]);
+
+        const { updatedTask } = await updateTaskService(
+            workspaceId,
+            projectId,
+            taskId,
+            body
+        );
+
+        return res.status(HTTPSTATUS.OK).json({
+            message: "Task updated successfully",
+            task: updatedTask,
+        });
+    }
+);
+
+export const deleteTaskController = asyncHandler(
+    async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+
+        const taskId = taskIdSchema.parse(req.params.id);
+        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+
+        const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
+        roleGuard(role, [Permissions.DELETE_TASK]);
+
+        await deleteTaskService(workspaceId, taskId);
+
+        return res.status(HTTPSTATUS.OK).json({
+            message: "Task deleted successfully",
         });
     }
 );
