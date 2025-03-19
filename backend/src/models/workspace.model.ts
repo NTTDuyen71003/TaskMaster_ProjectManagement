@@ -23,7 +23,7 @@ const workspaceSchema = new Schema<WorkspaceDocument>(
             type: String,
             required: true,
             unique: true,
-            default: generateInviteCode,
+            default: generateInviteCode, //Tạo mã mời ngẫu nhiên khi tạo workspace
         },
     },
     {

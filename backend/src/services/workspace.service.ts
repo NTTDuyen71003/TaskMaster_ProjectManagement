@@ -66,13 +66,14 @@ export const getAllWorkspacesUserIsMemberService = async (userId: string) => {
 
     return { workspaces };
 };
+
 export const getWorkspaceByIdService = async (workspaceId: string) => {
     const workspace = await WorkspaceModel.findById(workspaceId);
 
     if (!workspace) {
         throw new NotFoundException("Workspace not found");
     }
-    //Lấy tất cả thành viên trong workspace
+    //Lấy tất cả thành viên trong workspace 
     const members = await MemberModel.find({
         workspaceId,
     }).populate("role");
@@ -173,8 +174,8 @@ export const updateWorkspaceByIdService = async (
     }
 
     //Cập nhật thông tin của workspace
-    workspace.name = name || workspace.name;
-    workspace.description = description || workspace.description;
+    if (name) workspace.name = name;
+    if (description) workspace.description = description;
     await workspace.save();
 
     return {

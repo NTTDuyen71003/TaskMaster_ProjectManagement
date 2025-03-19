@@ -1,4 +1,8 @@
+import mongoose from "mongoose";
+import { TaskStatusEnum } from "../enums/task.enum";
 import ProjectModel from "../models/project.model";
+import TaskModel from "../models/task.model";
+import { NotFoundException } from "../utils/appError";
 
 export const createProjectService = async (
     userId: string,
@@ -46,4 +50,120 @@ export const getProjectsInWorkspaceService = async (
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return { projects, totalCount, totalPages, skip };
+};
+
+export const getProjectByIdAndWorkspaceIdService = async (
+    workspaceId: string,
+    projectId: string
+) => {
+    const project = await ProjectModel.findOne({
+        _id: projectId,
+        workspace: workspaceId,
+    }).select("_id emoji name description");
+
+    if (!project) {
+        throw new NotFoundException(
+            "Project not found or does not belong to the specified workspace"
+        );
+    }
+
+    return { project };
+};
+
+export const getProjectAnalyticsService = async (
+    workspaceId: string,
+    projectId: string
+) => {
+    const project = await ProjectModel.findById(projectId);
+
+    if (!project || project.workspace.toString() !== workspaceId.toString()) {
+        throw new NotFoundException(
+            "Project not found or does not belong to this workspace"
+        );
+    }
+
+    const currentDate = new Date();
+
+    // Đếm tổng số công việc trong dự án
+    const totalTasks = await TaskModel.countDocuments({
+        project: projectId,
+    });
+
+    // Đếm số công việc quá hạn (dueDate < currentDate và chưa hoàn thành)
+    const overdueTasks = await TaskModel.countDocuments({
+        project: projectId,
+        dueDate: { $lt: currentDate },
+        status: { $ne: TaskStatusEnum.DONE }
+    });
+
+    // Đếm số công việc đã hoàn thành
+    const completedTasks = await TaskModel.countDocuments({
+        project: projectId,
+        status: TaskStatusEnum.DONE,
+    });
+
+    const analytics = {
+        totalTasks,
+        overdueTasks,
+        completedTasks,
+    };
+
+    return {
+        analytics,
+    };
+};
+
+export const updateProjectService = async (
+    workspaceId: string,
+    projectId: string,
+    body: {
+        emoji?: string;
+        name: string;
+        description?: string;
+    }
+) => {
+    const { name, emoji, description } = body;
+
+    const project = await ProjectModel.findOne({
+        _id: projectId,
+        workspace: workspaceId,
+    });
+
+    if (!project) {
+        throw new NotFoundException(
+            "Project not found or does not belong to the specified workspace"
+        );
+    }
+
+    if (emoji) project.emoji = emoji;
+    if (name) project.name = name;
+    if (description) project.description = description;
+
+    await project.save();
+
+    return { project };
+};
+
+export const deleteProjectService = async (
+    workspaceId: string,
+    projectId: string
+) => {
+    const project = await ProjectModel.findOne({
+        _id: projectId,
+        workspace: workspaceId,
+    });
+
+    if (!project) {
+        throw new NotFoundException(
+            "Project not found or does not belong to the specified workspace"
+        );
+    }
+
+    await project.deleteOne();
+
+    await TaskModel.deleteMany({
+        project: project._id,
+    });
+
+    return project;
 };
