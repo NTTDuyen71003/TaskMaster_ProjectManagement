@@ -36,7 +36,7 @@ const AllMembers = () => {
           </Avatar>
           <div>
             <p className="text-sm font-medium leading-none">Sofia Davis</p>
-            <p className="text-sm text-muted-foreground">hutech@gmail.com</p>
+            <p className="text-sm text-muted-foreground">hutech@example.com</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

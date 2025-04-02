@@ -180,8 +180,8 @@ export default function CreateTaskForm(props: {
                               <Loader className="w-4 h-4 place-self-center flex animate-spin" />
                             </div>
                           )}
-                          <SelectItem value="hutech@gmail.com">
-                            hutech@gmail.com
+                          <SelectItem value="hutech@example.com">
+                            hutech@example.com
                           </SelectItem>
                           <SelectItem value="m@google.com">
                             m@google.com
@@ -217,8 +217,8 @@ export default function CreateTaskForm(props: {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="hutech@gmail.com">
-                          hutech@gmail.com
+                        <SelectItem value="hutech@example.com">
+                          hutech@example.com
                         </SelectItem>
                         <SelectItem value="m@google.com">
                           m@google.com
