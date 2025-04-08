@@ -1,28 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useEffect } from "react";
+import useWorkspaceId from "@/hooks/use-workspace-id";
 import useAuth from "@/hooks/api/use-auth";
 import { UserType, WorkspaceType } from "@/types/api.type";
-import useWorkspaceId from "@/hooks/use-workspace-id";
 import useGetWorkspaceQuery from "@/hooks/api/use-get-workspace";
 import { useNavigate } from "react-router-dom";
+import usePermissions from "@/hooks/use-permissions";
+import { PermissionType } from "@/constant";
 
-// Define the context shape
+// Định nghĩa kiểu dữ liệu cho context
 type AuthContextType = {
   user?: UserType;
   workspace?: WorkspaceType;
+  hasPermission: (permission: PermissionType) => boolean;
   error: any;
   isLoading: boolean;
-  workspaceLoading: boolean;
   isFetching: boolean;
+  workspaceLoading: boolean;
   refetchAuth: () => void;
   refetchWorkspace: () => void;
 };
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const navigate = useNavigate();
+  const workspaceId = useWorkspaceId();
+
   const {
     data: authData,
     error: authError,
@@ -32,16 +38,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   } = useAuth();
   const user = authData?.user;
 
-  const workspaceId = useWorkspaceId();
   const {
     data: workspaceData,
     isLoading: workspaceLoading,
     error: workspaceError,
     refetch: refetchWorkspace,
   } = useGetWorkspaceQuery(workspaceId);
+
   const workspace = workspaceData?.workspace;
 
-  const navigate = useNavigate();
   useEffect(() => {
     if (workspaceError) {
       if (workspaceError?.errorCode === "ACCESS_UNAUTHORIZED") {
@@ -50,15 +55,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [navigate, workspaceError]);
 
+  const permissions = usePermissions(user, workspace);
+
+  const hasPermission = (permission: PermissionType): boolean => {
+    return permissions.includes(permission);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         workspace,
+        hasPermission,
         error: authError || workspaceError,
         isLoading,
-        workspaceLoading,
         isFetching,
+        workspaceLoading,
         refetchAuth,
         refetchWorkspace,
       }}

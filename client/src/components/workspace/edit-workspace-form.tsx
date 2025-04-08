@@ -19,10 +19,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editWorkspaceMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import { Permissions } from "@/constant";
 
 export default function EditWorkspaceForm() {
 
-  const { workspace } = useAuthContext();
+  const { workspace, hasPermission } = useAuthContext();
+  const canEditWorkspace = hasPermission(Permissions.EDIT_WORKSPACE);
   const workspaceId = useWorkspaceId();
   const queryClient = useQueryClient();
 
@@ -99,9 +101,9 @@ export default function EditWorkspaceForm() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="NNPTUDS2."
+                        placeholder="Enter your workspace name..."
                         className="!h-[48px] disabled:opacity-90 disabled:pointer-events-none"
-                        disabled={false}
+                        disabled={!canEditWorkspace}
                         {...field}
                       />
                     </FormControl>
@@ -125,7 +127,7 @@ export default function EditWorkspaceForm() {
                     <FormControl>
                       <Textarea
                         rows={6}
-                        disabled={false}
+                        disabled={!canEditWorkspace}
                         className="disabled:opacity-90 disabled:pointer-events-none"
                         placeholder="Our team organizes marketing projects and tasks here."
                         {...field}

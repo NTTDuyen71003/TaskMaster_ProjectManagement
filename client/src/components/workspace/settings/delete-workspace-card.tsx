@@ -1,5 +1,6 @@
 import { ConfirmDialog } from "@/components/resuable/confirm-dialog";
 import { Button } from "@/components/ui/button";
+import { Permissions } from "@/constant";
 import { useAuthContext } from "@/context/auth-provider";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import { toast } from "@/hooks/use-toast";
@@ -9,7 +10,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 const DeleteWorkspaceCard = () => {
-  const { workspace } = useAuthContext();
+  const { workspace, hasPermission } = useAuthContext();
+  const canDeleteWorkspace = hasPermission(Permissions.DELETE_WORKSPACE);
   const navigate = useNavigate();
   const workspaceId = useWorkspaceId();
   const queryClient = useQueryClient();
@@ -61,6 +63,7 @@ const DeleteWorkspaceCard = () => {
             className="shrink-0 flex place-self-end h-[40px]"
             variant="destructive"
             onClick={onOpenDialog}
+            disabled={!canDeleteWorkspace}
           >
             Delete Workspace
           </Button>
