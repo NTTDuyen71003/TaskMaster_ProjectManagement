@@ -1,4 +1,4 @@
-import { AllMembersInWorkspaceResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateWorkspaceResponseType, CreateWorkspaceType, EditWorkspaceType, LoginResponseType, loginType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditWorkspaceType, LoginResponseType, loginType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -98,7 +98,16 @@ export const invitedUserJoinWorkspaceMutationFn = async (
 
 //********* */
 //********* PROJECTS
-export const createProjectMutationFn = async () => { };
+export const createProjectMutationFn = async ({
+  workspaceId,
+  data,
+}: CreateProjectPayloadType): Promise<ProjectResponseType> => {
+  const response = await API.post(
+    `/project/workspace/${workspaceId}/create`,
+    data
+  );
+  return response.data;
+};
 
 export const editProjectMutationFn = async () => { };
 
