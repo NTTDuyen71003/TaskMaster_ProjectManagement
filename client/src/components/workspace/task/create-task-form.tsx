@@ -28,24 +28,62 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "../../ui/textarea";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { transformOptions } from "@/lib/helper";
+import { getAvatarColor, getAvatarFallbackText, transformOptions } from "@/lib/helper";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
+import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
+import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-member";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 export default function CreateTaskForm(props: {
   projectId?: string;
   onClose: () => void;
 }) {
   const { projectId, onClose } = props;
-
   const workspaceId = useWorkspaceId();
+  const { data: menberData } = useGetWorkspaceMembers(workspaceId)
 
-  const isLoading = false;
+  const { data, isLoading } = useGetProjectsInWorkspaceQuery({
+    workspaceId,
+    skip: !!projectId,
+  });
 
-  //const projectOptions = []
+  const projects = data?.projects || [];
+  const members = menberData?.members || [];
+
+  //Workspace Projects
+  const projectOptions = projects?.map((project) => {
+    return {
+      label: (
+        <div className="flex items-center gap-1">
+          <span>{project.emoji}</span>
+          <span>{project.name}</span>
+        </div>
+      ),
+      value: project._id,
+    };
+  });
 
   // Workspace Memebers
-  //const membersOptions = []
+  const membersOptions = members?.map((member) => {
+    const name = member.userId?.name || "Unknown";
+    const initials = getAvatarFallbackText(name);
+    const avatarColor = getAvatarColor(name);
+
+    return {
+      label: (
+        <div className="flex items-center space-x-2">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={member.userId?.profilePicture || ""} alt={name} />
+            <AvatarFallback className={avatarColor}>{initials}</AvatarFallback>
+          </Avatar>
+          <span>{name}</span>
+        </div>
+      ),
+      value: member.userId._id,
+    };
+  });
 
   const formSchema = z.object({
     title: z.string().trim().min(1, {
@@ -180,15 +218,19 @@ export default function CreateTaskForm(props: {
                               <Loader className="w-4 h-4 place-self-center flex animate-spin" />
                             </div>
                           )}
-                          <SelectItem value="hutech@example.com">
-                            hutech@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
+
+                          {/* lay du lieu project de tao task cho project do */}
+                          <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                            {projectOptions?.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                className="!capitalize cursor-pointer"
+                                value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </div>
+
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -216,17 +258,26 @@ export default function CreateTaskForm(props: {
                           <SelectValue placeholder="Select a assignee" />
                         </SelectTrigger>
                       </FormControl>
+
+                      {/* lay du lieu member tu db de add vao task */}
                       <SelectContent>
-                        <SelectItem value="hutech@example.com">
-                          hutech@example.com
-                        </SelectItem>
-                        <SelectItem value="m@google.com">
-                          m@google.com
-                        </SelectItem>
-                        <SelectItem value="m@support.com">
-                          m@support.com
-                        </SelectItem>
+                        <div
+                          className="w-full max-h-[200px]
+                           overflow-y-auto scrollbar
+                          "
+                        >
+                          {membersOptions?.map((option) => (
+                            <SelectItem
+                              className="cursor-pointer"
+                              key={option.value}
+                              value={option.value}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </div>
                       </SelectContent>
+
                     </Select>
                     <FormMessage />
                   </FormItem>

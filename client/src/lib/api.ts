@@ -1,4 +1,4 @@
-import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -171,7 +171,18 @@ export const deleteProjectMutationFn = async ({
 //*******TASKS ********************************
 //************************* */
 
-export const createTaskMutationFn = async () => { };
+//tao project
+export const createTaskMutationFn = async ({
+  workspaceId,
+  projectId,
+  data,
+}:CreateTaskPayloadType) => {
+  const response = await API.post(
+    `/task/project/${projectId}/workspace/${workspaceId}/create`,
+    data
+  );
+  return response.data;
+ };
 
 export const getAllTasksQueryFn = async () => { };
 
