@@ -58,6 +58,7 @@ export default function CreateProjectForm({
   const handleEmojiSelection = (emoji: string) => {
     setEmoji(emoji);
   };
+  
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
@@ -72,7 +73,7 @@ export default function CreateProjectForm({
       onSuccess: (data) => {
         const project=data.project;
         queryClient.invalidateQueries({
-          queryKey: ["projects", workspaceId],
+          queryKey: ["allprojects", workspaceId],
         })
         toast({
           title: "Success",

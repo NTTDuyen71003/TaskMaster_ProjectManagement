@@ -53,7 +53,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap space-x-2">
             <Badge variant="outline" className="capitalize shrink-0 h-[25px]">
               {row.original.taskCode}
             </Badge>

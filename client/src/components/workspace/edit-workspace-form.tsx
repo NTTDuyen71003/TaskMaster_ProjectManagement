@@ -141,7 +141,7 @@ export default function EditWorkspaceForm() {
             {/* {canEditWorkspace && ( */}
             <Button
               className="flex place-self-end  h-[40px] text-white font-semibold"
-              disabled={isPending}
+              disabled={!canEditWorkspace}
               type="submit"
             >
               {isPending && <Loader className="animate-spin" />}
