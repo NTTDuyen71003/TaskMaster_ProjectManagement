@@ -46,7 +46,7 @@ export default function CreateTaskForm(props: {
   const { projectId, onClose } = props;
   const workspaceId = useWorkspaceId();
   const queryClient = useQueryClient();
-  const { data: menberData } = useGetWorkspaceMembers(workspaceId)
+  const { data: menberData } = useGetWorkspaceMembers(workspaceId);
 
   const { data, isLoading } = useGetProjectsInWorkspaceQuery({
     workspaceId,
@@ -156,6 +156,9 @@ export default function CreateTaskForm(props: {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["project-analytics", projectId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["all-tasks", workspaceId],
         });
         toast({
           title: "Success",

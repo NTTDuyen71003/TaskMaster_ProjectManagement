@@ -215,7 +215,7 @@ export const getAllTasksQueryFn = async ({
   const url = queryParams.toString() ? `${baseUrl}?${queryParams}` : baseUrl;
   const response = await API.get(url);
   return response.data;
-}
+};
 
 
 
