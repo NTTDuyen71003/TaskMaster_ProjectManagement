@@ -1,4 +1,4 @@
-import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -109,12 +109,13 @@ export const createProjectMutationFn = async ({
   return response.data;
 };
 
+
 //edit project
 export const editProjectMutationFn = async ({
   projectId,
   workspaceId,
   data,
-}:EditProjectPayloadType): Promise<ProjectResponseType> => {
+}: EditProjectPayloadType): Promise<ProjectResponseType> => {
   const response = await API.put(
     `/project/${projectId}/workspace/${workspaceId}/update`,
     data
@@ -146,6 +147,7 @@ export const getProjectByIdQueryFn = async ({
   return response.data;
 };
 
+
 //lay task cua project
 export const getProjectAnalyticsQueryFn = async ({
   workspaceId,
@@ -157,11 +159,12 @@ export const getProjectAnalyticsQueryFn = async ({
   return response.data;
 };
 
+
 //xoa project
 export const deleteProjectMutationFn = async ({
   workspaceId,
   projectId,
-}: ProjectByIdPayloadType): Promise<{message:string;}> => {
+}: ProjectByIdPayloadType): Promise<{ message: string; }> => {
   const response = await API.delete(
     `/project/${projectId}/workspace/${workspaceId}/delete`
   );
@@ -171,19 +174,51 @@ export const deleteProjectMutationFn = async ({
 //*******TASKS ********************************
 //************************* */
 
-//tao project
+//tao task
 export const createTaskMutationFn = async ({
   workspaceId,
   projectId,
   data,
-}:CreateTaskPayloadType) => {
+}: CreateTaskPayloadType) => {
   const response = await API.post(
     `/task/project/${projectId}/workspace/${workspaceId}/create`,
     data
   );
   return response.data;
- };
+};
 
-export const getAllTasksQueryFn = async () => { };
+
+//lay du lieu task
+export const getAllTasksQueryFn = async ({
+  workspaceId,
+  keyword,
+  projectId,
+  assignedTo,
+  priority,
+  status,
+  dueDate,
+  pageNumber,
+  pageSize,
+}: AllTaskPayloadType): Promise<AllTaskResponseType> => {
+  const baseUrl = `/task/workspace/${workspaceId}/all`;
+
+  const queryParams = new URLSearchParams();
+  if (keyword) queryParams.append("keyword", keyword);
+  if (projectId) queryParams.append("projectId", projectId);
+  if (assignedTo) queryParams.append("assignedTo", assignedTo);
+  if (priority) queryParams.append("priority", priority);
+  if (status) queryParams.append("status", status);
+  if (dueDate) queryParams.append("dueDate", dueDate);
+  if (pageNumber) queryParams.append("pageNumber", pageNumber?.toString());
+  if (pageSize) queryParams.append("pageSize", pageSize?.toString());
+
+  const url = queryParams.toString() ? `${baseUrl}?${queryParams}` : baseUrl;
+  const response = await API.get(url);
+  return response.data;
+}
+
+
+
+
 
 export const deleteTaskMutationFn = async () => { };

@@ -34,6 +34,9 @@ import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-member";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTaskMutationFn } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
 
 
 export default function CreateTaskForm(props: {
@@ -42,6 +45,7 @@ export default function CreateTaskForm(props: {
 }) {
   const { projectId, onClose } = props;
   const workspaceId = useWorkspaceId();
+  const queryClient = useQueryClient();
   const { data: menberData } = useGetWorkspaceMembers(workspaceId)
 
   const { data, isLoading } = useGetProjectsInWorkspaceQuery({
@@ -49,8 +53,13 @@ export default function CreateTaskForm(props: {
     skip: !!projectId,
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: createTaskMutationFn,
+  })
+
   const projects = data?.projects || [];
   const members = menberData?.members || [];
+
 
   //Workspace Projects
   const projectOptions = projects?.map((project) => {
@@ -64,6 +73,7 @@ export default function CreateTaskForm(props: {
       value: project._id,
     };
   });
+
 
   // Workspace Memebers
   const membersOptions = members?.map((member) => {
@@ -84,6 +94,7 @@ export default function CreateTaskForm(props: {
       value: member.userId._id,
     };
   });
+
 
   const formSchema = z.object({
     title: z.string().trim().min(1, {
@@ -128,9 +139,40 @@ export default function CreateTaskForm(props: {
   const statusOptions = transformOptions(taskStatusList);
   const priorityOptions = transformOptions(taskPriorityList);
 
+
+  //nút tạo task
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values, { workspaceId: workspaceId });
-    onClose();
+    if (isPending) return;
+    const payload = {
+      workspaceId,
+      projectId: values.projectId,
+      data: {
+        ...values,
+        dueDate: values.dueDate.toISOString(),
+      },
+    };
+
+    mutate(payload, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["project-analytics", projectId],
+        });
+        toast({
+          title: "Success",
+          description: "Task created successfully",
+          variant: "success",
+        });
+        onClose();
+        // setTimeout(() => onClose(), 100);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
@@ -261,11 +303,7 @@ export default function CreateTaskForm(props: {
 
                       {/* lay du lieu member tu db de add vao task */}
                       <SelectContent>
-                        <div
-                          className="w-full max-h-[200px]
-                           overflow-y-auto scrollbar
-                          "
-                        >
+                        <div className="w-full max-h-[200px]overflow-y-auto scrollbar">
                           {membersOptions?.map((option) => (
                             <SelectItem
                               className="cursor-pointer"
@@ -336,7 +374,6 @@ export default function CreateTaskForm(props: {
             </div>
 
             {/* {Status} */}
-
             <div>
               <FormField
                 control={form.control}
@@ -356,6 +393,8 @@ export default function CreateTaskForm(props: {
                           />
                         </SelectTrigger>
                       </FormControl>
+
+                      {/* lay du lieu trang thai tu db de add vao task */}
                       <SelectContent>
                         {statusOptions?.map((status) => (
                           <SelectItem
@@ -367,6 +406,7 @@ export default function CreateTaskForm(props: {
                           </SelectItem>
                         ))}
                       </SelectContent>
+
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -409,13 +449,15 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
+            {/* nút tạo task */}
             <Button
               className="flex place-self-end  h-[40px] text-white font-semibold"
               type="submit"
-            >
-              <Loader className="animate-spin" />
+              disabled={isPending}>
+              {isPending && <Loader className="animate-spin" />}
               Create
             </Button>
+
           </form>
         </Form>
       </div>
