@@ -2,17 +2,33 @@
 import { useParams } from "react-router-dom";
 import CreateTaskDialog from "../task/create-task-dialog";
 import EditProjectDialog from "./edit-project-dialog";
+import useWorkspaceId from "@/hooks/use-workspace-id";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getProjectByIdQueryFn } from "@/lib/api";
+import PermissionsGuard from "@/components/resuable/permission-guard";
+import { Permissions } from "@/constant";
 
 const ProjectHeader = () => {
   const param = useParams();
   const projectId = param.projectId as string;
 
-  const isPending = false;
-  const isError = false;
+  const workspaceId = useWorkspaceId();
+  const {data,isPending,isError}=useQuery({
+    queryKey: ["singleProject",projectId],
+    queryFn: () => getProjectByIdQueryFn({
+      workspaceId,
+      projectId,
+    }),
+    staleTime: Infinity,
+    enabled: !!projectId,
+    placeholderData: keepPreviousData,
+  });
+
+  const project = data?.project;
 
   // Fallback if no project data is found
-  const projectEmoji = "📊";
-  const projectName = "Untitled project";
+  const projectEmoji = project?.emoji || "📊";
+  const projectName = project?.name || "Untitled project";
 
   const renderContent = () => {
     if (isPending) return <span>Loading...</span>;
@@ -30,7 +46,10 @@ const ProjectHeader = () => {
         <h2 className="flex items-center gap-3 text-xl font-medium truncate tracking-tight">
           {renderContent()}
         </h2>
-        <EditProjectDialog project={{} as any} />
+        {/* an quyen truy cap sua project  */}
+        <PermissionsGuard requiredPermission={Permissions.EDIT_PROJECT}>
+          <EditProjectDialog project={project} />
+        </PermissionsGuard>
       </div>
       <CreateTaskDialog projectId={projectId} />
     </div>
