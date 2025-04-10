@@ -26,6 +26,9 @@ import { Permissions } from "@/constant/index"; // Ensure this path is correct
 import { useState } from "react";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 import { PaginationType } from "@/types/api.type";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteProjectMutationFn } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
 
 export function NavProjects() {
   const navigate = useNavigate();
@@ -38,8 +41,13 @@ export function NavProjects() {
   const { context, open, onOpenDialog, onCloseDialog } = useConfirmDialog();
   const [pageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const queryClient = useQueryClient();
 
-  const {data,isPending,isFetching,isError}=useGetProjectsInWorkspaceQuery({
+  const { mutate, isPending: isLoading } = useMutation({
+    mutationFn: deleteProjectMutationFn,
+  })
+
+  const { data, isPending, isFetching, isError } = useGetProjectsInWorkspaceQuery({
     workspaceId,
     pageSize,
     pageNumber,
@@ -47,9 +55,7 @@ export function NavProjects() {
 
   const projects = data?.projects || [];
   const pagination = data?.pagination || ({} as PaginationType);
-
-
-
+  const hasMore = pagination?.totalPages > pageNumber;
 
 
   // const projects = [
@@ -73,13 +79,41 @@ export function NavProjects() {
   //   },
   // ];
 
-  const hasMore = pagination?.totalPages>pageNumber;
   const fetchNextPage = () => {
-    if(!hasMore ||  isFetching) return;
+    if (!hasMore || isFetching) return;
     setPageSize((prev) => prev + 5);
   };
 
-  const handleConfirm = () => { };
+  const handleConfirm = () => {
+    if (!context) return;
+    mutate(
+      {
+        workspaceId,
+        projectId: context?._id,
+      },
+      {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({
+            queryKey: ["allprojects", workspaceId],
+          });;
+          toast({
+            title: "Success",
+            description: data.message,
+            variant: "success",
+          });
+          navigate(`/workspace/${workspaceId}`);
+          setTimeout(() => onCloseDialog(), 100);
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        },
+      }
+    );
+  };
   return (
     <>
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -97,10 +131,10 @@ export function NavProjects() {
           </PermissionsGuard>
         </SidebarGroupLabel>
         <SidebarMenu className="h-[320px] scrollbar overflow-y-auto pb-2">
-          {isError ? <div>Error occured</div>:null}
+          {isError ? <div>Error occured</div> : null}
           {isPending ? (
             <Loader className="w-5 h-5 animate-spin place-self-center" />
-          ):null}
+          ) : null}
           {!isPending && projects?.length === 0 ? (
             <div className="pl-3">
               <p className="text-xs text-muted-foreground">
@@ -138,11 +172,9 @@ export function NavProjects() {
                     <DropdownMenuContent
                       className="w-48 rounded-lg"
                       side={isMobile ? "bottom" : "right"}
-                      align={isMobile ? "end" : "start"}
-                    >
+                      align={isMobile ? "end" : "start"}>
                       <DropdownMenuItem
-                        onClick={() => navigate(`${projectUrl}`)}
-                      >
+                        onClick={() => navigate(`${projectUrl}`)}>
                         <Folder className="text-muted-foreground" />
                         <span>View Project</span>
                       </DropdownMenuItem>
@@ -151,7 +183,7 @@ export function NavProjects() {
                         requiredPermission={Permissions.DELETE_PROJECT}>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          disabled={false}
+                          disabled={isLoading}
                           onClick={() => onOpenDialog(item)}>
                           <Trash2 className="text-muted-foreground" />
                           <span>Delete Project</span>
@@ -167,10 +199,10 @@ export function NavProjects() {
 
           {hasMore && (
             <SidebarMenuItem>
-              <SidebarMenuButton 
-              className="text-sidebar-foreground/70"
-              disabled={isFetching}
-              onClick={fetchNextPage}
+              <SidebarMenuButton
+                className="text-sidebar-foreground/70"
+                disabled={isFetching}
+                onClick={fetchNextPage}
               >
                 <MoreHorizontal className="text-sidebar-foreground/70" />
                 <span>{isFetching ? "Loading..." : "More"}</span>
@@ -182,7 +214,7 @@ export function NavProjects() {
 
       <ConfirmDialog
         isOpen={open}
-        isLoading={false}
+        isLoading={isLoading}
         onClose={onCloseDialog}
         onConfirm={handleConfirm}
         title="Delete Project"

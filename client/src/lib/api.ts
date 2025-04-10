@@ -146,10 +146,27 @@ export const getProjectByIdQueryFn = async ({
   return response.data;
 };
 
+//lay task cua project
+export const getProjectAnalyticsQueryFn = async ({
+  workspaceId,
+  projectId,
+}: ProjectByIdPayloadType): Promise<AnalyticsResponseType> => {
+  const response = await API.get(
+    `/project/${projectId}/workspace/${workspaceId}/analytics`
+  );
+  return response.data;
+};
 
-export const getProjectAnalyticsQueryFn = async () => { };
-
-export const deleteProjectMutationFn = async () => { };
+//xoa project
+export const deleteProjectMutationFn = async ({
+  workspaceId,
+  projectId,
+}: ProjectByIdPayloadType): Promise<{message:string;}> => {
+  const response = await API.delete(
+    `/project/${projectId}/workspace/${workspaceId}/delete`
+  );
+  return response.data;
+};
 
 //*******TASKS ********************************
 //************************* */
