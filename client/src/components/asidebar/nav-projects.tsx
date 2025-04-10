@@ -77,7 +77,7 @@ export function NavProjects() {
   const fetchNextPage = () => {
     if(!hasMore ||  isFetching) return;
     setPageSize((prev) => prev + 5);
-  }
+  };
 
   const handleConfirm = () => { };
   return (
@@ -99,7 +99,7 @@ export function NavProjects() {
         <SidebarMenu className="h-[320px] scrollbar overflow-y-auto pb-2">
           {isError ? <div>Error occured</div>:null}
           {isPending ? (
-            <Loader className="h-5 w-5 animate-spin place-self-center" />
+            <Loader className="w-5 h-5 animate-spin place-self-center" />
           ):null}
           {!isPending && projects?.length === 0 ? (
             <div className="pl-3">
@@ -119,9 +119,7 @@ export function NavProjects() {
             </div>
           ) : (
             projects.map((item) => {
-              const projectUrl = '/workspace/${workspaceId}/project/${item._id}';
-              // const projectUrl = `/workspace/${workspaceId}/project/${item.id}`;
-
+              const projectUrl = `/workspace/${workspaceId}/project/${item._id}`;
               return (
                 <SidebarMenuItem key={item._id}>
                   <SidebarMenuButton asChild isActive={projectUrl === pathname}>
@@ -154,8 +152,7 @@ export function NavProjects() {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           disabled={false}
-                          onClick={() => onOpenDialog(item)}
-                        >
+                          onClick={() => onOpenDialog(item)}>
                           <Trash2 className="text-muted-foreground" />
                           <span>Delete Project</span>
                         </DropdownMenuItem>

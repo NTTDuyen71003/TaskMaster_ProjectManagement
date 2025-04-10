@@ -1,4 +1,4 @@
-import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditWorkspaceType, LoginResponseType, loginType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -109,12 +109,25 @@ export const createProjectMutationFn = async ({
   return response.data;
 };
 
-export const editProjectMutationFn = async () => { };
+//edit project
+export const editProjectMutationFn = async ({
+  projectId,
+  workspaceId,
+  data,
+}:EditProjectPayloadType): Promise<ProjectResponseType> => {
+  const response = await API.put(
+    `/project/${projectId}/workspace/${workspaceId}/update`,
+    data
+  );
+  return response.data;
+};
 
+
+//goi api lay tat ca cac project trong workspace
 export const getProjectsInWorkspaceQueryFn = async ({
   workspaceId,
-  pageSize=10,
-  pageNumber=1,
+  pageSize = 10,
+  pageNumber = 1,
 }: AllProjectPayloadType): Promise<AllProjectResponseType> => {
   const response = await API.get(
     `/project/workspace/${workspaceId}/all?pageSize=${pageSize}&pageNumber=${pageNumber}`
@@ -122,8 +135,17 @@ export const getProjectsInWorkspaceQueryFn = async ({
   return response.data;
 };
 
+//lấy project theo id
+export const getProjectByIdQueryFn = async ({
+  workspaceId,
+  projectId,
+}: ProjectByIdPayloadType): Promise<ProjectResponseType> => {
+  const response = await API.get(
+    `/project/${projectId}/workspace/${workspaceId}`
+  );
+  return response.data;
+};
 
-export const getProjectByIdQueryFn = async () => { };
 
 export const getProjectAnalyticsQueryFn = async () => { };
 
