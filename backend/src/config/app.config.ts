@@ -8,7 +8,7 @@ const appConfig = () => ({
 
     //deloyment
     JWT_SECRET: getEnv("JWT_SECRET"),
-    JWT_EXPIRES_IN:getEnv("JWT_EXPIRES_IN","1d"),
+    JWT_EXPIRES_IN: getEnv("JWT_EXPIRES_IN", "1d"),
 
     SESSION_SECRET: getEnv("SESSION_SECRET"),
     SESSION_EXPIRES_IN: getEnv("SESSION_EXPIRES_IN"),

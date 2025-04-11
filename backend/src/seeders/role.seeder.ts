@@ -20,7 +20,7 @@ const seedRoles = async () => {
             const role = roleName as keyof typeof RolePermissions;
             const permissions = RolePermissions[role];
 
-            // Check if the role already exists
+            //Kiểm tra xem role đã tồn tại chưa
             const existingRole = await RoleModel.findOne({ name: role }).session(
                 session
             );

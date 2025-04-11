@@ -96,6 +96,6 @@ passport.serializeUser((user: any, done) => done(null, user));
 passport.deserializeUser((user: any, done) => done(null, user));
 
 
-export const passportAuthenticateJWT=passport.authenticate("jwt",{
+export const passportAuthenticateJWT = passport.authenticate("jwt", {
     session: false,
 })

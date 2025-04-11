@@ -1,19 +1,15 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
-// import session from "cookie-session";
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { HTTPSTATUS } from "./config/http.config";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
-// import { BadRequestException } from "./utils/appError";
-// import { ErrorCodeEnum } from "./enums/error-code.enum";
 import "./config/passport.config"
 import passport from "passport";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
-// import isAuthenticated from "./middlewares/isAuthenticated.middleware";
 import workspaceRoutes from "./routes/workspace.routes";
 import memberRoutes from "./routes/member.routes";
 import projectRoutes from "./routes/project.routes";
