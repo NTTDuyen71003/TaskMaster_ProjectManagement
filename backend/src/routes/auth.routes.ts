@@ -14,7 +14,6 @@ authRoutes.get(
     "/google",
     passport.authenticate("google", {
         scope: ["profile", "email"],
-        //đổi sang false
         session:false,
     })
 );
@@ -23,7 +22,6 @@ authRoutes.get(
     "/google/callback",
     passport.authenticate("google", {
         failureRedirect: failedUrl,
-        //thêm dòng này
         session:false,
     }),
     googleLoginCallback
