@@ -94,8 +94,6 @@ const SignIn = () => {
   };
 
 
-
-
 return (
   <div className="flex min-h-screen items-center justify-center bg-gray-900 p-6">
     <div className="flex w-full max-w-2xl rounded-lg shadow-lg overflow-hidden">
@@ -230,13 +228,6 @@ return (
             <div className="text-center">
               <p className="text-sm text-gray-500 mb-4">Or Log in with</p>
               <div className="flex justify-center gap-4">
-                {/* <Button
-                  variant="outline"
-                  className="flex items-center gap-2 border-gray-300 h-10 rounded-lg"
-                >
-                  <GoogleIcon />
-                  Google
-                </Button> */}
                 <GoogleOauthButton label="Login" />
               </div>
             </div>
