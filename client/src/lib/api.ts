@@ -1,3 +1,4 @@
+import { TaskPriorityEnumType, TaskStatusEnumType } from '@/constant';
 import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
@@ -216,7 +217,42 @@ export const getAllTasksQueryFn = async ({
   const response = await API.get(url);
   return response.data;
 };
+export const editTaskMutationFn = async ({
+  workspaceId,
+  taskId,
+  projectId, // Add projectId parameter
+  data,
+}: {
+  workspaceId: string;
+  taskId: string;
+  projectId: string; // Add projectId
+  data: {
+    title: string;
+    description: string;
+    priority: TaskPriorityEnumType;
+    status: TaskStatusEnumType;
+    assignedTo: string;
+    dueDate: string;
+  };
+}) => {
+  const response = await API.put(
+    `/task/${taskId}/project/${projectId}/workspace/${workspaceId}/update`, // Include projectId in URL
+    data
+  );
+  return response.data;
+};
 
-
-
-export const deleteTaskMutationFn = async () => { };
+export const deleteTaskMutationFn = async ({
+  workspaceId,
+  taskId,
+}: {
+  workspaceId: string;
+  taskId: string;
+}): Promise<{
+  message: string;
+}> => {
+  const response = await API.delete(
+    `task/${taskId}/workspace/${workspaceId}/delete`
+  );
+  return response.data;
+};
