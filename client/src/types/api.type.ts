@@ -7,6 +7,7 @@ import {
 export type loginType = { email: string; password: string };
 export type LoginResponseType = {
   message: string;
+  access_token: string;
   user: {
     _id: string;
     currentWorkspace: string;

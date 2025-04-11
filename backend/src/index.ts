@@ -19,7 +19,7 @@ import "./config/passport.config"
 import passport from "passport";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
-import isAuthenticated from "./middlewares/isAuthenticated.middleware";
+// import isAuthenticated from "./middlewares/isAuthenticated.middleware";
 import workspaceRoutes from "./routes/workspace.routes";
 import memberRoutes from "./routes/member.routes";
 import projectRoutes from "./routes/project.routes";
