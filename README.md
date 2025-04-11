@@ -1,10 +1,10 @@
 # Đồ án NodeJS TaskMaster (Project Management)
 
 ## Sinh viên thực hiện:
-- **Phạm Vũ Tiến - 2180608746 - (Back End + Postman)**
+- **Phạm Vũ Tiến - 2180608746 - (Back End + Front End + Postman)**
 - **Nguyễn Thị Thuỳ Duyên - 2180608794 - (Front End  + UI/UX design)**
-- **Trần Công Thuận - 2180608740 - (DB Design + Word + Testing)**
-- **Trần Trọng Tuấn - 2180608187 - (Support + Team Collaboration)**
+- **Trần Công Thuận - 2180608740 - (BA + Word + Testing)**
+- **Trần Trọng Tuấn - 2180608187 - (DB Design + Support Back End)**
 
 ## Ngôn ngữ và công cụ sử dụng:
 - **Node.js**
@@ -45,5 +45,4 @@ Cài đặt dependencies and khởi động server phát triển:
 npm install  
 npm run dev
 
-Truy cập BE tại http://localhost:8000.
 Truy cập FE tại http://localhost:5173.
