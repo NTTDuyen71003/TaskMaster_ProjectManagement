@@ -45,5 +45,5 @@ Cài đặt dependencies and khởi động server phát triển:
 npm install  
 npm run dev
 
-Truy cập backend tại http://localhost:8000.
-Truy cập backend tại http://localhost:5173.
+Truy cập BE tại http://localhost:8000.
+Truy cập FE tại http://localhost:5173.

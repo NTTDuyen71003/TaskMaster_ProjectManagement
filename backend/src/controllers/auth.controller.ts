@@ -9,7 +9,6 @@ import { signJwtToken } from "../utils/jwt";
 
 export const googleLoginCallback = asyncHandler(
     async (req: Request, res: Response) => {
-        //thêm dòng này cho deloyment
         const jwt = req.jwt;
         const currentWorkspace = req.user?.currentWorkspace;
 
@@ -18,11 +17,6 @@ export const googleLoginCallback = asyncHandler(
                 `${config.FRONTEND_GOOGLE_CALLBACK_URL}?status=failure`
             );
         }
-
-        //tắt dòng này cho deloyment
-        // return res.redirect(
-        //     `${config.FRONTEND_ORIGIN}/workspace/${currentWorkspace}`
-        // );
         return res.redirect(
             `${config.FRONTEND_GOOGLE_CALLBACK_URL}?status=success&access_token=${jwt}&current_workspace=${currentWorkspace}`
         );
@@ -61,18 +55,6 @@ export const loginController = asyncHandler(
                         message: info?.message || "Invalid email or password",
                     });
                 }
-
-                //tắt dòng này
-                // req.logIn(user, (err) => {
-                //     if (err) {
-                //         return next(err);
-                //     }
-
-                //     return res.status(HTTPSTATUS.OK).json({
-                //         message: "Logged in successfully",
-                //         user,
-                //     });
-                // });
                 const access_token = signJwtToken({ userId: user._id });
                 return res.status(HTTPSTATUS.OK).json({
                     message: "Logged in successfully",
