@@ -17,6 +17,10 @@ export const googleLoginCallback = asyncHandler(
                 `${config.FRONTEND_GOOGLE_CALLBACK_URL}?status=failure`
             );
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> duyen
         return res.redirect(
             `${config.FRONTEND_GOOGLE_CALLBACK_URL}?status=success&access_token=${jwt}&current_workspace=${currentWorkspace}`
         );
@@ -55,6 +59,7 @@ export const loginController = asyncHandler(
                         message: info?.message || "Invalid email or password",
                     });
                 }
+
                 const access_token = signJwtToken({ userId: user._id });
                 return res.status(HTTPSTATUS.OK).json({
                     message: "Logged in successfully",

@@ -6,20 +6,14 @@ const GoogleOauthButton = (props: { label: string }) => {
   const handleClick = () => {
     window.location.href = `${baseURL}/auth/google`;
   };
+  const GoogleIcon = () => <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />;
   return (
     <Button
       onClick={handleClick}
       variant="outline"
       type="button"
-      className="w-full"
-    >
-      <img
-    src="../images/google.png"
-    alt="Google logo"
-    className="w-5 h-5"
-  />
-      {label} with Google
-    </Button>
+      className="flex items-center gap-2 border-gray-300 h-10 rounded-lg">
+      <GoogleIcon />Google</Button>
   );
 };
 
