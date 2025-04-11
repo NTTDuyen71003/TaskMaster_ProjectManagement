@@ -44,6 +44,7 @@ passport.use(
         {
             usernameField: "email",
             passwordField: "password",
+            //cần set lại false
             session: true,
         },
         async (email, password, done) => {

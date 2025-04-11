@@ -219,6 +219,4 @@ export const getAllTasksQueryFn = async ({
 
 
 
-
-
 export const deleteTaskMutationFn = async () => { };

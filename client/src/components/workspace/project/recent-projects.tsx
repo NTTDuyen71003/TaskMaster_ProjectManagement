@@ -55,12 +55,14 @@ const RecentProjects = () => {
                   </div>
                   <div className="ml-auto flex items-center gap-4">
                     <span className="text-sm text-gray-500">Created by</span>
+
+                    <span>{project.createdBy.name}</span>
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage src={project.createdBy.profilePicture || ""} alt="Avatar" />
                       <AvatarFallback className={avatarColor}>
                         {initials}
-                      </AvatarFallback>
-                    </Avatar>
+                      </AvatarFallback>                      
+                    </Avatar>                   
                   </div>
                 </div>
               </Link>
