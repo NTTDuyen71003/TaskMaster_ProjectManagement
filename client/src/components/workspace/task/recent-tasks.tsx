@@ -93,6 +93,7 @@ const RecentTasks = () => {
 
               {/* Assignee */}
               <div className="flex items-center space-x-2 ml-2">
+              <span>{task.assignedTo?.name}</span>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={task.assignedTo?.profilePicture || ""} 
                   alt={task.assignedTo?.name} />

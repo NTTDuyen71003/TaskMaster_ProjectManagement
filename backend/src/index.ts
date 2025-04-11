@@ -1,12 +1,17 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
+
+//cần remove
 import session from "cookie-session";
+
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { HTTPSTATUS } from "./config/http.config";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
+
+//cần remove
 import { BadRequestException } from "./utils/appError";
 import { ErrorCodeEnum } from "./enums/error-code.enum";
 
@@ -27,6 +32,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+//cần remove
 app.use(
     session({
         name: "session",
@@ -39,6 +45,8 @@ app.use(
 );
 
 app.use(passport.initialize());
+
+//cần remove
 app.use(passport.session());
 
 app.use(
@@ -51,7 +59,9 @@ app.use(
 app.get(
     `/`,
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        //cần remove dòng này
         throw new BadRequestException("This is a bad request", ErrorCodeEnum.AUTH_INVALID_TOKEN);
+
         res.status(HTTPSTATUS.OK).json({
             message: "Server is running",
         });
