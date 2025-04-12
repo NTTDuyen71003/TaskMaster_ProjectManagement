@@ -1,5 +1,5 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,28 +9,27 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { FaEye } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
+  // FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Logo from "@/components/logo";
 import GoogleOauthButton from "@/components/auth/google-oauth-button";
 import { useMutation } from "@tanstack/react-query";
 import { loginMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
 import { useStore } from "@/store/store";
 
 const SignIn = () => {
@@ -38,7 +37,7 @@ const SignIn = () => {
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get("returnUrl");
   // State for "Remember Me" checkbox
-  const [rememberMe, setRememberMe] = useState(false);
+  // const [rememberMe, setRememberMe] = useState(false);
 
   const {setAccessToken} =useStore();
 
@@ -64,13 +63,13 @@ const SignIn = () => {
   });
 
   // Check for saved email on mount
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("rememberedEmail");
-    if (savedEmail) {
-      form.setValue("email", savedEmail); // Prefill email field
-      setRememberMe(true); // Check the box
-    }
-  }, [form]);
+  // useEffect(() => {
+  //   const savedEmail = localStorage.getItem("rememberedEmail");
+  //   if (savedEmail) {
+  //     form.setValue("email", savedEmail); // Prefill email field
+  //     setRememberMe(true); // Check the box
+  //   }
+  // }, [form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
@@ -228,7 +227,7 @@ return (
             <div className="text-center">
               <p className="text-sm text-gray-500 mb-4">Or Log in with</p>
               <div className="flex justify-center gap-4">
-                <GoogleOauthButton label="Login" />
+                <GoogleOauthButton/>
               </div>
             </div>
           </form>
