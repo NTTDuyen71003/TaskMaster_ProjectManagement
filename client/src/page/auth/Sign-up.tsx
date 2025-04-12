@@ -8,23 +8,23 @@ import { FaEye, FaUserCircle } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { MdAttachEmail } from "react-icons/md";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
+  // FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Logo from "@/components/logo";
+// import Logo from "@/components/logo";
 import GoogleOauthButton from "@/components/auth/google-oauth-button";
 import { useMutation } from "@tanstack/react-query";
 import { registerMutationFn } from "@/lib/api";
@@ -76,164 +76,162 @@ const SignUp = () => {
   };
 
 
-
-
-return (
-  <div className="flex min-h-screen items-center justify-center bg-gray-900 p-6">
-    <div className="flex w-full max-w-2xl rounded-lg shadow-lg overflow-hidden">
-      {/* Left Geometric Background */}
-      <div className="hidden md:block w-1/3 bg-gradient-to-br from-pink-400 to-pink-300 relative">
-        <div className="absolute inset-0">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="0,0 100,0 0,100" fill="rgba(255,255,255,0.2)" />
-            <polygon points="0,100 100,0 100,100" fill="rgba(255,255,255,0.1)" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Right Sign-Up Form */}
-      <div className="w-full md:w-2/3 bg-white p-8">
-        {/* Logo */}
-        <div className="flex justify-center mb-3">
-          <span className="flex items-center gap-2">
-            <div className="cursor-pointer">
-              <img
-                src="/images/taskmaster_logo2.png"
-                alt="Logo"
-                className=""
-              />
-            </div>
-          </span>
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 p-6">
+      <div className="flex w-full max-w-2xl rounded-lg shadow-lg overflow-hidden">
+        {/* Left Geometric Background */}
+        <div className="hidden md:block w-1/3 bg-gradient-to-br from-pink-400 to-pink-300 relative">
+          <div className="absolute inset-0">
+            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polygon points="0,0 100,0 0,100" fill="rgba(255,255,255,0.2)" />
+              <polygon points="0,100 100,0 100,100" fill="rgba(255,255,255,0.1)" />
+            </svg>
+          </div>
         </div>
 
-        {/* Tabs (Login / Sign Up) */}
-        <div className="flex justify-center gap-4 mb-6">
-          <button className="text-lg font-semibold text-gray-500 pb-1">
-            <Link to="/" className="">
-              LOGIN
-            </Link>
-          </button>
-          <button className="text-lg font-semibold text-pink-500 border-b-2 border-pink-500 pb-1">
-            SIGN UP
-          </button>
-        </div>
+        {/* Right Sign-Up Form */}
+        <div className="w-full md:w-2/3 bg-white p-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-3">
+            <span className="flex items-center gap-2">
+              <div className="cursor-pointer">
+                <img
+                  src="/images/taskmaster_logo2.png"
+                  alt="Logo"
+                  className=""
+                />
+              </div>
+            </span>
+          </div>
 
-        {/* Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              {/* Name Field */}
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <FaUserCircle />
-                      </span>
-                      <FormControl>
-                        <Input
-                          placeholder="Name"
-                          className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
-                          {...field}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* Tabs (Login / Sign Up) */}
+          <div className="flex justify-center gap-4 mb-6">
+            <button className="text-lg font-semibold text-gray-500 pb-1">
+              <Link to="/" className="">
+                LOGIN
+              </Link>
+            </button>
+            <button className="text-lg font-semibold text-pink-500 border-b-2 border-pink-500 pb-1">
+              SIGN UP
+            </button>
+          </div>
 
-              {/* Email Field */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <MdAttachEmail  />
-                      </span>
-                      <FormControl>
-                        <Input
-                          placeholder="Email"
-                          className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
-                          {...field}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Password Field */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => {
-                  const [showPassword, setShowPassword] = useState(false);
-                  return (
+          {/* Form */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                {/* Name Field */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
                     <FormItem>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                          <RiLockPasswordFill />
+                          <FaUserCircle />
                         </span>
                         <FormControl>
                           <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            className="pl-10 pr-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                            placeholder="Name"
+                            className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
                             {...field}
                           />
                         </FormControl>
-                        <span
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                          {showPassword ? <IoIosEyeOff size={20} /> : <FaEye size={20} />}
-                        </span>
                       </div>
                       <FormMessage />
                     </FormItem>
-                  );
-                }}
-              />
+                  )}
+                />
 
-              {/* Sign Up Button */}
-              <Button
-                disabled={isPending}
-                type="submit"
-                className="w-full bg-pink-500 hover:bg-pink-600 text-white h-12 rounded-lg"
-              >
-                {isPending && <Loader className="animate-spin mr-2" />}
-                SIGN UP
-              </Button>
-            </div>
+                {/* Email Field */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                          <MdAttachEmail />
+                        </span>
+                        <FormControl>
+                          <Input
+                            placeholder="Email"
+                            className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Social Login */}
-            <div className="text-center">
-              <p className="text-sm text-gray-500 mb-4">Or Sign up with</p>
-              <div className="flex justify-center gap-4">
-                <GoogleOauthButton label="Sign up" />
+                {/* Password Field */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => {
+                    const [showPassword, setShowPassword] = useState(false);
+                    return (
+                      <FormItem>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <RiLockPasswordFill />
+                          </span>
+                          <FormControl>
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Password"
+                              className="pl-10 pr-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                              {...field}
+                            />
+                          </FormControl>
+                          <span
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                          >
+                            {showPassword ? <FaEye size={20} /> : <IoIosEyeOff size={20} />}
+                          </span>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+
+                {/* Sign Up Button */}
+                <Button
+                  disabled={isPending}
+                  type="submit"
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white h-12 rounded-lg"
+                >
+                  {isPending && <Loader className="animate-spin mr-2" />}
+                  SIGN UP
+                </Button>
               </div>
-            </div>
 
-            {/* Sign In Link */}
-            <div className="text-center text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link to="/" className="text-pink-500 hover:underline">
-                Sign in
-              </Link>
-            </div>
-          </form>
-        </Form>
+              {/* Social Login */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500 mb-4">Or Sign up with</p>
+                <div className="flex justify-center gap-4">
+                  <GoogleOauthButton/>
+                </div>
+              </div>
+
+              {/* Sign In Link */}
+              <div className="text-center text-sm text-gray-600">
+                Already have an account?{" "}
+                <Link to="/" className="text-pink-500 hover:underline">
+                  Sign in
+                </Link>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default SignUp;
