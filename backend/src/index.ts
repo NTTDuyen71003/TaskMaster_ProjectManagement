@@ -15,6 +15,7 @@ import memberRoutes from "./routes/member.routes";
 import projectRoutes from "./routes/project.routes";
 import taskRoutes from "./routes/task.routes";
 import { passportAuthenticateJWT } from "./config/passport.config";
+import path from "path";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -22,6 +23,8 @@ const BASE_PATH = config.BASE_PATH;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
+app.use('/template', express.static(path.join(__dirname, 'template')));
+
 
 
 app.use(

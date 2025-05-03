@@ -1,6 +1,6 @@
 import WorkspaceForm from "./create-workspace-form";
 import useCreateWorkspaceDialog from "@/hooks/use-create-workspace-dialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 
 const CreateWorkspaceDialog = () => {
@@ -8,7 +8,8 @@ const CreateWorkspaceDialog = () => {
 
   return (
     <Dialog modal={true} open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-5xl !p-0 overflow-hidden border-0">
+      <DialogContent className="col-12 grid-margin stretch-card">
+        <DialogTitle className="sr-only">Create Workspace</DialogTitle>
         <WorkspaceForm {...{ onClose }} />
       </DialogContent>
     </Dialog>
