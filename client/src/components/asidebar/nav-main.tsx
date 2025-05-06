@@ -76,7 +76,7 @@ export function NavMain() {
           <React.Fragment key={item.title}>
             <li className={`nav-item menu-items ${active ? "active" : ""}`}>
               <Link to={item.url} className="nav-link">
-                <span className="menu-icon">
+                <span className="menu-icon bg-sidebar-frameicon">
                   <item.icon className="mdi w-4 h-4" />
                 </span>
                 <span className="menu-title">{item.title}</span>
@@ -95,7 +95,7 @@ export function NavMain() {
                   className="nav-link flex items-center justify-between w-full"
                 >
                   <span className="flex items-center">
-                    <span className="menu-icon">
+                    <span className="menu-icon bg-sidebar-frameicon">
                       <Briefcase className="w-4 h-4" />
                     </span>
                     <span className="menu-title">Projects</span>

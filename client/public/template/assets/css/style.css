@@ -13122,7 +13122,6 @@ input[type="button"].btn-block {
   color: #ffffff;
   text-align: left;
   list-style: none;
-  background-color: #191c24;
   background-clip: padding-box;
   border: 1px solid #2c2e33;
   border-radius: 0.25rem;
@@ -13284,7 +13283,7 @@ input[type="button"].btn-block {
   height: 0;
   margin: 0.5rem 0;
   overflow: hidden;
-  border-top: 1px solid #2c2e33;
+  border-top: 1px solid rgba(120, 130, 140, 0.2);
 }
 
 .dropdown-item {
@@ -13304,7 +13303,14 @@ input[type="button"].btn-block {
 .dropdown-item:focus {
   color: #16181b;
   text-decoration: none;
-  background-color: #13151b;
+  background-color: #eff2ff;
+}
+
+.dark .dropdown-item:hover,
+.dark .dropdown-item:focus {
+  color: #16181b;
+  text-decoration: none;
+  background-color: #0050e3;
 }
 
 .dropdown-item.active,
@@ -29633,9 +29639,6 @@ div.tagsinput span.tag a {
   -webkit-transition: width 0.25s ease;
   -moz-transition: width 0.25s ease;
   -ms-transition: width 0.25s ease;
-  box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
   color: #ffffff;
   padding-left: 15px;
   padding-right: 15px;
@@ -30008,7 +30011,6 @@ div.tagsinput span.tag a {
 /* Sidebar */
 .sidebar {
   min-height: calc(100vh - 70px);
-  background: #191c24;
   font-weight: normal;
   padding: 0;
   width: 244px;
@@ -30019,12 +30021,12 @@ div.tagsinput span.tag a {
   -ms-transition: width 0.25s ease, background 0.25s ease;
 }
 
+
 .sidebar .sidebar-brand-wrapper {
   transition: width 0.25s ease, background 0.25s ease;
   -webkit-transition: width 0.25s ease, background 0.25s ease;
   -moz-transition: width 0.25s ease, background 0.25s ease;
   -ms-transition: width 0.25s ease, background 0.25s ease;
-  background: #191c24;
   width: 244px;
   height: 70px;
 }
@@ -30168,7 +30170,13 @@ div.tagsinput span.tag a {
 }
 
 .sidebar .nav .nav-item.active>.nav-link {
-  background: #0f1015;
+  background-color: #F2F4FF;
+  position: relative;
+}
+
+/* Dark mode */
+.dark .sidebar .nav .nav-item.active > .nav-link {
+  background-color: #0f1015;
   position: relative;
 }
 
@@ -30183,8 +30191,12 @@ div.tagsinput span.tag a {
   top: 0;
 }
 
-.sidebar .nav .nav-item.active>.nav-link .menu-title {
+.dark .sidebar .nav .nav-item.active>.nav-link .menu-title {
   color: #ffffff;
+}
+
+.sidebar .nav .nav-item.active>.nav-link .menu-title {
+  color: #000;
 }
 
 .sidebar .nav .nav-item.active>.nav-link i {
@@ -30387,7 +30399,6 @@ div.tagsinput span.tag a {
   margin-right: 0.5rem;
   font-size: 0.8125rem;
   line-height: 1;
-  background: rgba(108, 114, 147, 0.2);
   width: 31px;
   height: 31px;
   border-radius: 100%;
@@ -30437,6 +30448,10 @@ div.tagsinput span.tag a {
 }
 
 .sidebar .nav.sub-menu .nav-item .nav-link:hover {
+  color: #000;
+}
+
+.dark .sidebar .nav.sub-menu .nav-item .nav-link:hover {
   color: #ffffff;
 }
 
@@ -30445,6 +30460,11 @@ div.tagsinput span.tag a {
 }
 
 .sidebar .nav:not(.sub-menu)>.nav-item:hover:not(.nav-category):not(.account-dropdown)>.nav-link {
+  background: #D9DDFE;
+  color: #000;
+}
+
+.dark .sidebar .nav:not(.sub-menu)>.nav-item:hover:not(.nav-category):not(.account-dropdown)>.nav-link {
   background: #0f1015;
   color: #ffffff;
 }
@@ -30827,16 +30847,6 @@ div.tagsinput span.tag a {
 .avatar-border {
   border: 2px solid #6c7293;
 }
-
-.sidebar-offcanvas {
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-}
-
-.sidebar-offcanvas.active {
-  transform: translateX(-250px); /* hoặc -100% nếu bạn muốn nó trượt ra ngoài */
-}
-
 
 
 

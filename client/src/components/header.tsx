@@ -27,6 +27,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = location.pathname;
 
+
   const getPageLabel = (pathname: string) => {
     if (pathname.includes("/project/")) return "Project";
     if (pathname.includes("/settings")) return "Settings";
@@ -38,7 +39,7 @@ const Header = () => {
 
 
   return (
-    <nav className="navbar p-0 fixed-top d-flex flex-row">
+    <nav className="navbar bg-navbar p-0 fixed-top d-flex flex-row">
       {/* mini logo */}
       <div className="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
         <a className="navbar-brand brand-logo-mini" href={`/workspace/${workspaceId}`}>
@@ -79,28 +80,31 @@ const Header = () => {
           </li>
 
           {/* Icon 1 */}
-          <li className="nav-item nav-settings d-none d-lg-block">
-            <a className="nav-link" href="#">
-              <i className="mdi mdi-view-grid"></i>
+          <li className="nav-item dropdown">
+            <a className="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+              <i className="mdi mdi-account-plus" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
+            <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+              <h6 className="p-3 mb-0">TBA</h6>
+            </div>
           </li>
 
           {/* Icon mail */}
-          <li className="nav-item dropdown border-left">
+          <li className="text-sidebar-text nav-item dropdown border-left">
             <a className="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-              <i className="mdi mdi-email"></i>
+              <i className="mdi mdi-email" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
-            <div className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+            <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
               <h6 className="p-3 mb-0">TBA</h6>
             </div>
           </li>
 
           {/* Icon thông báo */}
-          <li className="nav-item dropdown border-left">
+          <li className="text-sidebar-text nav-item dropdown border-left">
             <a className="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i className="mdi mdi-bell"></i>
+              <i className="mdi mdi-bell" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
-            <div className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+            <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
               <h6 className="p-3 mb-0">TBA</h6>
             </div>
           </li>
@@ -113,12 +117,12 @@ const Header = () => {
             <li className="nav-item dropdown">
               <a className="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                 <div className="navbar-profile d-flex align-items-center">
-                  <span className="h-9 w-9 rounded-full d-flex align-items-center justify-content-center text-white text-sm font-semi-bold avatar-border ">
+                  <span className="text-sidebar-text h-9 w-9 rounded-full d-flex align-items-center justify-content-center text-sm font-semi-bold avatar-border ">
                     {user?.name?.split(" ")?.[0]?.charAt(0)}
                     {user?.name?.split(" ")?.[1]?.charAt(0) || ""}
                   </span>
                   <div className="d-none d-sm-block ms-2">
-                    <p className="mb-0 navbar-profile-name">{user?.name}</p>
+                    <p className="mb-0 text-sidebar-text navbar-profile-name">{user?.name}</p>
                     <small className="text-muted">{user?.email}</small>
                   </div>
                   <i className="mdi mdi-menu-down d-none d-sm-block ms-1"></i>
@@ -126,55 +130,69 @@ const Header = () => {
               </a>
 
               {/* dropdown menu */}
-              <div className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                <h6 className="p-3 mb-0">Profile</h6>
+              <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                <h6 className="text-sidebar-text p-3 mb-0">Profile</h6>
 
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item">
                   <div className="preview-thumbnail">
                     {/* icon */}
-                    <div className="preview-icon bg-dark rounded-circle">
+                    <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i className="mdi mdi-settings"></i>
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="preview-subject mb-1">Profile settings (TBA)</p>
+                    <p className="text-sidebar-text preview-subject mb-1">Profile settings (TBA)</p>
                   </div>
                 </a>
 
                 <div className="dropdown-divider"></div>
-                <a className="dropdown-item preview-item">
+                <a
+                  className="dropdown-item preview-item cursor-pointer"
+                  onClick={() => {
+                    const html = document.documentElement;
+                    const isDark = html.classList.contains("dark");
+
+                    if (isDark) {
+                      html.classList.remove("dark");
+                      localStorage.setItem("theme", "light");
+                    } else {
+                      html.classList.add("dark");
+                      localStorage.setItem("theme", "dark");
+                    }
+                  }}
+                >
                   <div className="preview-thumbnail">
-                    <div className="preview-icon bg-dark rounded-circle">
+                    <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i className="mdi mdi-brightness-4"></i>
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="preview-subject mb-1">Change theme</p>
+                    <p className="text-sidebar-text preview-subject mb-1">Change theme</p>
                   </div>
                 </a>
 
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item">
                   <div className="preview-thumbnail">
-                    <div className="preview-icon bg-dark rounded-circle">
+                    <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i><IoLanguage /></i>
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="preview-subject mb-1">Switch to Vietnammese</p>
+                    <p className="text-sidebar-text preview-subject mb-1">Switch to Vietnammese</p>
                   </div>
                 </a>
 
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item" onClick={() => setIsOpen(true)}>
                   <div className="preview-thumbnail">
-                    <div className="preview-icon bg-dark rounded-circle">
+                    <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i className="mdi mdi-logout"></i>
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="preview-subject mb-1"
+                    <p className="preview-subject mb-1 text-sidebar-text"
                     >Log out</p>
                   </div>
                 </a>
@@ -182,7 +200,7 @@ const Header = () => {
 
                 {/* mở rộng setting */}
                 <div className="dropdown-divider"></div>
-                <p className="p-3 mb-0 text-center">Advanced settings (TBA)</p>
+                <p className="p-3 mb-0 text-center text-sidebar-text">Advanced settings (TBA)</p>
               </div>
             </li>
           )}

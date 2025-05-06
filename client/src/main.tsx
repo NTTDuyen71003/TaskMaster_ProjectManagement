@@ -7,6 +7,12 @@ import App from "./App.tsx";
 import QueryProvider from "./context/query-provider.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+} else {
+  document.documentElement.classList.remove("dark");
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryProvider>

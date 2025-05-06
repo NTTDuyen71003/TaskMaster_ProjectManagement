@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Loader} from "lucide-react";
+import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import useCreateWorkspaceDialog from "@/hooks/use-create-workspace-dialog";
@@ -70,7 +70,7 @@ export function WorkspaceSwitcher() {
         <a href="" id="profile-dropdown" data-toggle="dropdown">
           <i className="mdi mdi-dots-vertical"></i>
         </a>
-        <div className="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
+        <div className="dropdown-menu bg-sidebar text-sidebar-text border-sidebar-border dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
           <div className="workspace-title-siderbar">
             <div className="preview-item-content">
               <h6 className="p-3 mb-0">Workspaces</h6>
@@ -81,15 +81,16 @@ export function WorkspaceSwitcher() {
           {workspaces?.map((workspace) => (
             <React.Fragment key={workspace._id}>
               <a
-                className="dropdown-item preview-item cursor-pointer"
+                className="dropdown-item preview-item cursor-pointer 
+                hover:bg-dropdown-hover-bg"
                 onClick={() => onSelect(workspace)}
               >
                 <div className="preview-thumbnail">
-                  <div className="preview-icon bg-dark rounded-circle">
+                  <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                     {workspace?.name?.split(" ")?.[0]?.charAt(0)}
                   </div>
                 </div>
-                <div className="preview-item-content">
+                <div className="preview-item-content text-sidebar-text">
                   <p className="preview-subject ellipsis mb-1 text-small">
                     {workspace.name}
                   </p>
@@ -98,9 +99,9 @@ export function WorkspaceSwitcher() {
               <div className="dropdown-divider"></div>
             </React.Fragment>
           ))}
-          <a className="dropdown-item preview-item cursor-pointer"
+          <a className="dropdown-item hover:bg-dropdown-hover-bg preview-item cursor-pointer"
             onClick={onOpen}>
-            <div className="preview-item-content">
+            <div className="preview-item-content text-sidebar-text">
               <p className="p-3 mb-0 text-center ellipsis">+ Add new workspace</p>
             </div>
           </a>

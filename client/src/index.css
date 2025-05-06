@@ -43,21 +43,16 @@ em-emoji-picker {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* màu nền chính trắng nhẹ #f5f6fb */
+    --background: 228 33% 97%;
 
-    /* màu tên sidebar - trắng */
-    --foreground: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
 
     --card: 0 0% 100%;
 
     --card-foreground: 0 0% 3.9%;
 
     --popover: 0 0% 100%;
-
-    --menu-sidebar: 231 18% 12%;
-
-    /* màu chữ sidebar-menu - trắng */
-    --menu-sidebar-foreground: 0 0% 100%
 
     --popover-foreground: 0 0% 3.9%;
 
@@ -73,8 +68,7 @@ em-emoji-picker {
 
     --muted-foreground: 0 0% 45.1%;
 
-    /* màu nền hover menu chung - xám */
-    --accent:216, 10.4%, 9.6%;
+    --accent: 0 0% 96.1%;
 
     --accent-foreground: 0 0% 9%;
 
@@ -100,9 +94,11 @@ em-emoji-picker {
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* màu nền khung sidebar - trắng  */
+    --sidebar-background: 0 0% 100%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
+
 
     --sidebar-primary: 330, 80%, 58%;
 
@@ -115,7 +111,29 @@ em-emoji-picker {
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* màu nền khung logo - trắng  */
+    --sidebar-logo: 0 0% 100%;
+
+    /* màu nền khung icon sidebar */
+    --sidebar-frameicon: 330, 80%, 58%;
+
+    /* màu border khung*/
+    --sidebar-border: 216 30% 81%;
+
+    /* màu chữ*/
+    --sidebar-text: 0 0% 3.9%;
+
+    /* màu hover dropdown menu*/
+    --dropdown-hover-bg: 230.769, 100%, 98%;
+
+    /* màu nền khung navbar - trắng */
+    --navbar-background: 0 0% 100%;
+
+    /* màu nền icon navbar*/
+    --navbar-icon: 330, 80%, 58%;
   }
+
 
   .dark {
     --background: 0 0% 3.9%;
@@ -127,8 +145,6 @@ em-emoji-picker {
     --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 3.9%;
-
-    /* --menuSidebar:231, 18%, 12%; */
 
     --popover-foreground: 0 0% 98%;
 
@@ -168,11 +184,13 @@ em-emoji-picker {
 
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
+    /* màu nền khung sidebar - xám #191c24 */
+    --sidebar-background: 223.636, 18%, 12%;
 
     --sidebar-foreground: 240 4.8% 95.9%;
 
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* màu nền khung workspace - hồng */
+    --sidebar-primary: 330, 80%, 58%;
 
     --sidebar-primary-foreground: 0 0% 100%;
 
@@ -183,6 +201,27 @@ em-emoji-picker {
     --sidebar-border: 240 3.7% 15.9%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* màu nền khung logo */
+    --sidebar-logo: 228 33% 97%;
+
+    /* màu nền khung icon sidebar */
+    --sidebar-frameicon: 330, 80%, 58%;
+
+    /* màu border khung*/
+    --sidebar-border: 222.857, 7%, 19%;
+
+    /* màu chữ*/
+    --sidebar-text: 0 0% 100%;
+
+    /* màu hover dropdown menu*/
+    --dropdown-hover-bg: 225, 17%, 9%;
+
+    /* màu nền khung navbar*/
+    --navbar-background: 223.636, 18%, 12%;
+
+    /* màu nền icon navbar*/
+    --navbar-icon:  0 0% 100%;
   }
 }
 
