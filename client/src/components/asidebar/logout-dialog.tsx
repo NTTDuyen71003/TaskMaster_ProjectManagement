@@ -21,7 +21,7 @@ const LogoutDialog = (props: {
 }) => {
   const { isOpen, setIsOpen } = props;
   const navigate = useNavigate();
-  const {clearAccessToken} = useStore();
+  const { clearAccessToken } = useStore();
 
   const queryClient = useQueryClient();
 
@@ -46,9 +46,19 @@ const LogoutDialog = (props: {
 
   // Handle logout action
   const handleLogout = useCallback(() => {
+    // Lưu theme của người dùng trước khi logout
+    const currentUserId = localStorage.getItem("currentUserId");
+    if (currentUserId) {
+      const theme = localStorage.getItem(`theme-${currentUserId}`);
+      localStorage.setItem("savedTheme", theme || "light"); // Lưu theme đã chọn
+    }
+    localStorage.removeItem("currentUserId");
+
+    // Tiến hành logout
     if (isPending) return;
     mutate();
   }, [isPending, mutate]);
+
 
   return (
     <>

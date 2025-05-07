@@ -5,6 +5,7 @@ import useWorkspaceId from "@/hooks/use-workspace-id";
 import useCreateWorkspaceDialog from "@/hooks/use-create-workspace-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { getAllWorkspacesUserIsMemberQueryFn } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 type WorkspaceType = {
   _id: string;
@@ -16,6 +17,7 @@ export function WorkspaceSwitcher() {
   const { onOpen } = useCreateWorkspaceDialog();
   const workspaceId = useWorkspaceId();
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspaceType>();
+  const { t } = useTranslation();
 
   const { data, isPending } = useQuery({
     queryKey: ["userWorkspaces"],
@@ -58,13 +60,13 @@ export function WorkspaceSwitcher() {
               </div>
               <div className="profile-name">
                 <h5 className="mb-0 font-weight-normal">{activeWorkspace?.name}</h5>
-                <span>Free workspace</span>
+                <span>{t("sub-title-workspace")}</span>
               </div>
             </div>
           </>
         ) : (
           <div className="profile-name">
-            <h5 className="mb-0 font-weight-normal">No Workspace selected</h5>
+            <h5 className="mb-0 font-weight-normal">{t("workspace-not-select")}</h5>
           </div>
         )}
         <a href="" id="profile-dropdown" data-toggle="dropdown">
@@ -73,7 +75,7 @@ export function WorkspaceSwitcher() {
         <div className="dropdown-menu bg-sidebar text-sidebar-text border-sidebar-border dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
           <div className="workspace-title-siderbar">
             <div className="preview-item-content">
-              <h6 className="p-3 mb-0">Workspaces</h6>
+              <h6 className="p-3 mb-0">{t("workspace-dialog-title")}</h6>
             </div>
           </div>
           <div className="dropdown-divider"></div>
@@ -102,7 +104,7 @@ export function WorkspaceSwitcher() {
           <a className="dropdown-item hover:bg-dropdown-hover-bg preview-item cursor-pointer"
             onClick={onOpen}>
             <div className="preview-item-content text-sidebar-text">
-              <p className="p-3 mb-0 text-center ellipsis">+ Add new workspace</p>
+              <p className="p-3 mb-0 text-center ellipsis">{t("workspace-dialog-add")}</p>
             </div>
           </a>
         </div>

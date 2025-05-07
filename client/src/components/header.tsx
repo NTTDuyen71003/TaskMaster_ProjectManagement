@@ -1,14 +1,3 @@
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "./ui/separator";
-import { Link, useLocation } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import useCreateProjectDialog from "@/hooks/use-create-project-dialog";
 import PermissionsGuard from "./resuable/permission-guard";
@@ -18,25 +7,26 @@ import { useAuthContext } from "@/context/auth-provider";
 import { Loader } from "lucide-react";
 import LogoutDialog from "./asidebar/logout-dialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 const Header = () => {
-  const location = useLocation();
   const workspaceId = useWorkspaceId();
   const { onOpen } = useCreateProjectDialog();
   const { isLoading, user } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = location.pathname;
+  const { t } = useTranslation();
 
+  const handleSwitchLanguage = () => {
+    const currentUserId = localStorage.getItem("currentUserId");
+    if (!currentUserId) return;
 
-  const getPageLabel = (pathname: string) => {
-    if (pathname.includes("/project/")) return "Project";
-    if (pathname.includes("/settings")) return "Settings";
-    if (pathname.includes("/tasks")) return "Tasks";
-    if (pathname.includes("/members")) return "Members";
-    return null; // Default label
+    const currentLang = localStorage.getItem(`language-${currentUserId}`) || "en";
+    const newLang = currentLang === "en" ? "vi" : "en";
+
+    i18n.changeLanguage(newLang);
+    localStorage.setItem(`language-${currentUserId}`, newLang);
   };
-  const pageHeading = getPageLabel(pathname);
-
 
   return (
     <nav className="navbar bg-navbar p-0 fixed-top d-flex flex-row">
@@ -56,7 +46,7 @@ const Header = () => {
         <ul className="navbar-nav w-100">
           <li className="nav-item w-100">
             <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-              <input type="text" className="form-control" placeholder="Search products"></input>
+              <input type="text" className="form-control bg-navbar border-sidebar-border text-sidebar-text" placeholder={t("navbar-search-placeholder")}></input>
             </form>
           </li>
         </ul>
@@ -74,7 +64,7 @@ const Header = () => {
                 onClick={onOpen}
                 type="button"
               >
-                + Create New Project
+                {t("create-project-btn")}
               </a>
             </PermissionsGuard>
           </li>
@@ -85,7 +75,7 @@ const Header = () => {
               <i className="mdi mdi-account-plus" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
             <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <h6 className="p-3 mb-0">TBA</h6>
+              <h6 className="p-3 mb-0 text-sidebar-text">{t("navbar-dialog-announce")}</h6>
             </div>
           </li>
 
@@ -95,7 +85,7 @@ const Header = () => {
               <i className="mdi mdi-email" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
             <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <h6 className="p-3 mb-0">TBA</h6>
+              <h6 className="p-3 mb-0 text-sidebar-text">{t("navbar-dialog-announce")}</h6>
             </div>
           </li>
 
@@ -105,7 +95,7 @@ const Header = () => {
               <i className="mdi mdi-bell" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
             </a>
             <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <h6 className="p-3 mb-0">TBA</h6>
+              <h6 className="p-3 mb-0 text-sidebar-text">{t("navbar-dialog-announce")}</h6>
             </div>
           </li>
 
@@ -115,7 +105,7 @@ const Header = () => {
             <Loader />
           ) : (
             <li className="nav-item dropdown">
-              <a className="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+              <a className="nav-link" id="profileDropdown" href="" data-toggle="dropdown">
                 <div className="navbar-profile d-flex align-items-center">
                   <span className="text-sidebar-text h-9 w-9 rounded-full d-flex align-items-center justify-content-center text-sm font-semi-bold avatar-border ">
                     {user?.name?.split(" ")?.[0]?.charAt(0)}
@@ -131,7 +121,7 @@ const Header = () => {
 
               {/* dropdown menu */}
               <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                <h6 className="text-sidebar-text p-3 mb-0">Profile</h6>
+                <h6 className="text-sidebar-text p-3 mb-0">{t("navbar-profile-title")}</h6>
 
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item">
@@ -142,7 +132,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="text-sidebar-text preview-subject mb-1">Profile settings (TBA)</p>
+                    <p className="text-sidebar-text preview-subject mb-1">{t("navbar-profile-settings")}</p>
                   </div>
                 </a>
 
@@ -152,13 +142,14 @@ const Header = () => {
                   onClick={() => {
                     const html = document.documentElement;
                     const isDark = html.classList.contains("dark");
+                    const currentUserId = localStorage.getItem("currentUserId");
 
                     if (isDark) {
                       html.classList.remove("dark");
-                      localStorage.setItem("theme", "light");
+                      localStorage.setItem(`theme-${currentUserId}`, "light");
                     } else {
                       html.classList.add("dark");
-                      localStorage.setItem("theme", "dark");
+                      localStorage.setItem(`theme-${currentUserId}`, "dark");
                     }
                   }}
                 >
@@ -168,19 +159,19 @@ const Header = () => {
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="text-sidebar-text preview-subject mb-1">Change theme</p>
+                    <p className="text-sidebar-text preview-subject mb-1">{t("navbar-change-theme")}</p>
                   </div>
                 </a>
 
                 <div className="dropdown-divider"></div>
-                <a className="dropdown-item preview-item">
+                <a className="dropdown-item preview-item" onClick={handleSwitchLanguage}>
                   <div className="preview-thumbnail">
                     <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i><IoLanguage /></i>
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="text-sidebar-text preview-subject mb-1">Switch to Vietnammese</p>
+                    <p className="text-sidebar-text preview-subject mb-1">{t("switch-language")}</p>
                   </div>
                 </a>
 
@@ -193,14 +184,14 @@ const Header = () => {
                   </div>
                   <div className="preview-item-content">
                     <p className="preview-subject mb-1 text-sidebar-text"
-                    >Log out</p>
+                    >{t("navbar-logout")}</p>
                   </div>
                 </a>
                 <LogoutDialog isOpen={isOpen} setIsOpen={setIsOpen} />
 
                 {/* mở rộng setting */}
                 <div className="dropdown-divider"></div>
-                <p className="p-3 mb-0 text-center text-sidebar-text">Advanced settings (TBA)</p>
+                <p className="p-3 mb-0 text-center text-sidebar-text">{t("navbar-advanced-settings")}</p>
               </div>
             </li>
           )}

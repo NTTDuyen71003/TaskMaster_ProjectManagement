@@ -9945,9 +9945,11 @@ pre code {
 
 .row {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   margin-right: -0.75rem;
   margin-left: -0.75rem;
+  padding: 1rem 1rem;
 }
 
 .no-gutters {
@@ -13310,7 +13312,7 @@ input[type="button"].btn-block {
 .dark .dropdown-item:focus {
   color: #16181b;
   text-decoration: none;
-  background-color: #0050e3;
+  background-color: #13151b;
 }
 
 .dropdown-item.active,
@@ -15747,7 +15749,6 @@ input[type="button"].btn-block {
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
-  background-color: #191c24;
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
@@ -17941,11 +17942,6 @@ button.bg-dark:focus {
 
 .bg-transparent {
   background-color: transparent !important;
-}
-
-.border,
-.loader-demo-box {
-  border: 1px solid #2c2e33 !important;
 }
 
 .border-top {
@@ -29589,7 +29585,6 @@ div.tagsinput span.tag a {
   -webkit-transition: width 0.25s ease, background 0.25s ease;
   -moz-transition: width 0.25s ease, background 0.25s ease;
   -ms-transition: width 0.25s ease, background 0.25s ease;
-  background: #191c24;
   width: 244px;
   height: 70px;
 }
@@ -29628,7 +29623,6 @@ div.tagsinput span.tag a {
 }
 
 .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini img {
-  width: calc(70px - 50px);
   max-width: 100%;
   height: 28px;
   margin: auto;
@@ -29840,6 +29834,19 @@ div.tagsinput span.tag a {
   top: 48px;
   right: 0;
   left: auto;
+  -webkit-box-shadow: 0px 12px 24px rgba(47, 63, 86, 0.2);
+  -moz-box-shadow: 0px 12px 24px rgba(47, 63, 86, 0.2);
+  box-shadow: 0px 12px 24px rgba(47, 63, 86, 0.2);
+  padding: 0;
+}
+
+.dark .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu.navbar-dropdown {
+  position: absolute;
+  font-size: 0.9rem;
+  margin-top: 0;
+  top: 48px;
+  right: 0;
+  left: auto;
   -webkit-box-shadow: 0px 0px 35px -3px black;
   -moz-box-shadow: 0px 0px 35px -3px black;
   box-shadow: 0px 0px 35px -3px black;
@@ -29961,13 +29968,22 @@ div.tagsinput span.tag a {
 }
 
 .navbar .navbar-menu-wrapper .search input {
-  background: #191c24;
-  padding: 13px 20px 11px 20px;
-  border: 1px solid #2c2e33;
+  padding: 10px 20px 10px 20px;
+  color: #000;
+}
+
+.dark .navbar .navbar-menu-wrapper .search input {
+  padding: 10px 20px 10px 20px;
+  color: #fff;
 }
 
 .navbar .navbar-menu-wrapper .search input::placeholder {
   color: #6c7293;
+  font-size: 0.875rem;
+}
+
+.dark.navbar .navbar-menu-wrapper .search input::placeholder {
+  color: #fff;
   font-size: 0.875rem;
 }
 
@@ -30802,7 +30818,8 @@ div.tagsinput span.tag a {
   transition: width 0.25s ease, margin 0.25s ease;
   width: 100%;
   min-height: calc(100vh - 70px);
-  padding-top: 70px;
+  padding:70px 20px 20px 20px;
+
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
@@ -30816,13 +30833,6 @@ div.tagsinput span.tag a {
   }
 }
 
-.content-wrapper {
-  background: #000000;
-  padding: 1.875rem 1.75rem;
-  width: 100%;
-  -webkit-flex-grow: 1;
-  flex-grow: 1;
-}
 
 /* thêm mới */
 .btn-bg
@@ -30837,6 +30847,7 @@ div.tagsinput span.tag a {
 
 .form-control:focus {
   border: 1px solid  #e83e8c !important;
+  background-color: inherit !important;
 }
 
 .bg-btn
@@ -30846,6 +30857,11 @@ div.tagsinput span.tag a {
 
 .avatar-border {
   border: 2px solid #6c7293;
+}
+
+.text-font
+{
+  font-size: 1.5rem;
 }
 
 

@@ -14,6 +14,7 @@ import { useAuthContext } from "@/context/auth-provider";
 import { Permissions } from "@/constant";
 import React from "react";
 import { NavProjects } from "./nav-projects";
+import { useTranslation } from "react-i18next";
 
 
 type ItemType = {
@@ -30,6 +31,7 @@ export function NavMain() {
   const location = useLocation();
   const pathname = location.pathname;
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const workspaceSubRoutes = ["/overview", "/activity"];
@@ -42,24 +44,24 @@ export function NavMain() {
 
   const items: ItemType[] = [
     {
-      title: "Dashboard",
+      title: t("sidebar-dashboard"),
       url: `/workspace/${workspaceId}`,
       icon: LayoutDashboard,
     },
     {
-      title: "Tasks",
+      title: t("sidebar-tasks"),
       url: `/workspace/${workspaceId}/tasks`,
       icon: CheckCircle,
     },
     {
-      title: "Members",
+      title: t("sidebar-members"),
       url: `/workspace/${workspaceId}/members`,
       icon: Users,
     },
     ...(canManageSettings
       ? [
         {
-          title: "Settings",
+          title: t("sidebar-settings"),
           url: `/workspace/${workspaceId}/settings`,
           icon: Settings,
         },
@@ -84,7 +86,7 @@ export function NavMain() {
             </li>
 
             {/* Chèn Projects ngay sau Dashboard */}
-            {item.title === "Dashboard" && (
+            {item.title === t("sidebar-dashboard") && (
               <li
                 className={`nav-item menu-items ${isWorkspaceOpen || pathname.includes(`/workspace/${workspaceId}/project/`) ? "active" : ""
                   }`}
@@ -98,7 +100,7 @@ export function NavMain() {
                     <span className="menu-icon bg-sidebar-frameicon">
                       <Briefcase className="w-4 h-4" />
                     </span>
-                    <span className="menu-title">Projects</span>
+                    <span className="menu-title">{t("sidebar-projects")}</span>
                   </span>
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-200 ${isWorkspaceOpen ? "rotate-180" : ""

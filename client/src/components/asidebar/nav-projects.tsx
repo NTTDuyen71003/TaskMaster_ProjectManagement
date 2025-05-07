@@ -1,4 +1,4 @@
-import { Loader, MoreHorizontal, Trash2 } from "lucide-react";
+import { Loader, MoreHorizontal,Trash2,Edit } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ import { PaginationType } from "@/types/api.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProjectMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 
 export function NavProjects() {
@@ -34,6 +35,7 @@ export function NavProjects() {
   const [pageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: deleteProjectMutationFn,
@@ -94,8 +96,7 @@ export function NavProjects() {
       ) : projects?.length === 0 ? (
         <li className="nav-item">
           <div className="nav-announce">
-            There is no project in this Workspace yet.
-            Projects created will be shown up here.
+          {t("sidebar-projects-announce")}
           </div>
         </li>
       ) : (
@@ -134,10 +135,16 @@ export function NavProjects() {
                       align={isMobile ? "end" : "start"}
                     >
 
+                      <DropdownMenuItem>
+                        <Edit className="mr-2" />
+                        <span>{t("sidebar-projects-edit")}</span>
+                      </DropdownMenuItem>
+                      <div className="dropdown-divider"></div>
+
                       <PermissionsGuard requiredPermission={Permissions.DELETE_PROJECT}>
                         <DropdownMenuItem disabled={isLoading} onClick={() => onOpenDialog(item)}>
                           <Trash2 className="mr-2" />
-                          <span>Delete Project</span>
+                          <span>{t("sidebar-projects-delete")}</span>
                         </DropdownMenuItem>
                       </PermissionsGuard>
                     </DropdownMenuContent>
