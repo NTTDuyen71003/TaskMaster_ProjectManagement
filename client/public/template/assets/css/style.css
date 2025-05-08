@@ -9949,7 +9949,6 @@ pre code {
   flex-wrap: wrap;
   margin-right: -0.75rem;
   margin-left: -0.75rem;
-  padding: 1rem 1rem;
 }
 
 .no-gutters {
@@ -22564,7 +22563,7 @@ code {
 
 /* Utilities */
 .grid-margin {
-  margin-bottom: 1.5rem;
+  margin: 1rem 0rem;
 }
 
 @media (min-width: 576px) {
@@ -24005,7 +24004,6 @@ code {
 }
 
 .card .card-title {
-  color: #ffffff;
   margin-bottom: 1.125rem;
   text-transform: capitalize;
 }
@@ -25714,6 +25712,7 @@ div.tagsinput {
   align-items: center;
   -webkit-justify-content: center;
   justify-content: center;
+  border-radius: 0.2rem;
 }
 
 .preview-list .preview-item .preview-thumbnail img i,
@@ -25957,7 +25956,7 @@ div.tagsinput {
 .jsgrid .jsgrid-table thead th {
   border-top: 0;
   border-bottom-width: 1px;
-  font-weight: 500;
+  font-weight: bolder;
   color: #6c7293;
 }
 
@@ -30862,6 +30861,22 @@ div.tagsinput span.tag a {
 .text-font
 {
   font-size: 1.5rem;
+}
+
+.title-font
+{
+  font-size: 1.125rem;
+}
+
+.card-border
+{
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.task-hover:hover
+{
+  padding: 0.5rem 1rem;
 }
 
 

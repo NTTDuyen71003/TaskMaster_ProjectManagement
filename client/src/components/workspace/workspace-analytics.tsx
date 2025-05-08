@@ -2,12 +2,14 @@ import useWorkspaceId from "@/hooks/use-workspace-id";
 import AnalyticsCard from "./common/analytics-card";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspaceAnalyticsQueryFn } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 
 const WorkspaceAnalytics = () => {
   const workspaceId = useWorkspaceId();
+  const { t } = useTranslation();
 
-
+  
   const { data, isPending } = useQuery({
     queryKey: ["workspace-analytics", workspaceId],
     queryFn: () => getWorkspaceAnalyticsQueryFn(workspaceId),
@@ -24,7 +26,7 @@ const WorkspaceAnalytics = () => {
       <div className="col-xl-3 col-sm-6 grid-margin stretch-card">
         <AnalyticsCard
           isLoading={isPending}
-          title="Total Task"
+          title={t("dashboard-total-task")}
           value={analytics?.totalTasks || 0}
         />
       </div>
@@ -33,7 +35,7 @@ const WorkspaceAnalytics = () => {
       <div className="col-xl-3 col-sm-6 grid-margin stretch-card">
         <AnalyticsCard
           isLoading={isPending}
-          title="Overdue Task"
+          title={t("dashboard-overdue-task")}
           value={analytics?.overdueTasks || 0}
         />
       </div>
@@ -42,7 +44,7 @@ const WorkspaceAnalytics = () => {
       <div className="col-xl-3 col-sm-6 grid-margin stretch-card">
         <AnalyticsCard
           isLoading={isPending}
-          title="Completed Task"
+          title={t("dashboard-completed-task")}
           value={analytics?.completedTasks || 0}
         />
       </div>

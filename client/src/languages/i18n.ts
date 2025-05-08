@@ -31,6 +31,18 @@ const resources = {
       "switch-language": "Switch to Vietnamese",
       "navbar-logout": "Log out",
       "navbar-advanced-settings": "Advanced settings (TBA)",
+
+      // Dashboard 
+      "dashboard-total-task": "Total Task",
+      "dashboard-overdue-task": "Overdue Task",
+      "dashboard-completed-task": "Completed Task",
+      "dashboard-recent-projects": "Recent Projects",
+      "dashboard-recent-tasks": "Recent Tasks",
+      "dashboard-recent-members": "Recent Members",
+      "dashboard-data-status": "Data status",
+      "dashboard-project-announce": "No Projects created yet",
+      "dashboard-project-created": "Created by",
+      "dashboard-task-announce": "No Tasks created yet",
     },
   },
   vi: {
@@ -60,6 +72,18 @@ const resources = {
       "switch-language": "Chuyển sang tiếng Anh",
       "navbar-logout": "Đăng xuất",
       "navbar-advanced-settings": "Cài đặt nâng cao (CNS)",
+
+      // Dashboard
+      "dashboard-total-task": "Tổng tác vụ",
+      "dashboard-overdue-task": "Quá hạn",
+      "dashboard-completed-task": "Tác vụ hoàn thành",
+      "dashboard-recent-projects": "Dự án gần đây",
+      "dashboard-recent-tasks": "Công việc gần đây",
+      "dashboard-recent-members": "Thành viên gần đây",
+      "dashboard-data-status": "Trạng thái dữ liệu",
+      "dashboard-project-announce": "Chưa có dự án nào được tạo",
+      "dashboard-project-created": "Được tạo bởi",
+      "dashboard-task-announce": "Chưa có công việc nào được tạo",
     },
   },
 };

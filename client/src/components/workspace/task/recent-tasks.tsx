@@ -1,9 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import {
-  TaskPriorityEnum,
-  TaskStatusEnum,
-} from "@/constant";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { getAllTasksQueryFn } from "@/lib/api";
 import {
@@ -15,104 +10,92 @@ import { TaskType } from "@/types/api.type";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 
 const RecentTasks = () => {
-  //recent task B1
   const workspaceId = useWorkspaceId();
-  //recent task B2
-  const {data,isLoading}=useQuery({
+  const { t } = useTranslation();
+
+  const { data, isLoading } = useQuery({
     queryKey: ["all-tasks", workspaceId],
-    queryFn:()=> getAllTasksQueryFn({
+    queryFn: () => getAllTasksQueryFn({
       workspaceId,
     }),
     staleTime: 0,
     enabled: !!workspaceId,
   });
-  //recent task B3
-  const tasks:TaskType[]=data?.tasks || [];
+  const tasks: TaskType[] = data?.tasks || [];
 
 
   // Scalable component
   return (
     <div className="flex flex-col space-y-6">
-
-      {/* b4 */}
+      {/* Loader */}
       {isLoading ? (
         <Loader className="w-8 h-8 animate-spin place-self-center flex" />
       ) : null}
-      {tasks.length === 0 && (
-        <div className="font-semibold text-sm text-muted-foreground text-center py-5  ">
-          No Tasks created yet
+
+      {/* No tasks message */}
+      {!isLoading && tasks.length === 0 && (
+        <div className="font-semibold text-sm text-muted-foreground text-center py-5">
+          {t("dashboard-task-announce")}
         </div>
       )}
 
-      <ul role="list" className="divide-y divide-gray-200">
-        {tasks.map((task) => {
-          const name = task?.assignedTo?.name || "";
-          const initials = getAvatarFallbackText(name);
-          const avatarColor = getAvatarColor(name);
-          return (
-            <li
-              key={task._id}
-              className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-            >
-              {/* Task Info */}
-              <div className="flex flex-col space-y-1 flex-grow">
-                {/* capitalize là in hoa task code lên */}
-                <span className="text-sm capitalize text-gray-600 font-medium">
-                  {task.taskCode}
-                </span>
-                <p className="text-md font-semibold text-gray-800 truncate">
-                  {task.title}
-                </p>
-                <span className="text-sm text-gray-500">
-                  Due: {task.dueDate ? format(task.dueDate, "PPP") : null}
-                </span>
-              </div>
+      {/* Table only shown when tasks exist */}
+      {tasks.length > 0 && (
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Task code</th>
+                <th>Task title</th>
+                <th>Created</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task) => {
+                const name = task?.assignedTo?.name || "";
+                const initials = getAvatarFallbackText(name);
+                const avatarColor = getAvatarColor(name);
 
-              {/* Task Status */}
-              <div className="text-sm font-medium ">
-                <Badge
-                  variant={TaskStatusEnum[task.status]}
-                  className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
-                >
-                  <span>{transformStatusEnum(task.status)}</span>
-                </Badge>
-              </div>
-
-              {/* Task Priority */}
-              <div className="text-sm ml-2">
-                <Badge
-                  variant={TaskPriorityEnum[task.priority]}
-                  className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
-                >
-                  <span>{transformStatusEnum(task.priority)}</span>
-                </Badge>
-              </div>
-
-              {/* Assignee */}
-              <div className="flex items-center space-x-2 ml-2">
-              <span>{task.assignedTo?.name}</span>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={task.assignedTo?.profilePicture || ""} 
-                  alt={task.assignedTo?.name} />
-                  <AvatarFallback className={avatarColor}>
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                return (
+                  <tr key={task._id}>
+                    <td>
+                      <div className="flex items-center space-x-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={task.assignedTo?.profilePicture || ""} alt={task.assignedTo?.name} />
+                          <AvatarFallback className={avatarColor}>
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{task.assignedTo?.name}</span>
+                      </div>
+                    </td>
+                    <td>{task.taskCode}</td>
+                    <td>{task.title}</td>
+                    <td>Due: {task.dueDate ? format(task.dueDate, "PPP") : null}</td>
+                    <td>
+                      <label className="badge badge-danger">
+                        {transformStatusEnum(task.status)}
+                      </label>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
 export default RecentTasks;
 
-// const RecentTasks = () => {
 //   const tasks = [
 //     {
 //       id: "Task-12",

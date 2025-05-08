@@ -74,6 +74,11 @@ export default {
 					foreground: 'hsl(var(--navbar-foreground))',
 					icon: 'hsl(var(--navbar-icon))',
 				},
+				dashboard: {
+					// DEFAULT: 'hsl(var(--navbar-background))',
+					// foreground: 'hsl(var(--navbar-foreground))',
+					icon: 'hsl(var(--dashboard-icon))',
+				},
 			}
 		}
 	},

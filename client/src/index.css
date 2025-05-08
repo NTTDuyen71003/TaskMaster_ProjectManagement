@@ -8,6 +8,7 @@ hody {
   height: 100%;
   font-family: "DM Sans", serif !important;
 }
+
 em-emoji-picker {
   width: 350px;
   height: 400px;
@@ -18,27 +19,35 @@ em-emoji-picker {
 /* Custom scrollbar styles */
 .scrollbar {
   overflow-y: auto;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: rgba(176, 174, 174, 0.7) #ddd; /* Firefox */
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: rgba(176, 174, 174, 0.7) #ddd;
+  /* Firefox */
   transition: scrollbar-color 0.3s ease, scrollbar-width 0.3s ease;
 }
 
 .scrollbar::-webkit-scrollbar {
-  width: 8px; /* Scrollbar width */
+  width: 8px;
+  /* Scrollbar width */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-  background: #ddd; /* Track color */
+  background: #ddd;
+  /* Track color */
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: gray; /* Thumb color */
-  border-radius: 100%; /* Rounded edges */
-  transition: background-color 0.3s ease; /* Smooth color change */
+  background-color: gray;
+  /* Thumb color */
+  border-radius: 100%;
+  /* Rounded edges */
+  transition: background-color 0.3s ease;
+  /* Smooth color change */
 }
 
 .scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: darkgray; /* Hover effect */
+  background-color: darkgray;
+  /* Hover effect */
 }
 
 @layer base {
@@ -99,7 +108,6 @@ em-emoji-picker {
 
     --sidebar-foreground: 240 5.3% 26.1%;
 
-
     --sidebar-primary: 330, 80%, 58%;
 
     --sidebar-primary-foreground: 0 0% 98%;
@@ -132,6 +140,9 @@ em-emoji-picker {
 
     /* màu nền icon navbar*/
     --navbar-icon: 330, 80%, 58%;
+
+    /* màu nền icon dashboard*/
+    --dashboard-icon: 233.514, 95%, 92%;
   }
 
 
@@ -221,7 +232,10 @@ em-emoji-picker {
     --navbar-background: 223.636, 18%, 12%;
 
     /* màu nền icon navbar*/
-    --navbar-icon:  0 0% 100%;
+    --navbar-icon: 0 0% 100%;
+
+    /* màu nền icon dashboard*/
+    --dashboard-icon: 0 0% 100%;
   }
 }
 
@@ -229,6 +243,7 @@ em-emoji-picker {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

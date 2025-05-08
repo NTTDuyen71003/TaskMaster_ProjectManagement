@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, ArrowBigUp, ArrowBigDown, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AnalyticsCard = (props: {
   title: string;
@@ -7,9 +7,10 @@ const AnalyticsCard = (props: {
   isLoading: boolean;
 }) => {
   const { title, value, isLoading } = props;
+  const { t } = useTranslation();
 
   const getArrowIconAndColor = () => {
-    if (title === "Overdue Task") {
+    if (title === t("dashboard-overdue-task")) {
       if (value > 0) {
         return {
           icon: <i className="mdi mdi-arrow-bottom-left icon-item" />,
@@ -23,7 +24,7 @@ const AnalyticsCard = (props: {
       }
     }
 
-    if (title === "Completed Task" || title === "Total Task") {
+    if (title === t("dashboard-completed-task") || title === t("dashboard-total-task")) {
       if (value > 0) {
         return {
           icon: <i className="mdi mdi-arrow-top-right icon-item" />,
@@ -42,7 +43,6 @@ const AnalyticsCard = (props: {
       colorClass: "",
     };
   };
-
   const { icon, colorClass } = getArrowIconAndColor();
 
 

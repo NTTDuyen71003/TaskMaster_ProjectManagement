@@ -1,5 +1,5 @@
 import AppRoutes from "./routes";
-import i18n from "./i18n";
+import i18n from "./languages/i18n";
 import { useEffect } from "react";
 
 function App() {
