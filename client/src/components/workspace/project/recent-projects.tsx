@@ -31,7 +31,7 @@ const RecentProjects = () => {
         <Loader className="w-8 h-8 animate-spin place-self-center flex" />
       ) : null}
       {projects.length === 0 && (
-        <div className="font-semibold text-sm text-muted-foreground text-center py-5  ">
+        <div className="font-semibold text-sm text-muted text-center py-5  ">
           {t("dashboard-project-announce")}
         </div>
       )}

@@ -11110,12 +11110,25 @@ pre code {
 .table td,
 .jsgrid .jsgrid-table td {
   padding: 0.9375rem;
-  vertical-align: top;
-  border-top: 1px solid #2c2e33;
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.dark .table th,
+.dark .jsgrid .jsgrid-table th,
+.dark .table td,
+.dark .jsgrid .jsgrid-table td {
+  padding: 0.9375rem;
+  border-bottom: 1px solid #2c2e33;
 }
 
 .table thead th,
 .jsgrid .jsgrid-table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+}
+
+.dark .table thead th,
+.dark .jsgrid .jsgrid-table thead th {
   vertical-align: bottom;
   border-bottom: 2px solid #2c2e33;
 }
@@ -11471,9 +11484,7 @@ pre code {
   font-weight: 400;
   line-height: 1;
   color: #495057;
-  background-color: #2A3038;
   background-clip: padding-box;
-  border: 1px solid #2c2e33;
   border-radius: 2px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -25712,7 +25723,7 @@ div.tagsinput {
   align-items: center;
   -webkit-justify-content: center;
   justify-content: center;
-  border-radius: 0.2rem;
+  border-radius: 0.4rem;
 }
 
 .preview-list .preview-item .preview-thumbnail img i,
@@ -30852,6 +30863,11 @@ div.tagsinput span.tag a {
 .bg-btn
 {
   background-color: #e83e8c;
+}
+
+.bg-btn:hover
+{
+  background-color: #c03178;
 }
 
 .avatar-border {

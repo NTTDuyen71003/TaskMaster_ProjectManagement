@@ -65,6 +65,7 @@ export default {
 					frameicon: 'hsl(var(--sidebar-frameicon))',
 					border: 'hsl(var(--sidebar-border))',
 					text: 'hsl(var(--sidebar-text))',
+					input: 'hsl(var(--sidebar-input))',
 				},
 				dropdown: {
 					'hover-bg': 'hsl(var(--dropdown-hover-bg))',

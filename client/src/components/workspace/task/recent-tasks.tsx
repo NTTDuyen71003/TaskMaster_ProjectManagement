@@ -1,5 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useWorkspaceId from "@/hooks/use-workspace-id";
+import { getDateFnsLocale } from "@/languages/getDateFnsLocale";
+import i18n from "@/languages/i18n";
 import { getAllTasksQueryFn } from "@/lib/api";
 import {
   getAvatarColor,
@@ -16,6 +18,10 @@ import { useTranslation } from "react-i18next";
 const RecentTasks = () => {
   const workspaceId = useWorkspaceId();
   const { t } = useTranslation();
+  const dateLocale = getDateFnsLocale();
+  const lang = i18n.language;
+
+  const formatStr = lang === "vi" ? "'Ngày' dd 'tháng' MM 'năm' yyyy" : "PPP";
 
   const { data, isLoading } = useQuery({
     queryKey: ["all-tasks", workspaceId],
@@ -38,22 +44,23 @@ const RecentTasks = () => {
 
       {/* No tasks message */}
       {!isLoading && tasks.length === 0 && (
-        <div className="font-semibold text-sm text-muted-foreground text-center py-5">
+        <div className="font-semibold text-sm text-muted text-center py-5">
           {t("dashboard-task-announce")}
         </div>
       )}
 
       {/* Table only shown when tasks exist */}
       {tasks.length > 0 && (
-        <div className="table-responsive">
+        <div className="table-responsive ">
           <table className="table">
             <thead>
               <tr>
-                <th>User</th>
-                <th>Task code</th>
-                <th>Task title</th>
-                <th>Created</th>
-                <th>Status</th>
+                <th>{t("dashboard-task-user")}</th>
+                <th>{t("dashboard-task-inproject")}</th>
+                <th>{t("dashboard-task-title")}</th>
+                <th>{t("dashboard-task-created")}</th>
+                <th>{t("dashboard-task-status")}</th>
+                <th>{t("dashboard-task-priority")}</th>
               </tr>
             </thead>
             <tbody>
@@ -63,7 +70,9 @@ const RecentTasks = () => {
                 const avatarColor = getAvatarColor(name);
 
                 return (
-                  <tr key={task._id}>
+                  <tr key={task._id} className="hover:bg-dropdown-hover-bg transition-colors duration-200">
+
+                    {/* Assignee */}
                     <td>
                       <div className="flex items-center space-x-2">
                         <Avatar className="h-8 w-8">
@@ -75,14 +84,53 @@ const RecentTasks = () => {
                         <span>{task.assignedTo?.name}</span>
                       </div>
                     </td>
+
+                    {/* Task code */}
                     <td>{task.taskCode}</td>
+
+                    {/* Task title */}
                     <td>{task.title}</td>
-                    <td>Due: {task.dueDate ? format(task.dueDate, "PPP") : null}</td>
+
+                    {/* Created date */}
                     <td>
-                      <label className="badge badge-danger">
-                        {transformStatusEnum(task.status)}
+                      {i18n.language === "en" && "Due: "}
+                      {i18n.language === "vi" && "Hạn: "}
+                      {task.dueDate
+                        ? format(new Date(task.dueDate), formatStr, { locale: dateLocale })
+                        : null}
+                    </td>
+
+
+                    {/* Status */}
+                    <td>
+                      <label
+                        className={`badge ${task.status === "IN_PROGRESS"
+                            ? "badge-warning"
+                            : task.status === "DONE"
+                              ? "badge-success"
+                              : task.status === "TODO"
+                                ? "badge-info"
+                                : "badge-danger"
+                          }`}
+                      >
+                        {t(`dashboard-status-${task.status.toLowerCase()}`)}
                       </label>
                     </td>
+
+                    {/* Priority */}
+                    <td>
+                      <label
+                        className={`badge ${task.priority === "HIGH"
+                          ? "badge-danger"
+                          : task.priority === "LOW"
+                            ? "badge-success"
+                            : "badge-warning"
+                          }`}
+                      >
+                        {t(`dashboard-priority-${task.priority.toLowerCase()}`)}
+                      </label>
+                    </td>
+
                   </tr>
                 );
               })}
@@ -96,70 +144,3 @@ const RecentTasks = () => {
 
 export default RecentTasks;
 
-//   const tasks = [
-//     {
-//       id: "Task-12",
-//       title: "You can't compress the program without quanti",
-//       date: "December 29, 2024",
-//       assigneeTo: "EM",
-//     },
-//     {
-//       id: "Task-13",
-//       title: "You can't compress the program without quanti",
-//       date: "December 29, 2024",
-//       assigneeTo: "EM",
-//     },
-//     {
-//       id: "Task-14",
-//       title: "You can't compress the program without quanti",
-//       date: "December 29, 2024",
-//       assigneeTo: "EM",
-//     },
-//     {
-//       id: "Task-15",
-//       title: "You can't compress the program without quanti",
-//       date: "December 29, 2024",
-//       assigneeTo: "EM",
-//     },
-//     {
-//       id: "Task-16",
-//       title: "You can't compress the program without quanti",
-//       date: "December 29, 2024",
-//       assigneeTo: "EM",
-//     },
-//   ];
-//   return (
-//     <div className="flex flex-col pt-2">
-//       <ul role="list" className="space-y-2">
-//         {tasks.map((item, index) => (
-//           <li
-//             key={index}
-//             role="listitem"
-//             className="shadow-none border-0 py-2 hover:bg-[#fbfbfb] transition-colors ease-in-out "
-//           >
-//             <div className="grid grid-cols-7 gap-1 p-0">
-//               <div className="shrink">
-//                 <p>{item.id}</p>
-//               </div>
-//               <div className="col-span-2">
-//                 <p className="text-sm font-medium leading-none">{item.title}</p>
-//               </div>
-//               <div>dueDate</div>
-//               <div>Todo</div>
-//               <div>High</div>
-//               <div className="flex items-center gap-4 place-self-end">
-//                 <span className="text-sm text-gray-500">Assigned To</span>
-//                 <Avatar className="hidden h-9 w-9 sm:flex">
-//                   <AvatarImage src="/avatars/01.png" alt="Avatar" />
-//                   <AvatarFallback>{item.assigneeTo}</AvatarFallback>
-//                 </Avatar>
-//               </div>
-//             </div>
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-// export default RecentTasks;

@@ -1,66 +1,74 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-member";
 import useWorkspaceId from "@/hooks/use-workspace-id";
+import { getDateFnsLocale } from "@/languages/getDateFnsLocale";
+import i18n from "@/languages/i18n";
 import { getAvatarColor, getAvatarFallbackText } from "@/lib/helper";
 import { format } from "date-fns";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const RecentMembers = () => {
-  //recent member B1
   const workspaceId = useWorkspaceId();
-  //recent member B2
   const { data, isPending } = useGetWorkspaceMembers(workspaceId);
-  //recent member B3
   const members = data?.members || [];
+  const lang = i18n.language;
+  const dateLocale = getDateFnsLocale();
+  const { t } = useTranslation();
+
+
+  const formatStr = lang === "vi" ? "'Ngày' dd 'tháng' MM 'năm' yyyy" : "PPP";
 
 
   return (
-    <div className="flex flex-col pt-2">
+    <div className="preview-list mt-2">
       {isPending ? (
         <Loader className="w-8 h-8 animate-spin place-self-center flex" />
       ) : null}
-      <ul role="list" className="space-y-3">
+
+      <div role="list">
         {members.map((member, index) => {
-          //B5
           const name = member?.userId?.name || "";
           const initials = getAvatarFallbackText(name);
           const avatarColor = getAvatarColor(name);
-          // B4
+
           return (
-            (
-              <li
-                key={index}
-                role="listitem"
-                className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 hover:bg-gray-50"
-              >
-                {/* Avatar */}
-                <div className="flex-shrink-0">
-                  <Avatar className="h-9 w-9 sm:flex">
-                    <AvatarImage src={member.userId.profilePicture || ""} alt="Avatar" />
-                    <AvatarFallback
-                      className={avatarColor}
-                    >
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
+            <div
+              key={index}
+              role="listitem"
+              className="flex items-center gap-4 p-3 rounded-lg
+              hover:bg-dropdown-hover-bg border-b border-border last:border-b-0"
+            >
+              {/* Avatar */}
+              <div className="preview-thumbnail">
+                <Avatar className="h-9 w-9 sm:flex">
+                  <AvatarImage src={member.userId?.profilePicture || ""} alt="Avatar" />
+                  <AvatarFallback className={avatarColor}>
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
 
-                {/* Member Details */}
-                <div className="flex flex-col">
-                  <p className="text-sm font-medium text-gray-900">{member.userId.name}</p>
-                  <p className="text-sm text-gray-500">{member.role.name}</p>
+              <div className="preview-item-content d-flex flex-grow">
+                <div className="flex-grow">
+                  <div className="d-flex d-md-block d-xl-flex justify-content-between">
+                    <h6 className="preview-subject">{member.userId.name}</h6>
+                    <p className="text-muted text-small">{t("dashboard-member-joinday")}</p>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                  <p className="text-muted">{t(`dashboard-${member.role.name.toLowerCase()}`)}</p>
+                    <p className="text-muted text-small">
+                      {member.joinedAt
+                        ? format(new Date(member.joinedAt), formatStr, { locale: dateLocale })
+                        : null}
+                    </p>
+                  </div>
                 </div>
-
-                {/* Joined Date */}
-                <div className="ml-auto text-sm text-gray-500">
-                  <p>Joined</p>
-                  <p>{member.joinedAt ? format(member.joinedAt, "PPP") : null}</p>
-                </div>
-              </li>
-            )
-          )
+              </div>
+            </div>
+          );
         })}
-      </ul>
+      </div>
     </div>
   );
 };
