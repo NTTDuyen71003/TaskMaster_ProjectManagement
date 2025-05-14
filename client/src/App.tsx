@@ -1,17 +1,29 @@
+import { useEffect } from "react";
 import AppRoutes from "./routes";
 import i18n from "./languages/i18n";
-import { useEffect } from "react";
 
 function App() {
-    useEffect(() => {
+  useEffect(() => {
     const currentUserId = localStorage.getItem("currentUserId");
+
     if (currentUserId) {
-      const lang = localStorage.getItem(`language-${currentUserId}`);
-      i18n.changeLanguage(lang || "en");
+      // Set theme
+      const theme = localStorage.getItem(`theme-${currentUserId}`) || "light";
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+
+      // Set language
+      const lang = localStorage.getItem(`language-${currentUserId}`) || "en";
+      i18n.changeLanguage(lang);
     } else {
+      document.documentElement.classList.remove("dark");
       i18n.changeLanguage("en");
     }
   }, []);
+
   return <AppRoutes />;
 }
 

@@ -20,8 +20,8 @@ export const loginOrCreateAccountService = async (data: {
     email?: string;
 }) => {
     const { providerId, provider, displayName, email, picture } = data;
-
     const session = await mongoose.startSession();
+    const { t } = useTranslation();
 
     try {
         session.startTransaction();
@@ -194,3 +194,7 @@ export const findUserByIdService = async (userId: string) => {
     });
     return user || null;
 };
+
+function useTranslation(): { t: any; } {
+    throw new Error("Function not implemented.");
+}

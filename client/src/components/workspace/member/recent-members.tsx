@@ -17,7 +17,7 @@ const RecentMembers = () => {
   const { t } = useTranslation();
 
 
-  const formatStr = lang === "vi" ? "'Ngày' dd 'tháng' MM 'năm' yyyy" : "PPP";
+  const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
 
 
   return (

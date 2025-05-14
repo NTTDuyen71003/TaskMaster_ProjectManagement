@@ -7,15 +7,15 @@ import { useState } from "react";
 const CreateTaskDialog = (props: { projectId?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const onClose=()=> {
+  const onClose = () => {
     setIsOpen(false);
   }
-  
+
   return (
     <div>
-      <Dialog modal={true} open ={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger>
-          <Button>
+      <Dialog modal={true} open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="create">
             <Plus />
             New Task
           </Button>

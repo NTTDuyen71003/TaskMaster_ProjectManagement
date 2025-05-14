@@ -15,7 +15,7 @@ const RecentProjects = () => {
   const lang = i18n.language;
   const dateLocale = getDateFnsLocale();
 
-  const formatStr = lang === "vi" ? "'Ngày' dd 'tháng' MM 'năm' yyyy" : "PPP";
+  const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
 
   const { data, isPending } = useGetProjectsInWorkspaceQuery({
     workspaceId,
@@ -86,7 +86,6 @@ const RecentProjects = () => {
                 </div>
               </div>
             </Link>
-
           )
         })}
       </ul>

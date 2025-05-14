@@ -74,6 +74,7 @@ export default {
 					DEFAULT: 'hsl(var(--navbar-background))',
 					foreground: 'hsl(var(--navbar-foreground))',
 					icon: 'hsl(var(--navbar-icon))',
+					'createbtn-hover': 'hsl(var(--navbar-createbtn-hover))',
 				},
 				dashboard: {
 					// DEFAULT: 'hsl(var(--navbar-background))',

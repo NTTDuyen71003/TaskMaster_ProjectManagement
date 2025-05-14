@@ -24,9 +24,10 @@ const Header = () => {
     const currentLang = localStorage.getItem(`language-${currentUserId}`) || "en";
     const newLang = currentLang === "en" ? "vi" : "en";
 
-    i18n.changeLanguage(newLang);
     localStorage.setItem(`language-${currentUserId}`, newLang);
+    i18n.changeLanguage(newLang);
   };
+
 
   return (
     <nav className="navbar bg-navbar p-0 fixed-top d-flex flex-row">
@@ -54,20 +55,19 @@ const Header = () => {
         {/* Tạo mới dự án */}
         <ul className="navbar-nav navbar-nav-right">
           <li className="nav-item dropdown d-none d-lg-block">
-            <PermissionsGuard
-              requiredPermission={Permissions.CREATE_PROJECT}>
-              <a
-                className="nav-link btn create-new-button bg-btn"
+            <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
+              <button
+                className="nav-link btn create-new-button 
+                bg-sidebar-frameicon hover:bg-navbar-createbtn-hover bg-btn"
                 id="createbuttonDropdown"
-                data-toggle="dropdown"
-                aria-expanded="false"
                 onClick={onOpen}
                 type="button"
               >
                 {t("create-project-btn")}
-              </a>
+              </button>
             </PermissionsGuard>
           </li>
+
 
           {/* Icon 1 */}
           <li className="nav-item dropdown">
@@ -136,6 +136,7 @@ const Header = () => {
                   </div>
                 </a>
 
+                {/* Đổi theme */}
                 <div className="dropdown-divider"></div>
                 <a
                   className="dropdown-item preview-item cursor-pointer"
@@ -143,6 +144,8 @@ const Header = () => {
                     const html = document.documentElement;
                     const isDark = html.classList.contains("dark");
                     const currentUserId = localStorage.getItem("currentUserId");
+
+                    if (!currentUserId) return;
 
                     if (isDark) {
                       html.classList.remove("dark");
@@ -159,10 +162,14 @@ const Header = () => {
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="text-sidebar-text preview-subject mb-1">{t("navbar-change-theme")}</p>
+                    <p className="text-sidebar-text preview-subject mb-1">
+                      {t("navbar-change-theme")}
+                    </p>
                   </div>
                 </a>
 
+
+                {/* Đổi ngôn ngữ */}
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item" onClick={handleSwitchLanguage}>
                   <div className="preview-thumbnail">
@@ -171,10 +178,14 @@ const Header = () => {
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="text-sidebar-text preview-subject mb-1">{t("switch-language")}</p>
+                    <p className="text-sidebar-text preview-subject mb-1">
+                      {t("switch-language")}
+                    </p>
                   </div>
                 </a>
 
+
+                {/* Đăng xuất */}
                 <div className="dropdown-divider"></div>
                 <a className="dropdown-item preview-item" onClick={() => setIsOpen(true)}>
                   <div className="preview-thumbnail">

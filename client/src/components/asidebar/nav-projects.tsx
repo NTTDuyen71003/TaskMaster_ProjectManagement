@@ -1,4 +1,4 @@
-import { Loader, MoreHorizontal,Trash2,Edit } from "lucide-react";
+import { Loader, MoreHorizontal, Trash2, Edit } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -23,6 +23,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProjectMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import { useAuthContext } from "@/context/auth-provider";
+import { clsx } from "clsx";
 
 
 export function NavProjects() {
@@ -35,6 +37,8 @@ export function NavProjects() {
   const [pageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const queryClient = useQueryClient();
+  const { hasPermission } = useAuthContext();
+
   const { t } = useTranslation();
 
   const { mutate, isPending: isLoading } = useMutation({
@@ -96,7 +100,7 @@ export function NavProjects() {
       ) : projects?.length === 0 ? (
         <li className="nav-item">
           <div className="nav-announce">
-          {t("sidebar-projects-announce")}
+            {t("sidebar-projects-announce")}
           </div>
         </li>
       ) : (
@@ -121,7 +125,10 @@ export function NavProjects() {
                         href=""
                         id="profile-dropdown"
                         data-toggle="dropdown"
-                        className="p-2 rounded-md transition-colors text-[#6c7293] hover:text-[#6c7293]"
+                        className={clsx(
+                          "p-2 rounded-md transition-colors text-[#6c7293] hover:text-[#6c7293]",
+                          !hasPermission(Permissions.EDIT_PROJECT) && "invisible"
+                        )}
                         aria-label="More options"
                         onClick={(e) => e.preventDefault()}
                       >
@@ -134,12 +141,13 @@ export function NavProjects() {
                       side={isMobile ? "bottom" : "right"}
                       align={isMobile ? "end" : "start"}
                     >
-
-                      <DropdownMenuItem>
-                        <Edit className="mr-2" />
-                        <span>{t("sidebar-projects-edit")}</span>
-                      </DropdownMenuItem>
-                      <div className="dropdown-divider"></div>
+                      <PermissionsGuard requiredPermission={Permissions.EDIT_PROJECT}>
+                        <DropdownMenuItem>
+                          <Edit className="mr-2" />
+                          <span>{t("sidebar-projects-edit")}</span>
+                        </DropdownMenuItem>
+                        <div className="dropdown-divider"></div>
+                      </PermissionsGuard>
 
                       <PermissionsGuard requiredPermission={Permissions.DELETE_PROJECT}>
                         <DropdownMenuItem disabled={isLoading} onClick={() => onOpenDialog(item)}>
@@ -155,10 +163,10 @@ export function NavProjects() {
                     isLoading={isLoading}
                     onClose={onCloseDialog}
                     onConfirm={handleConfirm}
-                    title="Delete Project"
-                    description={`Are you sure you want to delete ${context?.name || "this item"}? This action cannot be undone.`}
-                    confirmText="Delete"
-                    cancelText="Cancel"
+                    title={t("sidebar-project-deletetitle")}
+                    description={`${t("sidebar-project-deletedescription1")} ${context?.name || t("sidebar-project-deletedescription2")}? ${t("sidebar-project-deletedescription3")}`}
+                    confirmText={t("sidebar-project-deletebtn")}
+                    cancelText={t("sidebar-createworkspace-cancelbtn")}
                   />
                 </div>
               </li>
@@ -180,7 +188,7 @@ export function NavProjects() {
               </SidebarMenuItem>
             </li>
           )}
-
+          
         </>
       )}
     </>

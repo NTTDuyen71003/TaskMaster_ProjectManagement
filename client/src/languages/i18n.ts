@@ -27,6 +27,11 @@ const resources = {
       "sidebar-createworkspace-placeholderdecription": "Our team organizes marketing projects and tasks here.",
       "sidebar-createworkspace-btn": "Create workspace",
       "sidebar-createworkspace-cancelbtn": "Cancel",
+      "sidebar-project-deletetitle": "Delete Project",
+      "sidebar-project-deletedescription1": "Are you sure you want to delete",
+      "sidebar-project-deletedescription2": "this item",
+      "sidebar-project-deletedescription3": "This action cannot be undone.",
+      "sidebar-project-deletebtn": "Delete",
 
 
       // Navbar
@@ -39,6 +44,18 @@ const resources = {
       "switch-language": "Switch to Vietnamese",
       "navbar-logout": "Log out",
       "navbar-advanced-settings": "Advanced settings (TBA)",
+      "navbar-create-project-title1": "Create Project",
+      "navbar-create-project-title2": "Organize and manage tasks, resources, and team collaboration",
+      "navbar-create-project-icon": "Select an icon",
+      "navbar-create-project-name": "Project title",
+      "navbar-create-project-placeholder-name": "Project name",
+      "navbar-create-project-description": "Project description",
+      "navbar-create-project-placeholder-description": "Write project description here",
+      "navbar-create-project-btn": "Create project",
+      "navbar-logout-title": "Are you sure you want to log out?",
+      "navbar-logout-description": "This will end your current session and you will need to log in again to access your account.",
+      "navbar-logout-confirm": "Sign out",
+
 
       // Dashboard 
       "dashboard-total-task": "Total Task",
@@ -53,6 +70,7 @@ const resources = {
       "dashboard-task-announce": "No Tasks created yet",
       "dashboard-task-user": "Assignee",
       "dashboard-task-inproject": "Project",
+      "dashboard-task-code": "Task code",
       "dashboard-task-title": "Task title",
       "dashboard-task-created": "Created",
       "dashboard-task-status": "Status",
@@ -94,7 +112,11 @@ const resources = {
       "sidebar-createworkspace-placeholderdecription": "Đội ngũ của chúng tôi tổ chức các dự án và công việc tiếp thị tại đây.",
       "sidebar-createworkspace-btn": "Tạo",
       "sidebar-createworkspace-cancelbtn": "Hủy",
-
+      "sidebar-project-deletetitle": "Xóa dự án",
+      "sidebar-project-deletedescription1": "Bạn có chắc chắn muốn xóa",
+      "sidebar-project-deletedescription2": "dự án này không",
+      "sidebar-project-deletedescription3": "Hành động này không thể hoàn tác.",
+      "sidebar-project-deletebtn": "Xóa",
 
 
       // Navbar
@@ -107,6 +129,18 @@ const resources = {
       "switch-language": "Chuyển sang tiếng Anh",
       "navbar-logout": "Đăng xuất",
       "navbar-advanced-settings": "Cài đặt nâng cao (CNS)",
+      "navbar-create-project-title1": "Tạo dự án",
+      "navbar-create-project-title2": "Tổ chức và quản lý công việc, tài nguyên và sự hợp tác của nhóm",
+      "navbar-create-project-icon": "Chọn biểu tượng",
+      "navbar-create-project-name": "Tiêu đề dự án",
+      "navbar-create-project-placeholder-name": "Tên dự án",
+      "navbar-create-project-description": "Mô tả dự án",
+      "navbar-create-project-placeholder-description": "Viết mô tả dự án ở đây",
+      "navbar-create-project-btn": "Tạo dự án",
+      "navbar-logout-title": "Bạn có chắc chắn muốn đăng xuất không?",
+      "navbar-logout-description": "Điều này sẽ kết thúc phiên hiện tại của bạn và bạn sẽ cần đăng nhập lại để truy cập tài khoản của mình.",
+      "navbar-logout-confirm": "Đăng xuất",
+
 
       // Dashboard
       "dashboard-total-task": "Tổng tác vụ",
@@ -117,10 +151,11 @@ const resources = {
       "dashboard-recent-members": "Thành viên gần đây",
       "dashboard-data-status": "Trạng thái dữ liệu",
       "dashboard-project-announce": "Chưa có dự án nào được tạo",
-      "dashboard-project-created": "Được tạo bởi",
+      "dashboard-project-created": "Người tạo",
       "dashboard-task-announce": "Chưa có công việc nào được tạo",
       "dashboard-task-user": "Người thực hiện",
       "dashboard-task-inproject": "Dự án",
+      "dashboard-task-code": "Mã công việc",
       "dashboard-task-title": "Tiêu đề công việc",
       "dashboard-task-created": "Ngày tạo",
       "dashboard-task-status": "Trạng thái",

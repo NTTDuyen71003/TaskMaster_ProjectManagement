@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import { useStore } from "@/store/store";
+import { useTranslation } from "react-i18next";
 
 const LogoutDialog = (props: {
   isOpen: boolean;
@@ -22,7 +23,7 @@ const LogoutDialog = (props: {
   const { isOpen, setIsOpen } = props;
   const navigate = useNavigate();
   const { clearAccessToken } = useStore();
-
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -63,21 +64,20 @@ const LogoutDialog = (props: {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent
+        aria-describedby={undefined}
+        className="sm:max-w-md card card-body bg-sidebar">
           <DialogHeader>
-            <DialogTitle>Are you sure you want to log out?</DialogTitle>
-            <DialogDescription>
-              This will end your current session and you will need to log in
-              again to access your account.
-            </DialogDescription>
+            <DialogTitle>{t("navbar-logout-title")}</DialogTitle>
+            <DialogDescription>{t("navbar-logout-description")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+              {t("sidebar-createworkspace-cancelbtn")}
+            </Button>
             <Button disabled={isPending} type="button" onClick={handleLogout}>
               {isPending && <Loader className="animate-spin" />}
-              Sign out
-            </Button>
-            <Button type="button" onClick={() => setIsOpen(false)}>
-              Cancel
+              {t("navbar-logout-confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

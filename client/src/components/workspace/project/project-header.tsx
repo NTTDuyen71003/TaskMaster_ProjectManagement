@@ -41,7 +41,7 @@ const ProjectHeader = () => {
     );
   };
   return (
-    <div className="flex items-center justify-between space-y-2">
+    <div className="flex items-center justify-between space-y-2 mt-5">
       <div className="flex items-center gap-2">
         <h2 className="flex items-center gap-3 text-xl font-medium truncate tracking-tight">
           {renderContent()}

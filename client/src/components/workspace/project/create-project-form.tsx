@@ -3,15 +3,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../../ui/textarea";
 import EmojiPickerComponent from "@/components/emoji-picker";
 import {
   Popover,
@@ -25,16 +19,20 @@ import { useNavigate } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 
 export default function CreateProjectForm({
   onClose,
-}:{
+}: {
   onClose: () => void;
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
   const [emoji, setEmoji] = useState("📊");
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useMutation({
     mutationFn: createProjectMutationFn,
@@ -57,8 +55,9 @@ export default function CreateProjectForm({
 
   const handleEmojiSelection = (emoji: string) => {
     setEmoji(emoji);
+    setEmojiPickerOpen(false);
   };
-  
+
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
@@ -71,18 +70,18 @@ export default function CreateProjectForm({
     };
     mutate(payload, {
       onSuccess: (data) => {
-        const project=data.project;
+        const project = data.project;
         queryClient.invalidateQueries({
           queryKey: ["allprojects", workspaceId],
         })
         toast({
           title: "Success",
-          description:"Project created successfully",
+          description: "Project created successfully",
           variant: "success",
         });
         navigate(`/workspace/${workspaceId}/project/${project._id}`);
         setTimeout(() => onClose(), 500);
-       },
+      },
       onError: (error) => {
         toast({
           title: "Error",
@@ -94,96 +93,86 @@ export default function CreateProjectForm({
   };
 
   return (
-    <div className="w-full h-auto max-w-full">
-      <div className="h-full">
-        <div className="mb-5 pb-2 border-b">
-          <h1
-            className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1
-           text-center sm:text-left"
-          >
-            Create Project
-          </h1>
-          <p className="text-muted-foreground text-sm leading-tight">
-            Organize and manage tasks, resources, and team collaboration
-          </p>
-        </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Emoji
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="font-normal size-[60px] !p-2 !shadow-none mt-2 items-center rounded-full "
-                  >
-                    <span className="text-4xl">{emoji}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className=" !p-0">
-                  <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="mb-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Website Redesign"
-                        className="!h-[48px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="mb-4">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={4}
-                        placeholder="Projects description"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+    <>
+      <div className="card">
+        <div className="card-body bg-sidebar">
+          <h4 className="card-title text-center font-bold">{t("navbar-create-project-title1")}</h4>
+          <Form {...form}>
+            <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
 
-            <Button
-            disabled={isPending}
-              className="flex place-self-end  h-[40px] text-white font-semibold"
-              type="submit"
-            >
-              {isPending && <Loader className="animate-spin" />}
-              Create
-            </Button>
-          </form>
-        </Form>
-      </div>
-    </div>
+              <div className="form-group">
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <label htmlFor="exampleInputName1">{t("navbar-create-project-icon")}</label>
+                  <Popover open={emojiPickerOpen} onOpenChange={setEmojiPickerOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="font-normal size-[60px] !p-2 !shadow-none items-center rounded-full"
+                      >
+                        <span className="text-4xl">{emoji}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="!p-0 z-[9999]">
+                      <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+
+              <div className="form-group">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <>
+                      <label htmlFor="exampleInputName1">{t("navbar-create-project-name")}</label>
+                      <input
+                        type="text"
+                        className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                        id="exampleInputName1"
+                        placeholder={t("navbar-create-project-placeholder-name")}
+                        {...field}
+                      />
+                    </>
+                  )}
+                />
+              </div>
+
+              <div className="form-group">
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <>
+                      <label htmlFor="exampleTextarea1">
+                        {t("navbar-create-project-description")}
+                      </label>
+                      <textarea
+                        className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                        id="exampleTextarea1"
+                        rows={4}
+                        placeholder={t("navbar-create-project-placeholder-description")}
+                        {...field}
+                      ></textarea>
+                    </>
+                  )}
+                />
+              </div>
+
+              <button
+                disabled={isPending}
+                type="submit"
+                className="btn btn-bg mr-2"
+              >
+                {isPending && <Loader />}
+                {t("navbar-create-project-btn")}
+              </button>
+              <button className="btn btn-dark" type="button" onClick={onClose} >{t("sidebar-createworkspace-cancelbtn")}</button>
+            </form>
+          </Form>
+        </div>
+      </div >
+    </>
   );
 }

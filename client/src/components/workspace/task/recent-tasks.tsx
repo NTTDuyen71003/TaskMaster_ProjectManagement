@@ -6,7 +6,6 @@ import { getAllTasksQueryFn } from "@/lib/api";
 import {
   getAvatarColor,
   getAvatarFallbackText,
-  transformStatusEnum,
 } from "@/lib/helper";
 import { TaskType } from "@/types/api.type";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +20,7 @@ const RecentTasks = () => {
   const dateLocale = getDateFnsLocale();
   const lang = i18n.language;
 
-  const formatStr = lang === "vi" ? "'Ngày' dd 'tháng' MM 'năm' yyyy" : "PPP";
+  const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
 
   const { data, isLoading } = useQuery({
     queryKey: ["all-tasks", workspaceId],
@@ -51,12 +50,13 @@ const RecentTasks = () => {
 
       {/* Table only shown when tasks exist */}
       {tasks.length > 0 && (
-        <div className="table-responsive ">
+        <div className="table-responsive"> 
           <table className="table">
             <thead>
               <tr>
                 <th>{t("dashboard-task-user")}</th>
                 <th>{t("dashboard-task-inproject")}</th>
+                <th>{t("dashboard-task-code")}</th>
                 <th>{t("dashboard-task-title")}</th>
                 <th>{t("dashboard-task-created")}</th>
                 <th>{t("dashboard-task-status")}</th>
@@ -85,6 +85,9 @@ const RecentTasks = () => {
                       </div>
                     </td>
 
+                    {/* Task project */}
+                    <td>{task.project?.name}</td>
+
                     {/* Task code */}
                     <td>{task.taskCode}</td>
 
@@ -100,17 +103,16 @@ const RecentTasks = () => {
                         : null}
                     </td>
 
-
                     {/* Status */}
                     <td>
                       <label
                         className={`badge ${task.status === "IN_PROGRESS"
-                            ? "badge-warning"
-                            : task.status === "DONE"
-                              ? "badge-success"
-                              : task.status === "TODO"
-                                ? "badge-info"
-                                : "badge-danger"
+                          ? "badge-warning"
+                          : task.status === "DONE"
+                            ? "badge-success"
+                            : task.status === "TODO"
+                              ? "badge-info"
+                              : "badge-danger"
                           }`}
                       >
                         {t(`dashboard-status-${task.status.toLowerCase()}`)}
@@ -130,7 +132,6 @@ const RecentTasks = () => {
                         {t(`dashboard-priority-${task.priority.toLowerCase()}`)}
                       </label>
                     </td>
-
                   </tr>
                 );
               })}

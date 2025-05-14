@@ -39,7 +39,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   };
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        aria-describedby={undefined}
+        className="sm:max-w-md card card-body bg-sidebar">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}

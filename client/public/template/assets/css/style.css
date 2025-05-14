@@ -11118,7 +11118,7 @@ pre code {
 .dark .table td,
 .dark .jsgrid .jsgrid-table td {
   padding: 0.9375rem;
-  border-bottom: 1px solid #2c2e33;
+  border-top: 1px solid #2c2e33;
 }
 
 .table thead th,
@@ -11428,7 +11428,7 @@ pre code {
   }
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 1380px) {
   .table-responsive-lg {
     display: block;
     width: 100%;
@@ -17966,8 +17966,12 @@ button.bg-dark:focus {
   border-bottom: 1px solid #2c2e33 !important;
 }
 
-.border-left {
+.dark .border-left {
   border-left: 1px solid #2c2e33 !important;
+}
+
+.border-left {
+  border-left: 1px solid #F2F4FF !important;
 }
 
 .border-0 {
@@ -22520,7 +22524,8 @@ code {
 }
 
 .page-header {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.5rem 1rem;
+  font-weight: 800;
 }
 
 .page-header .breadcrumb {
@@ -22529,7 +22534,6 @@ code {
 }
 
 .page-title {
-  color: #ffffff;
   font-size: 1.125rem;
   margin-bottom: 0;
 }
@@ -30862,13 +30866,9 @@ div.tagsinput span.tag a {
 
 .bg-btn
 {
-  background-color: #e83e8c;
+  border-radius: 0.5rem;
 }
 
-.bg-btn:hover
-{
-  background-color: #c03178;
-}
 
 .avatar-border {
   border: 2px solid #6c7293;

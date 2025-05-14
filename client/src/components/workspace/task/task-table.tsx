@@ -30,10 +30,8 @@ interface DataTableFilterToolbarProps {
 const TaskTable = () => {
   const param = useParams();
   const projectId = param.projectId as string;
-
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
   const [filters, setFilters] = useTaskTableFilter();
   const workspaceId=useWorkspaceId();
   const columns = getColumns(projectId);
@@ -53,7 +51,6 @@ const TaskTable = () => {
     }), 
     staleTime:0,// Replace with your data fetching function
   });
-
   const tasks:TaskType[]=data?.tasks || [];
   const totalCount = data?.pagination.totalCount || 0;
 
@@ -66,8 +63,9 @@ const TaskTable = () => {
     setPageSize(size);
   };
 
+
   return (
-    <div className="w-full relative">
+    <div className="col-12 grid-margin">
       <DataTable
         isLoading={isLoading}
         data={tasks}
