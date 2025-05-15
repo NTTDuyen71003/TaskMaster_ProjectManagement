@@ -3,9 +3,11 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import CreateTaskForm from "./create-task-form";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const CreateTaskDialog = (props: { projectId?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   const onClose = () => {
     setIsOpen(false);
@@ -17,7 +19,7 @@ const CreateTaskDialog = (props: { projectId?: string }) => {
         <DialogTrigger asChild>
           <Button variant="create">
             <Plus />
-            New Task
+            {t("taskboard-createbtn")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-lg max-h-auto my-5 border-0">

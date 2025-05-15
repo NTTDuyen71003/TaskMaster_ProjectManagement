@@ -87,6 +87,18 @@ const resources = {
       "dashboard-member": "MEMBER",
       "dashboard-member-joinday": "Joined",
 
+
+      //Task dashboard
+      "taskboard-title":"All Tasks",
+      "taskboard-createbtn":"New Task",
+      "taskboard-search-placeholder":"Filter tasks...",
+      "taskboard-status":"Status",
+      "taskboard-piority":"Priority",
+      "taskboard-assignedto":"Assigned To",
+      "taskboard-reset":"Reset",
+
+      "taskboard-noresult":"No results."
+
     },
   },
   vi: {
@@ -143,9 +155,9 @@ const resources = {
 
 
       // Dashboard
-      "dashboard-total-task": "Tổng tác vụ",
+      "dashboard-total-task": "Tổng công việc",
       "dashboard-overdue-task": "Quá hạn",
-      "dashboard-completed-task": "Tác vụ hoàn thành",
+      "dashboard-completed-task": "Công việc hoàn thành",
       "dashboard-recent-projects": "Dự án gần đây",
       "dashboard-recent-tasks": "Công việc gần đây",
       "dashboard-recent-members": "Thành viên gần đây",
@@ -171,6 +183,18 @@ const resources = {
       "dashboard-admin": "QUẢN TRỊ VIÊN",
       "dashboard-member": "THÀNH VIÊN",
       "dashboard-member-joinday": "Ngày tham gia",
+
+
+      //Task dashboard
+      "taskboard-title":"Tất cả công việc",
+      "taskboard-createbtn":"Công việc mới",
+      "taskboard-search-placeholder":"Tìm kiếm công việc...",
+      "taskboard-status":"Trạng thái",
+      "taskboard-piority":"Ưu tiên",
+      "taskboard-assignedto":"Người tham gia",
+      "taskboard-reset":"Xóa",
+      
+      "taskboard-noresult":"Không tìm thấy."
     },
   },
 };

@@ -17,9 +17,9 @@ const WorkspaceDashboard = () => {
     <div className="main-panel">
       <WorkspaceAnalytics />
       
-      <div className="col-md-12 grid-margin stretch-card">
+      <div className="mt-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="card-body bg-sidebar card-border">
-          <TabsList className="d-flex flex-row align-items-center">
+          <TabsList className="d-flex flex-wrap align-items-center">
             <TabsTrigger className="py-2" value="projects">
               <h4 className="card-title mb-1 title-font">{t("dashboard-recent-projects")}</h4>
             </TabsTrigger>

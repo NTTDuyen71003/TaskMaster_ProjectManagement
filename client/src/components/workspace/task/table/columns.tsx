@@ -161,7 +161,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
               variant={TaskStatusEnum[statusKey]}
               className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
             >
-              <Icon className="h-4 w-4 rounded-full text-inherit" />
+              {/* <Icon className="h-4 w-4 rounded-full text-inherit" /> */}
               <span>{status.label}</span>
             </Badge>
           </div>
@@ -195,9 +195,9 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
           <div className="flex items-center">
             <Badge
               variant={TaskPriorityEnum[statusKey]}
-              className="flex lg:w-[110px] p-1 gap-1 !bg-transparent font-medium !shadow-none uppercase border-0"
+              className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
             >
-              <Icon className="h-4 w-4 rounded-full text-inherit" />
+              {/* <Icon className="h-4 w-4 rounded-full text-inherit" /> */}
               <span>{priority.label}</span>
             </Badge>
           </div>

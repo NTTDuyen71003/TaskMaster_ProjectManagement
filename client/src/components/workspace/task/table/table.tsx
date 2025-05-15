@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import TableSkeleton from "@/components/skeleton-loaders/table-skeleton";
 import { DataTablePagination } from "./table-pagination";
+import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   totalCount: number;
@@ -56,7 +57,7 @@ export function DataTable<TData, TValue>({
   onPageSizeChange,
 }: DataTableProps<TData, TValue>) {
   const { totalCount = 0, pageNumber = 1, pageSize = 10 } = pagination || {};
-
+  const { t } = useTranslation();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -92,7 +93,7 @@ export function DataTable<TData, TValue>({
         {filtersToolbar && <div className="flex-1"> {filtersToolbar}</div>}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto w-full lg:w-auto">
+            <Button variant="outline" className="ml-auto w-full lg:w-auto mb-3">
               Columns <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -163,7 +164,7 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t("taskboard-noresult")}
                   </TableCell>
                 </TableRow>
               )}
