@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTaskMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 
 export default function CreateTaskForm(props: {
@@ -59,6 +60,7 @@ export default function CreateTaskForm(props: {
 
   const projects = data?.projects || [];
   const members = menberData?.members || [];
+  const { t } = useTranslation();
 
 
   //Workspace Projects
@@ -179,114 +181,110 @@ export default function CreateTaskForm(props: {
   };
 
   return (
-    <div className="w-full h-auto max-w-full">
-      <div className="h-full">
-        <div className="mb-5 pb-2 border-b">
-          <h1
-            className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1
-           text-center sm:text-left"
-          >
-            Create Task
-          </h1>
-          <p className="text-muted-foreground text-sm leading-tight">
-            Organize and manage tasks, resources, and team collaboration
-          </p>
-        </div>
+    <div className="card">
+      <div className="card-body bg-sidebar">
+        <h4
+          className="card-title text-center font-bold"
+        >
+          {t("taskboard-createbtn")}
+        </h4>
         <Form {...form}>
-          <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-            <div>
+          <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
+
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Task title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Website Redesign"
-                        className="!h-[48px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <>
+                    <label htmlFor="exampleInputName1">{t("taskboard-form-create-title")}</label>
+                    <input
+                      type="text"
+                      className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white rounded-lg"
+                      id="exampleInputName1"
+                      placeholder={t("taskboard-form-create-title-placeholder")}
+                      {...field}
+                    />
+                  </>
                 )}
               />
             </div>
 
             {/* {Description} */}
-            <div>
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Task description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea rows={1} placeholder="Description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <>
+                    <label htmlFor="exampleTextarea1">
+                      {t("taskboard-create-task-description")}
+                    </label>
+                    <textarea
+                      className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white rounded-lg"
+                      id="exampleTextarea1"
+                      rows={4}
+                      placeholder={t("taskboard-form-create-task-description-placeholder")}
+                      {...field}
+                    ></textarea>
+                  </>
                 )}
               />
             </div>
 
             {/* {ProjectId} */}
-
             {!projectId && (
               <div>
                 <FormField
                   control={form.control}
                   name="projectId"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a project" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {isLoading && (
-                            <div className="my-2">
-                              <Loader className="w-4 h-4 place-self-center flex animate-spin" />
-                            </div>
-                          )}
+                    // <FormItem>
+                    //   <FormLabel>Project</FormLabel>
+                    //   <Select
+                    //     onValueChange={field.onChange}
+                    //     defaultValue={field.value}
+                    //   >
+                    //     <FormControl>
+                    //       <SelectTrigger>
+                    //         <SelectValue placeholder="Select a project" />
+                    //       </SelectTrigger>
+                    //     </FormControl>
+                    //     <SelectContent>
+                    //       {isLoading && (
+                    //         <div className="my-2">
+                    //           <Loader className="w-4 h-4 place-self-center flex animate-spin" />
+                    //         </div>
+                    //       )}
 
-                          {/* lay du lieu project de tao task cho project do */}
-                          <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                            {projectOptions?.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                className="!capitalize cursor-pointer"
-                                value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </div>
+                    //       {/* lay du lieu project de tao task cho project do */}
+                    //       <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                    //         {projectOptions?.map((option) => (
+                    //           <SelectItem
+                    //             key={option.value}
+                    //             className="!capitalize cursor-pointer"
+                    //             value={option.value}>
+                    //             {option.label}
+                    //           </SelectItem>
+                    //         ))}
+                    //       </div>
 
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                    //     </SelectContent>
+                    //   </Select>
+                    //   <FormMessage />
+                    // </FormItem>
+                    <div className="form-group ">
+                        <label htmlFor="exampleSelectGender">{t("taskboard-form-create-project")}</label>
+                        <select className="form-control bg-sidebar-input border-sidebar-border" id="exampleSelectGender">
+                          <option>Male</option>
+                        </select>
+                      </div>
                   )}
                 />
               </div>
             )}
 
             {/* {Members AssigneeTo} */}
-
             <div>
               <FormField
                 control={form.control}

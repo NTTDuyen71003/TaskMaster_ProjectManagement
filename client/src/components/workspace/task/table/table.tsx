@@ -86,6 +86,7 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
   });
+  
 
   return (
     <div>
@@ -93,8 +94,8 @@ export function DataTable<TData, TValue>({
         {filtersToolbar && <div className="flex-1"> {filtersToolbar}</div>}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto w-full lg:w-auto mb-3">
-              Columns <ChevronDown />
+            <Button variant="option" className="ml-auto w-full lg:w-auto mb-3">
+              {t("taskboard-column")} <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

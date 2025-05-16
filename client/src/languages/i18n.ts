@@ -96,6 +96,14 @@ const resources = {
       "taskboard-piority":"Priority",
       "taskboard-assignedto":"Assigned To",
       "taskboard-reset":"Reset",
+      "taskboard-column":"Columns",
+      "taskboard-form-create-title":"Task title",
+      "taskboard-form-create-title-placeholder":"Task name",
+      "taskboard-create-task-description":"Task description",
+      "taskboard-form-create-task-description-placeholder":"Write task description here",
+      "taskboard-form-create-project":"Project",
+      "taskboard-form-create-project-placeholder":"Select a project",
+
 
       "taskboard-noresult":"No results."
 
@@ -193,6 +201,15 @@ const resources = {
       "taskboard-piority":"Ưu tiên",
       "taskboard-assignedto":"Người tham gia",
       "taskboard-reset":"Xóa",
+      "taskboard-column":"Cột",
+      "taskboard-form-create-title":"Tiêu đề công việc",
+      "taskboard-form-create-title-placeholder":"Tên công việc",
+      "taskboard-create-task-description":"Mô tả công việc",
+      "taskboard-form-create-task-description-placeholder":"Mô tả công việc tại đây.",
+      "taskboard-form-create-project":"Dự án",
+      "taskboard-form-create-project-placeholder":"Chọn dự án",
+
+
       
       "taskboard-noresult":"Không tìm thấy."
     },

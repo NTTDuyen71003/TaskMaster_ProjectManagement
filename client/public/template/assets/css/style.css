@@ -24605,7 +24605,6 @@ select.typeahead,
 select.tt-query,
 select.tt-hint {
   padding: .4375rem .75rem;
-  border: 0;
   color: #4b5564;
 }
 
