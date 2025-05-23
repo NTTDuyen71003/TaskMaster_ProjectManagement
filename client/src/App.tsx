@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import AppRoutes from "./routes";
 import i18n from "./languages/i18n";
-import $ from "jquery";
 
 function App() {
   useEffect(() => {
