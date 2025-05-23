@@ -1,6 +1,7 @@
 import React from "react";
 import { PermissionType } from "@/constant";
 import { useAuthContext } from "@/context/auth-provider";
+import { useTranslation } from "react-i18next";
 
 type PermissionsGuardProps = {
   requiredPermission: PermissionType;
@@ -14,6 +15,7 @@ const PermissionsGuard: React.FC<PermissionsGuardProps> = ({
   children,
 }) => {
   const { hasPermission } = useAuthContext();
+  const { t } = useTranslation();
 
   if (!hasPermission(requiredPermission)) {
     return (
@@ -23,9 +25,9 @@ const PermissionsGuard: React.FC<PermissionsGuardProps> = ({
         text-sm pt-3
         italic
         w-full
-        text-muted-foreground"
+        text-muted"
         >
-          You do not have the permission to view this
+          {t("role-accouncement")}
         </div>
       )
     );

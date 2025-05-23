@@ -9486,14 +9486,13 @@ sup {
 }
 
 a {
-  color: #007bff;
+  /* color: #007bff; */
   text-decoration: none;
   background-color: transparent;
 }
 
 a:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 a:not([href]):not([class]) {
@@ -11591,7 +11590,6 @@ pre code {
 .typeahead[readonly],
 .tt-query[readonly],
 .tt-hint[readonly] {
-  background-color: #e9ecef;
   opacity: 1;
 }
 
@@ -30071,7 +30069,7 @@ div.tagsinput span.tag a {
   font-size: 1.5rem;
   line-height: 48px;
   margin-right: 0;
-  padding: 0rem 0rem 0rem 1.3rem;
+  padding: 0rem;
   width: 100%;
 }
 
@@ -30094,9 +30092,8 @@ div.tagsinput span.tag a {
 }
 
 .sidebar .sidebar-brand-wrapper .sidebar-brand.brand-logo-mini img {
-  width: calc(70px - 50px);
   max-width: 100%;
-  height: 28px;
+  height: 40px;
   margin: auto;
 }
 
@@ -30506,9 +30503,9 @@ div.tagsinput span.tag a {
   color: #00d25b;
 }
 
-/* .sidebar .nav .menu-items:nth-child(5n+3) .nav-link .menu-icon i {
+.sidebar .nav .menu-items:nth-child(5n+3) .nav-link .menu-icon i {
   color: #8f5fe8; 
-} */
+}
 
 .sidebar .nav .menu-items:nth-child(5n+4) .nav-link .menu-icon i {
   color: #ffab00;
@@ -30894,6 +30891,20 @@ div.tagsinput span.tag a {
   padding: 0.5rem 1rem;
 }
 
+.top-space
+{
+  margin-top: 5rem !important;
+}
+
+.text-des
+{
+  color:#000;
+}
+
+.dark .text-des
+{
+  color:#fff;
+}
 
 
 /*# sourceMappingURL=maps/style.css.map */

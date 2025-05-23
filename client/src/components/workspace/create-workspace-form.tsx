@@ -69,11 +69,12 @@ export default function CreateWorkspaceForm({
           <h4 className="card-title text-center font-bold">{t("sidebar-createworkspace-title")}</h4>
           <Form {...form}>
             <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
+              
               <div className="form-group">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <>
                       <label htmlFor="exampleInputName1">{t("sidebar-createworkspace-name")}</label>
                       <input
@@ -83,6 +84,9 @@ export default function CreateWorkspaceForm({
                         placeholder={t("sidebar-createworkspace-placeholdername")}
                         {...field}
                       />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
+                      )}
                     </>
                   )}
                 />

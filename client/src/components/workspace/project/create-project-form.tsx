@@ -20,6 +20,7 @@ import useWorkspaceId from "@/hooks/use-workspace-id";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 
 
 export default function CreateProjectForm({
@@ -38,59 +39,117 @@ export default function CreateProjectForm({
     mutationFn: createProjectMutationFn,
   });
 
+  // Get existing projects to check for duplicates
+  const { data: projectsResponse } = useGetProjectsInWorkspaceQuery({
+    workspaceId,
+    pageSize: 100, // Get a large number to check all projects
+    pageNumber: 1,
+  });
+
+  const existingProjects = projectsResponse?.projects || [];
+
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Project title is required",
+      message: t("navbar-create-title-require"),
     }),
     description: z.string().trim(),
+    emoji: z.string().trim().min(1)
+  }).superRefine((data, ctx) => {
+    const normalizedName = data.name.toLowerCase().trim();
+    const normalizedEmoji = data.emoji;
+
+    const isDuplicate = existingProjects.some(
+      (project: any) =>
+        project.name.toLowerCase().trim() === normalizedName &&
+        project.emoji === normalizedEmoji
+    );
+
+    if (isDuplicate) {
+      ctx.addIssue({
+        path: ["name"],
+        code: z.ZodIssueCode.custom,
+        message: t("navbar-create-name-require"),
+      });
+    }
   });
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
+      emoji,
     },
   });
 
   const handleEmojiSelection = (emoji: string) => {
     setEmoji(emoji);
     setEmojiPickerOpen(false);
+    form.setValue("emoji", emoji);
   };
-
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
+
+    if (existingProjects && Array.isArray(existingProjects)) {
+      const normalizedName = values.name.toLowerCase().trim();
+
+      const isDuplicate = existingProjects.some(
+        (project: any) =>
+          project.name.toLowerCase().trim() === normalizedName &&
+          project.emoji === emoji // Chỉ cấm nếu emoji cũng giống
+      );
+
+      if (isDuplicate) {
+        form.setError("name", {
+          type: "manual",
+          message: t("navbar-create-name-require"),
+        });
+        return;
+      }
+    }
+
     const payload = {
       workspaceId,
       data: {
-        emoji,
         ...values,
       },
     };
+
     mutate(payload, {
       onSuccess: (data) => {
         const project = data.project;
         queryClient.invalidateQueries({
           queryKey: ["allprojects", workspaceId],
-        })
+        });
         toast({
-          title: "Success",
-          description: "Project created successfully",
+          title: t("navbar-create-project-success"),
+          description: t("navbar-create-project-success-desc"),
           variant: "success",
+          duration: 2500,
         });
         navigate(`/workspace/${workspaceId}/project/${project._id}`);
         setTimeout(() => onClose(), 500);
       },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+      onError: (error: any) => {
+        if (error?.response?.status === 409 || error?.message?.includes("duplicate")) {
+          form.setError("name", {
+            type: "manual",
+            message: t("navbar-create-name-require"),
+          });
+        } else {
+          toast({
+            title: t("memberdashboard-changerole-error"),
+            description: t("navbar-create-project-error-desc"),
+            variant: "destructive",
+            duration: 2500,
+          });
+        }
       },
     });
   };
+
 
   return (
     <>
@@ -119,21 +178,24 @@ export default function CreateProjectForm({
                 </div>
               </div>
 
-
               <div className="form-group">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <>
                       <label htmlFor="exampleInputName1">{t("navbar-create-project-name")}</label>
                       <input
                         type="text"
-                        className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                        className={`form-control bg-sidebar-input border-sidebar-border text-black dark:text-white ${fieldState.error ? 'border-red-500' : ''
+                          }`}
                         id="exampleInputName1"
                         placeholder={t("navbar-create-project-placeholder-name")}
                         {...field}
                       />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
+                      )}
                     </>
                   )}
                 />
@@ -172,7 +234,7 @@ export default function CreateProjectForm({
             </form>
           </Form>
         </div>
-      </div >
+      </div>
     </>
   );
 }

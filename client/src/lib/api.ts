@@ -137,6 +137,21 @@ export const getProjectsInWorkspaceQueryFn = async ({
   return response.data;
 };
 
+//kiểm tra project trùng
+export const checkProjectNameExistsQueryFn = async ({
+  workspaceId,
+  name,
+}: {
+  workspaceId: string;
+  name: string;
+}): Promise<{ exists: boolean }> => {
+  const response = await API.get(
+    `/project/workspace/${workspaceId}/check-name?name=${encodeURIComponent(name)}`
+  );
+  return response.data;
+};
+
+
 //lấy project theo id
 export const getProjectByIdQueryFn = async ({
   workspaceId,

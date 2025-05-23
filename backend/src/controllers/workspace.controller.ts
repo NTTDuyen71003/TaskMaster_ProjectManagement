@@ -7,12 +7,24 @@ import { changeMemberRoleService, createWorkspaceService, deleteWorkspaceService
 import { getMemberRoleInWorkspace } from '../services/member.service';
 import { roleGuard } from '../utils/roleGuard';
 import { Permissions } from "../enums/role.enum";
+import WorkspaceModel from '../models/workspace.model';
 
 export const createWorkspaceController = asyncHandler(
     async (req: Request, res: Response) => {
         const body = createWorkspaceSchema.parse(req.body);
-
         const userId = req.user?._id;
+
+        const existingWorkspace = await WorkspaceModel.findOne({
+            userId: userId,
+            name: { $regex: new RegExp(`^${body.name.trim()}$`, 'i') }
+        });
+
+        if (existingWorkspace) {
+            return res.status(409).json({
+                error: "Project with this name already exists"
+            });
+        }
+
         const { workspace } = await createWorkspaceService(userId, body);
 
         return res.status(HTTPSTATUS.CREATED).json({

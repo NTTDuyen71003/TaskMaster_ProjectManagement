@@ -18,6 +18,7 @@ import {
     updateProjectService,
 } from "../services/project.service";
 import { HTTPSTATUS } from "../config/http.config";
+import Project from "../models/project.model";
 
 export const createProjectController = asyncHandler(
     async (req: Request, res: Response) => {
@@ -27,6 +28,19 @@ export const createProjectController = asyncHandler(
         const userId = req.user?._id;
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.CREATE_PROJECT]);
+
+        // Backend validation: Check if project with the same name exists in the workspace
+        const existingProject = await Project.findOne({
+            workspaceId: workspaceId,
+            name: { $regex: new RegExp(`^${body.name.trim()}$`, 'i') },
+            emoji: body.emoji,
+        });
+
+        if (existingProject) {
+            return res.status(409).json({
+                error: "Project with this name already exists"
+            });
+        }
 
         const { project } = await createProjectService(userId, workspaceId, body);
 

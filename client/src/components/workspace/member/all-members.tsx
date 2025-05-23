@@ -1,8 +1,6 @@
 import { ChevronDown, Loader } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
 import {
   Command,
   CommandEmpty,
@@ -24,18 +22,31 @@ import { changeWorkspaceMemberRoleMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { useAuthContext } from "@/context/auth-provider";
 import { Permissions } from "@/constant";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
+
 const AllMembers = () => {
   const { user, hasPermission } = useAuthContext();
   const canChangeMemberRole = hasPermission(Permissions.CHANGE_MEMBER_ROLE);
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
   const { data, isPending } = useGetWorkspaceMembers(workspaceId);
-
   const members = data?.members || [];
   const roles = data?.roles || [];
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: changeWorkspaceMemberRoleMutationFn,
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const { t } = useTranslation();
+  const [openPopoverMemberId, setOpenPopoverMemberId] = useState<string | null>(null);
+
+
+  const filteredMembers = members.filter((member) =>
+    member.userId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handleSelect = (roleId: string, memberId: string) => {
     if (!roleId || !memberId) return;
     const payload = {
@@ -51,31 +62,45 @@ const AllMembers = () => {
           queryKey: ["members", workspaceId],
         });
         toast({
-          title: "Success",
-          description: "Member's role changed successfully",
+          title: t("memberdashboard-changerole-success"),
+          description: t("memberdashboard-changerole-success-description"),
           variant: "success",
+          duration: 2500,
         });
+        setOpenPopoverMemberId(null);
       },
       onError: () => {
         toast({
-          title: "Error",
-          description: "You do not have permission to change this member's role.",
+          title: t("memberdashboard-changerole-error"),
+          description: t("memberdashboard-changerole-error-description"),
           variant: "destructive",
+          duration: 2500,
         });
       },
     });
   };
+
+
   return (
     <div className="grid gap-6 pt-2">
+      <input
+        type="text"
+        className="form-control bg-navbar border-sidebar-border rounded disabled:opacity-100 disabled:pointer-events-none text-des"
+        placeholder={t("memberdashboard-search-placeholder")}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       {isPending ? (
         <Loader className="w-8 h-8 animate-spin place-self-center flex" />
       ) : null}
-      {members.map((member) => {
+      {filteredMembers.map((member) => {
         const name = member.userId?.name;
         const initials = getAvatarFallbackText(name);
         const avatarColor = getAvatarColor(name);
         return (
-          <div className="flex items-center justify-between space-x-4">
+          <div 
+          key={member.userId._id}
+          className="flex items-center justify-between space-x-4">
             <div className="flex items-center space-x-4">
               <Avatar className="h-8 w-8">
                 <AvatarImage
@@ -88,13 +113,18 @@ const AllMembers = () => {
               </Avatar>
               <div>
                 <p className="text-sm font-medium leading-none">{name}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted">
                   {member.userId.email}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Popover>
+              <Popover
+                open={openPopoverMemberId === member.userId._id}
+                onOpenChange={(open) =>
+                  setOpenPopoverMemberId(open ? member.userId._id : null)
+                }
+              >
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -103,7 +133,7 @@ const AllMembers = () => {
                     disabled={isLoading ||
                       !canChangeMemberRole || member.userId._id === user?._id} // Vô hiệu hóa nút nếu là người dùng hiện tại
                   >
-                    {member.role.name?.toLowerCase()}{" "}
+                    {t(`role.${member.role.name?.toLowerCase()}`)}{" "}
                     {member.userId._id !== user?._id && ( // Chỉ hiển thị icon chevron khi không phải người dùng hiện tại
                       <ChevronDown className="text-muted-foreground" />
                     )}
@@ -111,15 +141,13 @@ const AllMembers = () => {
                 </PopoverTrigger>
                 <PopoverContent className="p-0" align="end">
                   <Command>
-                    <CommandInput placeholder="Select new role..."
-
-                    />
+                    <CommandInput placeholder={t("memberdashboard-role-search")} />
                     <CommandList>
                       {isLoading ? (
                         <Loader className="w-8 h-8 animate-spin place-self-center flex my-4" />
                       ) : (
                         <>
-                          <CommandEmpty>No roles found.</CommandEmpty>
+                          <CommandEmpty>{t("memberdashboard-role-notfound")}</CommandEmpty>
                           <CommandGroup>
                             {roles?.map(
                               (role) =>
@@ -127,20 +155,20 @@ const AllMembers = () => {
                                   <CommandItem
                                     key={role._id}
                                     disabled={isLoading}
-                                    className="disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer"
+                                    className="disabled:pointer-events-none gap-1 mb-1 flex flex-col items-start px-4 py-2 cursor-pointer"
                                     onSelect={() => {
-                                      handleSelect(
-                                        role._id,
-                                        member.userId._id);
+                                      handleSelect(role._id, member.userId._id);
                                     }}
                                   >
                                     <p className="capitalize">
-                                      {role.name?.toLowerCase()}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                      {role.name === "ADMIN" &&
-                                        `Can view, create, edit tasks, project and manage settings .`}
-                                      {role.name === "MEMBER" &&
-                                        `Can view,edit only task created by.`}
+                                      {/* Dịch tiêu đề hiển thị */}
+                                      {t(`role.${role.name.toLowerCase()}`)}
+                                    </p>
+                                    <p className="text-sm text-muted">
+                                      {/* Dùng giá trị gốc để xác định mô tả cần hiển thị */}
+                                      {role.name === "ADMIN" && t("memberdashboard-admin-desc")}
+                                      {role.name === "MEMBER" && t("memberdashboard-member-desc")}
+                                      {role.name === "OWNER" && t("memberdashboard-owner-desc")}
                                     </p>
                                   </CommandItem>
                                 )

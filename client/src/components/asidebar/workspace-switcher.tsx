@@ -59,7 +59,7 @@ export function WorkspaceSwitcher() {
                 </div>
               </div>
               <div className="profile-name">
-                <h5 className="mb-0 font-weight-normal">{activeWorkspace?.name}</h5>
+                <h5 className="mb-0 font-semibold">{activeWorkspace?.name}</h5>
                 <span>{t("sub-title-workspace")}</span>
               </div>
             </div>

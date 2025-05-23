@@ -4,27 +4,43 @@ import EditWorkspaceForm from "@/components/workspace/edit-workspace-form";
 import DeleteWorkspaceCard from "@/components/workspace/settings/delete-workspace-card";
 import { Permissions } from "@/constant";
 import withPermission from "@/hoc/with-permission";
+import { useTranslation } from "react-i18next";
+
 
 const Settings = () => {
-  return (
-    <div className="w-full h-auto py-2">
-      <WorkspaceHeader />
-      <Separator className="my-4 " />
-      <main>
-        <div className="w-full max-w-3xl mx-auto py-3">
-          <h2 className="text-[20px] leading-[30px] font-semibold mb-3">
-            Workspace settings
-          </h2>
+  const { t } = useTranslation();
 
-          <div className="flex flex-col pt-0.5 px-0 ">
-            <div className="pt-2">
+
+  return (
+    <div className="w-full min-h-screen py-6 px-4 bg-background text-foreground">
+      <WorkspaceHeader />
+
+      <main className="max-w-4xl mx-auto mt-6 space-y-8">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">{t("settingboard-title")}</h1>
+          <p className="text-muted text-sm">
+            {t("settingboard-title-desc")}
+          </p>
+        </div>
+        <Separator />
+
+        <div className="content-wrapper bg-sidebar card card-body rounded-2xl">
+          <div className="row">
+            <div className="col-md-12 grid-margin stretch-card">
               <EditWorkspaceForm />
             </div>
-            <div className="pt-2">
+          </div>
+        </div>
+        <Separator />
+
+        <div className="content-wrapper bg-sidebar card card-body rounded-2xl border-destructive">
+          <div className="row">
+            <div className="col-md-12 grid-margin stretch-card">
               <DeleteWorkspaceCard />
             </div>
           </div>
         </div>
+
       </main>
     </div>
   );
@@ -33,6 +49,6 @@ const Settings = () => {
 const SettingsWithPermission = withPermission(
   Settings,
   Permissions.MANAGE_WORKSPACE_SETTINGS
-); 
+);
 
 export default SettingsWithPermission;

@@ -19,16 +19,15 @@ export const createWorkspaceService = async (
     const { name, description } = body;
 
     const user = await UserModel.findById(userId);
-
     if (!user) {
         throw new NotFoundException("User not found");
     }
 
     const ownerRole = await RoleModel.findOne({ name: Roles.OWNER });
-
     if (!ownerRole) {
         throw new NotFoundException("Owner role not found");
     }
+    
     //Tạo workspace mới
     const workspace = new WorkspaceModel({
         name: name,
@@ -197,6 +196,7 @@ export const deleteWorkspaceService = async (
     const session = await mongoose.startSession();
     session.startTransaction();
 
+
     try {
         const workspace = await WorkspaceModel.findById(workspaceId).session(
             session
@@ -206,11 +206,10 @@ export const deleteWorkspaceService = async (
         }
 
         // // Kiểm tra quyền xóa workspace, chỉ chủ sở hữu mới có quyền này
-        if (workspace.owner.toString() !== userId) {
-            throw new BadRequestException(
-                "You are not authorized to delete this workspace"
-            );
+        if (workspace.owner.toString() !== userId.toString()) {
+            throw new BadRequestException("You are not authorized to delete this workspace");
         }
+
 
         const user = await UserModel.findById(userId).session(session);
         if (!user) {

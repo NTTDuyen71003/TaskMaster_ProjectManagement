@@ -9,13 +9,6 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { FaEye } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -29,7 +22,6 @@ import GoogleOauthButton from "@/components/auth/google-oauth-button";
 import { useMutation } from "@tanstack/react-query";
 import { loginMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
-// import { Loader } from "lucide-react";
 import { useStore } from "@/store/store";
 
 const SignIn = () => {
@@ -69,14 +61,6 @@ const SignIn = () => {
     },
   });
 
-  // Check for saved email on mount
-  // useEffect(() => {
-  //   const savedEmail = localStorage.getItem("rememberedEmail");
-  //   if (savedEmail) {
-  //     form.setValue("email", savedEmail); // Prefill email field
-  //     setRememberMe(true); // Check the box
-  //   }
-  // }, [form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;

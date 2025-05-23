@@ -20,12 +20,26 @@ const Header = () => {
   const handleSwitchLanguage = () => {
     const currentUserId = localStorage.getItem("currentUserId");
     if (!currentUserId) return;
-
     const currentLang = localStorage.getItem(`language-${currentUserId}`) || "en";
     const newLang = currentLang === "en" ? "vi" : "en";
-
     localStorage.setItem(`language-${currentUserId}`, newLang);
     i18n.changeLanguage(newLang);
+  };
+
+  const handleToggleSidebar = () => {
+    const body = document.body;
+    if (body.classList.contains('sidebar-toggle-display') || body.classList.contains('sidebar-absolute')) {
+      body.classList.toggle('sidebar-hidden');
+    } else {
+      body.classList.toggle('sidebar-icon-only');
+    }
+  };
+
+  const handleToggleOffcanvas = () => {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar) {
+      sidebar.classList.toggle("active");
+    }
   };
 
 
@@ -39,9 +53,14 @@ const Header = () => {
 
       {/* Icon kéo ra kéo vào */}
       <div className="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-        <button className="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+        <button
+          className="navbar-toggler navbar-toggler align-self-center"
+          type="button"
+          onClick={handleToggleSidebar}
+        >
           <span className="mdi mdi-menu"></span>
         </button>
+
 
         {/* Thanh tìm kiếm */}
         <ul className="navbar-nav w-100">
@@ -209,7 +228,11 @@ const Header = () => {
         </ul>
 
         {/* nút đóng mở*/}
-        <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+        <button
+          className="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
+          type="button"
+          onClick={handleToggleOffcanvas}
+        >
           <span className="mdi mdi-format-line-spacing"></span>
         </button>
       </div>

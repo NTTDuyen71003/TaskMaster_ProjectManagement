@@ -67,23 +67,25 @@ export function NavProjects() {
         projectId: context?._id,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: ["allprojects", workspaceId],
           });;
           toast({
-            title: "Success",
-            description: data.message,
+            title: t("settingboard-delete-workspace-success"),
+            description: t("sidebar-project-delete-desc"),
             variant: "success",
+            duration:2500,
           });
           navigate(`/workspace/${workspaceId}`);
           setTimeout(() => onCloseDialog(), 100);
         },
-        onError: (error) => {
+        onError: () => {
           toast({
-            title: "Error",
-            description: error.message,
+            title: t("memberdashboard-changerole-error"),
+            description: t("memberdashboard-changerole-error-description"),
             variant: "destructive",
+            duration:2500,
           });
         },
       }
@@ -122,7 +124,6 @@ export function NavProjects() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <a
-                        href=""
                         id="profile-dropdown"
                         data-toggle="dropdown"
                         className={clsx(
@@ -163,8 +164,8 @@ export function NavProjects() {
                     isLoading={isLoading}
                     onClose={onCloseDialog}
                     onConfirm={handleConfirm}
-                    title={t("sidebar-project-deletetitle")}
-                    description={`${t("sidebar-project-deletedescription1")} ${context?.name || t("sidebar-project-deletedescription2")}? ${t("sidebar-project-deletedescription3")}`}
+                    title={`${t("sidebar-project-deletetitle")} "${context?.name || t("sidebar-project-deletedescription2")}"`}
+                    description={`${t("sidebar-project-deletedescription1")} ${t("sidebar-project-deletedescription3")}`}
                     confirmText={t("sidebar-project-deletebtn")}
                     cancelText={t("sidebar-createworkspace-cancelbtn")}
                   />

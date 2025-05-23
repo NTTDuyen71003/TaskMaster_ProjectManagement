@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "@/hooks/use-toast";
@@ -8,10 +7,13 @@ import { CheckIcon, CopyIcon, Loader } from "lucide-react";
 import { BASE_ROUTE } from "@/routes/common/routePaths";
 import PermissionsGuard from "@/components/resuable/permission-guard";
 import { Permissions } from "@/constant";
+import { useTranslation } from "react-i18next";
 
 const InviteMember = () => {
   const { workspace, workspaceLoading } = useAuthContext();
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
+
 
   const inviteUrl = workspace
     ? `${window.location.origin}${BASE_ROUTE.INVITE_URL.replace(
@@ -25,22 +27,24 @@ const InviteMember = () => {
       navigator.clipboard.writeText(inviteUrl).then(() => {
         setCopied(true);
         toast({
-          title: "Copied",
-          description: "Invite url copied to clipboard",
+          title: t("memberdashboard-link-title"),
+          description: t("memberdashboard-link-description"),
           variant: "success",
+          duration: 2500,
         });
         setTimeout(() => setCopied(false), 2000);
       });
     }
   };
+
+
   return (
     <div className="flex flex-col pt-0.5 px-0 ">
       <h5 className="text-lg  leading-[30px] font-semibold mb-1">
-        Invite members to join you
+        {t("memberdashboard-invite-title")}
       </h5>
-      <p className="text-sm text-muted-foreground leading-tight">
-        Anyone with an invite link can join this free Workspace. You can also
-        disable and create a new invite link for this Workspace at any time.
+      <p className="text-muted leading-tight">
+        {t("memberdashboard-invite-description")}
       </p>
 
       <PermissionsGuard showMessage requiredPermission={Permissions.ADD_MEMBER}>
@@ -56,14 +60,17 @@ const InviteMember = () => {
             <Label htmlFor="link" className="sr-only">
               Link
             </Label>
-            <Input
+            <input
+              type="text"
               id="link"
-              disabled={true}
-              className="disabled:opacity-100 disabled:pointer-events-none"
-              value={inviteUrl}
+              disabled
               readOnly
+              value={inviteUrl}
+              className="form-control bg-navbar border-sidebar-border text-sidebar-text rounded disabled:opacity-100 disabled:pointer-events-none"
+              placeholder={t("navbar-search-placeholder")}
             />
             <Button
+              variant="create"
               disabled={false}
               className="shrink-0"
               size="icon"

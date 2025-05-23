@@ -20,6 +20,7 @@ import { editWorkspaceMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 import { Permissions } from "@/constant";
+import { useTranslation } from "react-i18next";
 
 export default function EditWorkspaceForm() {
 
@@ -27,10 +28,12 @@ export default function EditWorkspaceForm() {
   const canEditWorkspace = hasPermission(Permissions.EDIT_WORKSPACE);
   const workspaceId = useWorkspaceId();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useMutation({
     mutationFn: editWorkspaceMutationFn,
   });
+
   const formSchema = z.object({
     name: z.string().trim().min(1, {
       message: "Workspace name is required",
@@ -66,90 +69,86 @@ export default function EditWorkspaceForm() {
         queryClient.invalidateQueries({
           queryKey: ["userWorkspaces"],
         });
-      },
-      onError: (error) => {
+
         toast({
-          title: "Error",
-          description: error.message,
+          title: t("settingboard-edit-success"),
+          description: t("settingboard-edit-success-description"),
+          variant: "success",
+          duration: 2500,
+        });
+      },
+      onError: () => {
+        toast({
+          title: t("settingboard-edit-error"),
+          description: t("settingboard-edit-error-description"),
           variant: "destructive",
+          duration: 2500,
         });
       },
     });
   };
 
+
   return (
-    <div className="w-full h-auto max-w-full">
-      <div className="h-full">
-        <div className="mb-5 border-b">
-          <h1
-            className="text-[17px] tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
-           text-center sm:text-left"
-          >
-            Edit Workspace
-          </h1>
-        </div>
+    <>
+      <div className="col-md-12">
+        <h4 className="card-title font-bold">{t("settingboard-edit-workspace")}</h4>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="mb-4">
+          <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
+
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your workspace name..."
-                        className="!h-[48px] disabled:opacity-90 disabled:pointer-events-none"
-                        disabled={!canEditWorkspace}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <>
+                    <label htmlFor="exampleInputName1">{t("sidebar-createworkspace-name")}</label>
+                    <input
+                      type="text"
+                      className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                      id="exampleInputName1"
+                      placeholder={t("sidebar-createworkspace-placeholdername")}
+                      disabled={!canEditWorkspace}
+                      {...field}
+                    />
+                  </>
                 )}
               />
             </div>
-            <div className="mb-4">
+
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={6}
-                        disabled={!canEditWorkspace}
-                        className="disabled:opacity-90 disabled:pointer-events-none"
-                        placeholder="Our team organizes marketing projects and tasks here."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <>
+                    <label htmlFor="exampleTextarea1">
+                      {t("sidebar-createworkspace-decription")}
+                    </label>
+                    <textarea
+                      className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                      id="exampleTextarea1"
+                      rows={4}
+                      placeholder={t("sidebar-createworkspace-placeholderdecription")}
+                      disabled={!canEditWorkspace}
+                      {...field}
+                    ></textarea>
+                  </>
                 )}
               />
             </div>
-            {/* {canEditWorkspace && ( */}
-            <Button
-              className="flex place-self-end  h-[40px] text-white font-semibold"
-              disabled={!canEditWorkspace}
+
+            <button
+              disabled={isPending}
               type="submit"
+              className="btn btn-bg mr-2"
             >
-              {isPending && <Loader className="animate-spin" />}
-              Update Workspace
-            </Button>
+              {isPending && <Loader />}
+              {t("settingboard-edit-btn")}
+            </button>
           </form>
         </Form>
       </div>
-    </div>
+    </>
   );
 }

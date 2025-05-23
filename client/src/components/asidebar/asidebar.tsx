@@ -8,7 +8,7 @@ const Asidebar = () => {
   const { t } = useTranslation();
   
   return (
-    <nav className="sidebar bg-sidebar sidebar-offcanvas" id="sidebar">
+    <nav className="sidebar sidebar-offcanvas bg-sidebar" id="sidebar">
       <div className="sidebar-brand-wrapper bg-sidebar d-none d-lg-flex align-items-center justify-content-center fixed-top">
         <a className="brand-logo" href={`/workspace/${workspaceId}`}>
           <img src="/images/taskmaster_logo2.png" alt="logo" />
