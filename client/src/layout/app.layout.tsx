@@ -5,25 +5,28 @@ import Asidebar from "@/components/asidebar/asidebar";
 import Header from "@/components/header";
 import CreateWorkspaceDialog from "@/components/workspace/create-workspace-dialog";
 import CreateProjectDialog from "@/components/workspace/project/create-project-dialog";
+import { SearchProvider } from "@/context/search-projects-provider";
 
 const AppLayout = () => {
   return (
     <AuthProvider>
-      <SidebarProvider>
-        <Asidebar />
-        <SidebarInset className="overflow-x-hidden">
-          <div className="w-full">
-            <>
-              <Header />
-              <div className="px-3 lg:px-20 py-3">
-                <Outlet />
-              </div>
-            </>
-            <CreateWorkspaceDialog />
-            <CreateProjectDialog />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <SearchProvider>
+        <SidebarProvider>
+          <Asidebar />
+          <SidebarInset className="overflow-x-hidden">
+            <div className="w-full">
+              <>
+                <Header />
+                <div className="px-3 lg:px-20 py-3">
+                  <Outlet />
+                </div>
+              </>
+              <CreateWorkspaceDialog />
+              <CreateProjectDialog />
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </SearchProvider>
     </AuthProvider>
   );
 };

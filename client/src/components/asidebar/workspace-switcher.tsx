@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Loader } from "lucide-react";
+import { Loader, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import useCreateWorkspaceDialog from "@/hooks/use-create-workspace-dialog";
@@ -18,6 +18,7 @@ export function WorkspaceSwitcher() {
   const workspaceId = useWorkspaceId();
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspaceType>();
   const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = React.useState("");
 
   const { data, isPending } = useQuery({
     queryKey: ["userWorkspaces"],
@@ -44,6 +45,10 @@ export function WorkspaceSwitcher() {
     setActiveWorkspace(workspace);
     navigate(`/workspace/${workspace._id}`);
   };
+
+  const filteredWorkspaces = workspaces?.filter((workspace) =>
+    workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
   return (
@@ -75,12 +80,27 @@ export function WorkspaceSwitcher() {
         <div className="dropdown-menu bg-sidebar text-sidebar-text border-sidebar-border dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
           <div className="workspace-title-siderbar">
             <div className="preview-item-content">
-              <h6 className="p-3 mb-0">{t("workspace-dialog-title")}</h6>
+              <h6 className="p-3">{t("workspace-dialog-title")}</h6>
             </div>
           </div>
-          <div className="dropdown-divider"></div>
+
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-sidebar-text">
+              <Search className="w-5 h-5 mt-1 text-muted" />
+            </span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-control form-custom bg-navbar border-t border-b 
+              border-sidebar-border border-l-0 border-r-0 pl-10 w-full py-4"
+              placeholder={t("sidebar-workspace-search-placeholder")}
+            />
+          </div>
+
           {isPending ? <Loader className=" w-5 h-5 animate-spin" /> : null}
-          {workspaces?.map((workspace) => (
+
+          {filteredWorkspaces?.map((workspace) => (
             <React.Fragment key={workspace._id}>
               <a
                 className="dropdown-item preview-item cursor-pointer 

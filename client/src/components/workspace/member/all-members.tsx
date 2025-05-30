@@ -98,11 +98,13 @@ const AllMembers = () => {
         const initials = getAvatarFallbackText(name);
         const avatarColor = getAvatarColor(name);
         return (
-          <div 
-          key={member.userId._id}
-          className="flex items-center justify-between space-x-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-8 w-8">
+          <div
+            key={member.userId._id}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          >
+            {/* Avatar and Name/Email */}
+            <div className="flex items-start sm:items-center gap-3">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={member.userId?.profilePicture || ""}
                   alt="Image"
@@ -112,13 +114,17 @@ const AllMembers = () => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium leading-none">{name}</p>
-                <p className="text-sm text-muted">
+                <p className="text-sm font-medium leading-none break-words">
+                  {name}
+                </p>
+                <p className="text-sm text-muted break-all">
                   {member.userId.email}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Role Dropdown */}
+            <div className="flex sm:items-center sm:justify-end">
               <Popover
                 open={openPopoverMemberId === member.userId._id}
                 onOpenChange={(open) =>
@@ -129,13 +135,16 @@ const AllMembers = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="ml-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none"
-                    disabled={isLoading ||
-                      !canChangeMemberRole || member.userId._id === user?._id} // Vô hiệu hóa nút nếu là người dùng hiện tại
+                    className="min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none"
+                    disabled={
+                      isLoading ||
+                      !canChangeMemberRole ||
+                      member.userId._id === user?._id
+                    }
                   >
                     {t(`role.${member.role.name?.toLowerCase()}`)}{" "}
-                    {member.userId._id !== user?._id && ( // Chỉ hiển thị icon chevron khi không phải người dùng hiện tại
-                      <ChevronDown className="text-muted-foreground" />
+                    {member.userId._id !== user?._id && (
+                      <ChevronDown className="text-muted-foreground ml-1" />
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -147,7 +156,9 @@ const AllMembers = () => {
                         <Loader className="w-8 h-8 animate-spin place-self-center flex my-4" />
                       ) : (
                         <>
-                          <CommandEmpty>{t("memberdashboard-role-notfound")}</CommandEmpty>
+                          <CommandEmpty>
+                            {t("memberdashboard-role-notfound")}
+                          </CommandEmpty>
                           <CommandGroup>
                             {roles?.map(
                               (role) =>
@@ -155,20 +166,21 @@ const AllMembers = () => {
                                   <CommandItem
                                     key={role._id}
                                     disabled={isLoading}
-                                    className="disabled:pointer-events-none gap-1 mb-1 flex flex-col items-start px-4 py-2 cursor-pointer"
-                                    onSelect={() => {
-                                      handleSelect(role._id, member.userId._id);
-                                    }}
+                                    className="gap-1 mb-1 flex flex-col items-start px-4 py-2 cursor-pointer"
+                                    onSelect={() =>
+                                      handleSelect(role._id, member.userId._id)
+                                    }
                                   >
                                     <p className="capitalize">
-                                      {/* Dịch tiêu đề hiển thị */}
                                       {t(`role.${role.name.toLowerCase()}`)}
                                     </p>
                                     <p className="text-sm text-muted">
-                                      {/* Dùng giá trị gốc để xác định mô tả cần hiển thị */}
-                                      {role.name === "ADMIN" && t("memberdashboard-admin-desc")}
-                                      {role.name === "MEMBER" && t("memberdashboard-member-desc")}
-                                      {role.name === "OWNER" && t("memberdashboard-owner-desc")}
+                                      {role.name === "ADMIN" &&
+                                        t("memberdashboard-admin-desc")}
+                                      {role.name === "MEMBER" &&
+                                        t("memberdashboard-member-desc")}
+                                      {role.name === "OWNER" &&
+                                        t("memberdashboard-owner-desc")}
                                     </p>
                                   </CommandItem>
                                 )

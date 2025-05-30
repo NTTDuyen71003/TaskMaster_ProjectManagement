@@ -4,7 +4,7 @@ const vi = {
         "workspace-not-select": "Chưa chọn không gian",
         "sub-title-workspace": "Không gian làm việc",
         "workspace-dialog-title": "Không gian làm việc",
-        "workspace-dialog-add": "+ Thêm không gian làm việc mới",
+        "workspace-dialog-add": "+ Thêm không gian mới",
         "nav-title": "Điều hướng",
         "sidebar-dashboard": "Trang chủ",
         "sidebar-projects": "Dự án",
@@ -26,18 +26,26 @@ const vi = {
         "sidebar-project-deletedescription2": "dự án này không",
         "sidebar-project-deletedescription3": "Hành động này không thể hoàn tác.",
         "sidebar-project-deletebtn": "Xóa",
-        "sidebar-project-delete-desc":"Mọi dữ liệu của dự án đã được xóa",
-        "sidebar-workspace-name-require":"Tên không gian làm việc không được trống!",
+        "sidebar-project-delete-desc": "Mọi dữ liệu của dự án đã được xóa",
+        "sidebar-workspace-name-require": "Tên không gian làm việc không được trống!",
+        "sidebar-workspace-search-placeholder": "Tìm kiếm...",
+        "sidebar-create-workspace-success-desc": "Không gian làm việc được tạo thành công!",
+        "sidebar-no-workspace": "Không có không gian làm việc nào ở đây cả. Hãy tạo mới hoặc tham gia vào không gian làm việc của người khác",
+        "sidebar-create-workspace-name-require": "Tên dự án không được trống!",
+        "sidebar-create-workspace-name-duplicate": "Tên không gian làm việc này đã tồn tại",
 
 
         // Navbar
-        "navbar-search-placeholder": "Tìm kiếm dự án hoặc không gian làm việc",
+        "navbar-search-placeholder": "Tìm kiếm dự án...",
         "create-project-btn": "+ Tạo dự án",
         "navbar-dialog-announce": "Cập nhật sau",
         "navbar-profile-title": "Hồ sơ",
         "navbar-profile-settings": "Cài đặt hồ sơ (CNS)",
         "navbar-change-theme": "Thay đổi giao diện",
-        "switch-language": "Chuyển sang tiếng Anh",
+        "switch-language": "Chuyển ngôn ngữ",
+        "switch-language-en": "Tiếng Anh",
+        "switch-language-vi": "Tiếng Việt",
+        "switch-language-es": "Tiếng Tây Ban Nha (Cập nhật sau)",
         "navbar-logout": "Đăng xuất",
         "navbar-advanced-settings": "Cài đặt nâng cao (CNS)",
         "navbar-create-project-title1": "Tạo dự án",
@@ -51,11 +59,25 @@ const vi = {
         "navbar-logout-title": "Bạn có chắc chắn muốn đăng xuất không?",
         "navbar-logout-description": "Điều này sẽ kết thúc phiên hiện tại của bạn và bạn sẽ cần đăng nhập lại để truy cập tài khoản của mình.",
         "navbar-logout-confirm": "Đăng xuất",
-        "navbar-create-project-success":"Thành công",
-        "navbar-create-project-success-desc":"Dự án được tạo thành công",
+        "navbar-create-project-success": "Thành công",
+        "navbar-create-project-success-desc": "Dự án được tạo thành công",
         "navbar-create-project-error-desc": "Đã xảy ra lỗi, vui lòng thử lại sau.",
-        "navbar-create-title-require":"Tên dự án không được trống!",
-        "navbar-create-name-require":"Đã có dự án với tên và hình đại diện tồn tại",
+        "navbar-create-title-require": "Tên dự án không được trống!",
+        "navbar-create-name-require": "Đã có dự án với tên và hình đại diện tồn tại",
+        "navbar-search-createdby": "Được tạo bởi",
+        "navbar-search-notfound": "Không tìm thấy dự án",
+        "navbar-search-notfound1": "Không tìm thấy dự án nào",
+        "navbar-theme-search": "Tìm kiếm chủ đề...",
+        "navbar-theme-search-notfound": "Không tìm thấy chủ đề bạn cần tìm",
+        "navbar-theme-light": "Chế độ Sáng",
+        "navbar-theme-light-desc": "Giao diện sáng sủa và tinh tế",
+        "navbar-theme-dark": "Chế độ Tối",
+        "navbar-theme-dark-desc": "Thoải mái cho mắt, dễ nhìn",
+        "navbar-theme-title-mobi": "Chọn 1 chủ đề",
+        "navbar-theme-special": "Chế độ đặc biệt",
+        "navbar-language-title-mobi": "Chọn 1 ngôn ngữ",
+        "navbar-language-search": "Tìm kiếm ngôn ngữ...",
+        "navbar-language-search-notfound": "Không tìm thấy ngôn ngữ bạn cần tìm",
 
 
         // Dashboard
@@ -87,6 +109,12 @@ const vi = {
         "dashboard-admin": "Quản trị viên",
         "dashboard-member": "Thành viên",
         "dashboard-member-joinday": "Ngày tham gia",
+
+
+        //Project dashboard
+        "projectboard-edit-title": "Chỉnh sửa dự án",
+        "projectboard-edit-updatebtn": "Cập nhật",
+        "projectboard-task-assign": "Giao cho",
 
 
         //Task dashboard
@@ -134,7 +162,7 @@ const vi = {
         "settingboard-edit-workspace": "Chỉnh sửa không gian làm việc",
         "settingboard-edit-btn": "Cập nhật",
         "settingboard-edit-success": "Cập nhật thành công",
-        "settingboard-edit-success-description": "Thông tin workspace đã được cập nhật.",
+        "settingboard-edit-success-description": "Thông tin đã được cập nhật.",
         "settingboard-edit-error": "Lỗi",
         "settingboard-edit-error-description": "Bạn không có đủ quyền hạn để thực hiện thao tác này.",
         "settingboard-delete-title": "Khu vực nguy hiểm",
@@ -142,8 +170,8 @@ const vi = {
         "settingboard-delete-btn": "Xóa không gian làm việc",
         "settingboard-delete-workspace-title": "Không gian làm việc",
         "settingboard-delete-workspace-desc": "Hành động này không thể hoàn tác. Tất cả dữ liệu của không gian làm việc sẽ bị mất.",
-        "settingboard-delete-workspace-success":"Xóa thành công",
-        "settingboard-delete-workspace-success-desc":"Mọi dữ liệu của không gian làm việc đã được xóa",
+        "settingboard-delete-workspace-success": "Xóa thành công",
+        "settingboard-delete-workspace-success-desc": "Mọi dữ liệu của không gian làm việc đã được xóa",
 
 
         //Role

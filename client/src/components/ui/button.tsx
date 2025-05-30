@@ -22,7 +22,9 @@ const buttonVariants = cva(
         create:
           "bg-sidebar-frameicon text-white hover:bg-navbar-createbtn-hover",
         option:
-        "border border-input shadow-sm bg-background hover:bg-dropdown-hover-bg hover:text-accent-foreground",
+          "border border-input shadow-sm bg-background hover:bg-dropdown-hover-bg hover:text-accent-foreground",
+        static:
+          "bg-[#F2F4FF] text-black/50",
       },
       size: {
         default: "h-9 px-4 py-2",

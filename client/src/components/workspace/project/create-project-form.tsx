@@ -89,6 +89,7 @@ export default function CreateProjectForm({
     form.setValue("emoji", emoji);
   };
 
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
 
@@ -191,11 +192,19 @@ export default function CreateProjectForm({
                           }`}
                         id="exampleInputName1"
                         placeholder={t("navbar-create-project-placeholder-name")}
+                        maxLength={12}
                         {...field}
                       />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
-                      )}
+                      <div className="flex justify-between items-center mt-1">
+                        <div>
+                          {fieldState.error && (
+                            <p className="text-red-500 text-sm">{fieldState.error.message}</p>
+                          )}
+                        </div>
+                        <span className="text-sm text-muted">
+                          {field.value?.length || 0}/12
+                        </span>
+                      </div>
                     </>
                   )}
                 />
@@ -225,7 +234,7 @@ export default function CreateProjectForm({
               <button
                 disabled={isPending}
                 type="submit"
-                className="btn btn-bg mr-2"
+                className="btn bg-sidebar-frameicon mr-2"
               >
                 {isPending && <Loader />}
                 {t("navbar-create-project-btn")}

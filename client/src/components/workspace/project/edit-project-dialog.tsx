@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import EditProjectForm from "./edit-project-form";
 import { ProjectType } from "@/types/api.type";
 import { useState } from "react";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 
 const EditProjectDialog = (props: { project?: ProjectType }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,8 @@ const EditProjectDialog = (props: { project?: ProjectType }) => {
           </button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-lg border-0">
+          <DialogTitle className="sr-only">Edit Project</DialogTitle>
+          <DialogDescription className="sr-only">Change the information of Project</DialogDescription>
           <EditProjectForm project={props.project} onClose={onClose} />
         </DialogContent>
       </Dialog>

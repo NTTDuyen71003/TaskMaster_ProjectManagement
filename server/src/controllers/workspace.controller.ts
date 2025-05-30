@@ -14,14 +14,15 @@ export const createWorkspaceController = asyncHandler(
         const body = createWorkspaceSchema.parse(req.body);
         const userId = req.user?._id;
 
+        // Backend validation: Check if workspace with the same name exists for this user
         const existingWorkspace = await WorkspaceModel.findOne({
-            userId: userId,
-            name: { $regex: new RegExp(`^${body.name.trim()}$`, 'i') }
+            userId: userId, // Assuming workspaces are user-specific
+            name: { $regex: new RegExp(`^${body.name.trim()}$`, 'i') },
         });
 
         if (existingWorkspace) {
             return res.status(409).json({
-                error: "Project with this name already exists"
+                error: "Workspace with this name already exists"
             });
         }
 
@@ -33,6 +34,7 @@ export const createWorkspaceController = asyncHandler(
         });
     }
 );
+
 
 export const getAllWorkspacesUserIsMemberController = asyncHandler(
     async (req: Request, res: Response) => {

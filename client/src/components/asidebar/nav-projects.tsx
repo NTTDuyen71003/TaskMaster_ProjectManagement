@@ -1,5 +1,5 @@
 import { Loader, MoreHorizontal, Trash2, Edit } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,7 +75,7 @@ export function NavProjects() {
             title: t("settingboard-delete-workspace-success"),
             description: t("sidebar-project-delete-desc"),
             variant: "success",
-            duration:2500,
+            duration: 2500,
           });
           navigate(`/workspace/${workspaceId}`);
           setTimeout(() => onCloseDialog(), 100);
@@ -85,21 +85,27 @@ export function NavProjects() {
             title: t("memberdashboard-changerole-error"),
             description: t("memberdashboard-changerole-error-description"),
             variant: "destructive",
-            duration:2500,
+            duration: 2500,
           });
         },
       }
     );
   };
 
-
+  
   return (
     <>
-      {isError && <div>Error occurred</div>}
-
       {isPending ? (
         <Loader className="w-5 h-5 animate-spin place-self-center" />
+      ) : isError || !workspaceId ? (
+        // Show only if there's an error OR no workspaceId
+        <li className="nav-item">
+          <div className="nav-announce">
+            {t("sidebar-no-workspace")}
+          </div>
+        </li>
       ) : projects?.length === 0 ? (
+        // Show only if workspace exists but no projects
         <li className="nav-item">
           <div className="nav-announce">
             {t("sidebar-projects-announce")}
@@ -107,27 +113,25 @@ export function NavProjects() {
         </li>
       ) : (
         <>
+          {/* Render project list */}
           {projects.map((item) => {
             const projectUrl = `/workspace/${workspaceId}/project/${item._id}`;
             const isActive = pathname === projectUrl;
+
             return (
               <li key={item._id} className={`nav-item ${isActive ? "active" : ""}`}>
                 <div className="flex items-center justify-between w-full">
-                  <Link
-                    to={projectUrl}
-                    className={`nav-link flex items-center ${pathname.includes("/overview") ? "active" : ""}`}
-                  >
-                    {item.emoji}
-                    <span className="ml-[10px]">{item.name}</span>
-                  </Link>
-
+                  <a href={projectUrl} className="nav-link">
+                    <span>{item.emoji}</span>
+                    <span className="ml-2">{item.name}</span>
+                  </a>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <a
                         id="profile-dropdown"
                         data-toggle="dropdown"
                         className={clsx(
-                          "p-2 rounded-md transition-colors text-[#6c7293] hover:text-[#6c7293]",
+                          "p-2 rounded-md transition-colors text-muted",
                           !hasPermission(Permissions.EDIT_PROJECT) && "invisible"
                         )}
                         aria-label="More options"
@@ -158,17 +162,6 @@ export function NavProjects() {
                       </PermissionsGuard>
                     </DropdownMenuContent>
                   </DropdownMenu>
-
-                  <ConfirmDialog
-                    isOpen={open}
-                    isLoading={isLoading}
-                    onClose={onCloseDialog}
-                    onConfirm={handleConfirm}
-                    title={`${t("sidebar-project-deletetitle")} "${context?.name || t("sidebar-project-deletedescription2")}"`}
-                    description={`${t("sidebar-project-deletedescription1")} ${t("sidebar-project-deletedescription3")}`}
-                    confirmText={t("sidebar-project-deletebtn")}
-                    cancelText={t("sidebar-createworkspace-cancelbtn")}
-                  />
                 </div>
               </li>
             );
@@ -189,7 +182,18 @@ export function NavProjects() {
               </SidebarMenuItem>
             </li>
           )}
-          
+
+          {/* Confirm delete dialog */}
+          <ConfirmDialog
+            isOpen={open}
+            isLoading={isLoading}
+            onClose={onCloseDialog}
+            onConfirm={handleConfirm}
+            title={`${t("sidebar-project-deletetitle")} "${context?.name || t("sidebar-project-deletedescription2")}"`}
+            description={`${t("sidebar-project-deletedescription1")} ${t("sidebar-project-deletedescription3")}`}
+            confirmText={t("sidebar-project-deletebtn")}
+            cancelText={t("sidebar-createworkspace-cancelbtn")}
+          />
         </>
       )}
     </>

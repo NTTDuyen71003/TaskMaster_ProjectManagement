@@ -14,7 +14,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  // FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -144,13 +143,15 @@ const SignIn = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                           <FaUserCircle />
                         </span>
                         <FormControl>
                           <Input
                             placeholder="Email"
-                            className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                            className="pl-10 h-12 rounded-lg border-gray-300 
+                            focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
+                            text-black"
                             {...field}
                           />
                         </FormControl>
@@ -171,14 +172,16 @@ const SignIn = () => {
                       <FormItem>
                         <div className="relative">
                           {/* Lock icon on the left */}
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                             <RiLockPasswordFill />
                           </span>
                           <FormControl>
                             <Input
                               type={showPassword ? "text" : "password"} // Toggle between text and password
                               placeholder="Password"
-                              className="pl-10 pr-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500" // Added pr-10 for right icon
+                              className="pl-10 pr-10 h-12 rounded-lg border-gray-300
+                              focus:border-pink-500 focus:ring-pink-500
+                              text-black"
                               {...field}
                             />
                           </FormControl>
@@ -198,7 +201,7 @@ const SignIn = () => {
                 />
 
                 {/* Remember Me Checkbox and Forgot Password Link */}
-                <div className="flex justify-between items-center">
+                {/* <div className="flex justify-between items-center">
                   <label className="flex items-center space-x-2">
                     <Checkbox
                       className="border-gray-300 data-[state=checked]:bg-pink-500 data-[state=checked]:border-pink-500"
@@ -208,13 +211,14 @@ const SignIn = () => {
                   <a href="#" className="text-sm text-pink-500 hover:underline">
                     Forgot Password?
                   </a>
-                </div>
+                </div> */}
 
                 {/* Login Button */}
                 <Button
                   disabled={isPending}
                   type="submit"
-                  className="w-full bg-pink-500 hover:bg-pink-600 text-white h-12 rounded-lg"
+                  className="w-full bg-sidebar-frameicon hover:bg-pink-600
+                   text-white h-12 rounded-lg"
                 >
                   LOGIN
                 </Button>

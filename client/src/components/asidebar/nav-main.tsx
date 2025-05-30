@@ -15,6 +15,7 @@ import { Permissions } from "@/constant";
 import React from "react";
 import { NavProjects } from "./nav-projects";
 import { useTranslation } from "react-i18next";
+import { useSidebarMode } from "@/hooks/use-sidebar";
 
 
 type ItemType = {
@@ -32,6 +33,8 @@ export function NavMain() {
   const pathname = location.pathname;
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
   const { t } = useTranslation();
+  const isSidebarIconOnly = useSidebarMode();
+  const [showHoverSubmenu, setShowHoverSubmenu] = useState(false);
 
   useEffect(() => {
     const workspaceSubRoutes = ["/overview", "/activity"];
@@ -40,7 +43,6 @@ export function NavMain() {
     );
     setIsWorkspaceOpen(isSubRoute);
   }, [pathname, workspaceId]);
-
 
   const items: ItemType[] = [
     {
@@ -69,10 +71,9 @@ export function NavMain() {
       : []),
   ];
 
-
   return (
     <>
-      {items.map((item) => {
+      {items.map((item, index) => {
         const active = item.url === pathname;
         return (
           <React.Fragment key={item.title}>
@@ -85,16 +86,19 @@ export function NavMain() {
               </Link>
             </li>
 
-            {/* Chèn Projects ngay sau Dashboard */}
-            {item.title === t("sidebar-dashboard") && (
+            {/* Insert Projects menu after Dashboard */}
+            {index === 0 && ( 
               <li
-                className={`nav-item menu-items ${isWorkspaceOpen || pathname.includes(`/workspace/${workspaceId}/project/`) ? "active" : ""
-                  }`}
+                className={`nav-item menu-items ${
+                  isWorkspaceOpen || pathname.includes(`/workspace/${workspaceId}/project/`) ? "active" : ""
+                }`}
+                onMouseEnter={() => isSidebarIconOnly && setShowHoverSubmenu(true)}
+                onMouseLeave={() => isSidebarIconOnly && setShowHoverSubmenu(false)}
               >
-                <button
-                  type="button"
-                  onClick={() => setIsWorkspaceOpen((prev) => !prev)}
-                  className="nav-link flex items-center justify-between w-full"
+                {/* Projects Header */}
+                <a
+                  onClick={() => !isSidebarIconOnly && setIsWorkspaceOpen((prev) => !prev)}
+                  className="nav-link flex items-center justify-between w-full cursor-pointer"
                 >
                   <span className="flex items-center">
                     <span className="menu-icon bg-sidebar-frameicon">
@@ -103,14 +107,48 @@ export function NavMain() {
                     <span className="menu-title">{t("sidebar-projects")}</span>
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${isWorkspaceOpen ? "rotate-180" : ""
-                      }`}
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isWorkspaceOpen ? "rotate-180" : ""
+                    }`}
                   />
-                </button>
-                <div className={`${isWorkspaceOpen ? "block" : "hidden"}`}>
-                  <ul className="nav flex-column sub-menu">
-                    <NavProjects />
-                  </ul>
+                </a>
+
+                {/* Projects Submenu - Normal Sidebar */}
+                {!isSidebarIconOnly && (
+                  <div 
+                    className={`transition-all duration-300 overflow-hidden ${
+                      isWorkspaceOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <ul className="nav flex-column sub-menu">
+                      <NavProjects />
+                    </ul>
+                  </div>
+                )}
+
+                {/* Projects Submenu - Icon Only Sidebar (Hover) */}
+                <div 
+                  className={`absolute left-full bg-sidebar-submenu top-0 z-50 min-w-[200px] transition-all duration-300 ${
+                    isSidebarIconOnly && showHoverSubmenu 
+                      ? 'opacity-100 visible transform translate-x-0' 
+                      : 'opacity-0 invisible transform -translate-x-2'
+                  }`}
+                  style={{
+                    transitionProperty: 'opacity, visibility, transform',
+                    transitionDuration: '0.25s',
+                    transitionTimingFunction: 'ease-out'
+                  }}
+                  onMouseEnter={() => setShowHoverSubmenu(true)}
+                  onMouseLeave={() => setShowHoverSubmenu(false)}
+                >
+                  <div className="p-2 mt-1">
+                    <span className="menu-title mb-2 ml-3 text-custom-sm">
+                      {t("sidebar-projects")}
+                    </span>
+                    <ul className="nav flex-column sub-menu mt-2">
+                      <NavProjects />
+                    </ul>
+                  </div>
                 </div>
               </li>
             )}

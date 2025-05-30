@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import useGetAllWorkspacesQuery from "@/hooks/api/use-get-all-workspaces";
 
 export default function CreateWorkspaceForm({
   onClose,
@@ -25,11 +26,30 @@ export default function CreateWorkspaceForm({
     mutationFn: createWorkspaceMutationFn,
   });
 
+  // Get existing workspaces to check for duplicates
+  const { data: workspacesResponse } = useGetAllWorkspacesQuery();
+  const existingWorkspaces = workspacesResponse?.workspaces || [];
+
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Workspace name is required",
+      message: t("sidebar-create-workspace-name-require"),
     }),
     description: z.string().trim(),
+  }).superRefine((data, ctx) => {
+    const normalizedName = data.name.toLowerCase().trim();
+
+    const isDuplicate = existingWorkspaces.some(
+      (workspace: any) =>
+        workspace.name.toLowerCase().trim() === normalizedName
+    );
+
+    if (isDuplicate) {
+      ctx.addIssue({
+        path: ["name"],
+        code: z.ZodIssueCode.custom,
+        message: t("sidebar-create-workspace-name-duplicate"),
+      });
+    }
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,22 +62,54 @@ export default function CreateWorkspaceForm({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
+
+    // Additional client-side check before submission
+    if (existingWorkspaces && Array.isArray(existingWorkspaces)) {
+      const normalizedName = values.name.toLowerCase().trim();
+
+      const isDuplicate = existingWorkspaces.some(
+        (workspace: any) =>
+          workspace.name.toLowerCase().trim() === normalizedName
+      );
+
+      if (isDuplicate) {
+        form.setError("name", {
+          type: "manual",
+          message: t("sidebar-create-workspace-name-duplicate"),
+        });
+        return;
+      }
+    }
+
     mutate(values, {
       onSuccess: (data) => {
         queryClient.resetQueries({
           queryKey: ["userWorkspaces"],
         });
-
+        toast({
+          title: t("navbar-create-project-success"),
+          description: t("sidebar-create-workspace-success-desc"),
+          variant: "success",
+          duration: 2500,
+        });
         const workspace = data.workspace;
         onClose();
         navigate(`/workspace/${workspace._id}`);
       },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+      onError: (error: any) => {
+        if (error?.response?.status === 409 || error?.message?.includes("duplicate")) {
+          form.setError("name", {
+            type: "manual",
+            message: t("sidebar-create-workspace-name-exists"),
+          });
+        } else {
+          toast({
+            title: t("memberdashboard-changerole-error"),
+            description: t("navbar-create-project-error-desc"),
+            variant: "destructive",
+            duration: 2500,
+          });
+        }
       },
     });
   };
@@ -69,7 +121,7 @@ export default function CreateWorkspaceForm({
           <h4 className="card-title text-center font-bold">{t("sidebar-createworkspace-title")}</h4>
           <Form {...form}>
             <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
-              
+
               <div className="form-group">
                 <FormField
                   control={form.control}
@@ -79,14 +131,23 @@ export default function CreateWorkspaceForm({
                       <label htmlFor="exampleInputName1">{t("sidebar-createworkspace-name")}</label>
                       <input
                         type="text"
-                        className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                        className={`form-control bg-sidebar-input border-sidebar-border text-black dark:text-white ${fieldState.error ? 'border-red-500' : ''
+                          }`}
                         id="exampleInputName1"
                         placeholder={t("sidebar-createworkspace-placeholdername")}
+                        maxLength={12}
                         {...field}
                       />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
-                      )}
+                      <div className="flex justify-between items-center mt-1">
+                        <div>
+                          {fieldState.error && (
+                            <p className="text-red-500 text-sm">{fieldState.error.message}</p>
+                          )}
+                        </div>
+                        <span className="text-sm text-muted">
+                          {field.value?.length || 0}/12
+                        </span>
+                      </div>
                     </>
                   )}
                 />
@@ -99,7 +160,7 @@ export default function CreateWorkspaceForm({
                   render={({ field }) => (
                     <>
                       <label htmlFor="exampleTextarea1">
-                      {t("sidebar-createworkspace-decription")}
+                        {t("sidebar-createworkspace-decription")}
                       </label>
                       <textarea
                         className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
@@ -116,7 +177,7 @@ export default function CreateWorkspaceForm({
               <button
                 disabled={isPending}
                 type="submit"
-                className="btn btn-bg mr-2"
+                className="btn bg-sidebar-frameicon mr-2"
               >
                 {isPending && <Loader />}
                 {t("sidebar-createworkspace-btn")}

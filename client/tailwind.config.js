@@ -7,12 +7,16 @@ export default {
 			fontFamily: {
 				inter: ['Inter', 'sans-serif'],
 			},
+			fontSize: {
+				'custom-sm': '0.9375rem',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			colors: {
+				'neon-green': '#39FF14',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
@@ -66,6 +70,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					text: 'hsl(var(--sidebar-text))',
 					input: 'hsl(var(--sidebar-input))',
+					submenu:'hsl(var(--sidebar-submenu))',
 				},
 				dropdown: {
 					'hover-bg': 'hsl(var(--dropdown-hover-bg))',

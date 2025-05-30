@@ -135,6 +135,9 @@ em-emoji-picker {
     /* màu khung input form create*/
     --sidebar-input: 230.769, 100%, 98%;
 
+    /* màu hover submenu ở trạng thái thu gọn sidebar */
+    --sidebar-submenu:233.514, 95%, 92%;
+
     /* màu hover dropdown menu*/
     --dropdown-hover-bg: 230.769, 100%, 98%;
 
@@ -233,6 +236,9 @@ em-emoji-picker {
 
     /* màu khung input form create*/
     --sidebar-input: 214.286, 14%, 19%;
+
+     /* màu hover submenu ở trạng thái thu gọn sidebar */
+    --sidebar-submenu:230, 17%, 7%;
 
     /* màu hover dropdown menu*/
     --dropdown-hover-bg: 225, 17%, 9%;

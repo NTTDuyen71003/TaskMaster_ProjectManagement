@@ -16,7 +16,6 @@ const RecentMembers = () => {
   const dateLocale = getDateFnsLocale();
   const { t } = useTranslation();
 
-
   const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
 
 

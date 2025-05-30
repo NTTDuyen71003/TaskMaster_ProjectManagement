@@ -9,7 +9,7 @@ const GoogleOauthButton = () => {
   return (
     <Button
       onClick={handleClick}
-      variant="outline"
+      variant="static"
       type="button"
       className="flex items-center gap-2 border-gray-300 h-10 rounded-lg">
       <GoogleIcon />Google</Button>

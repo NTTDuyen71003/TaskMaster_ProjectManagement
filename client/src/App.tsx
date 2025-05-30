@@ -7,7 +7,7 @@ function App() {
     const currentUserId = localStorage.getItem("currentUserId");
 
     if (currentUserId) {
-      // Set theme
+      // Handle theme
       const theme = localStorage.getItem(`theme-${currentUserId}`) || "light";
       if (theme === "dark") {
         document.documentElement.classList.add("dark");
@@ -15,14 +15,24 @@ function App() {
         document.documentElement.classList.remove("dark");
       }
 
-      // Set language
+      // Handle language - only change to supported languages
       const lang = localStorage.getItem(`language-${currentUserId}`) || "en";
-      i18n.changeLanguage(lang);
+      const supportedLanguages = ['en', 'vi']; 
+      
+      if (supportedLanguages.includes(lang)) {
+        i18n.changeLanguage(lang);
+      } else {
+        // Fallback to English if saved language is not supported
+        i18n.changeLanguage("en");
+        localStorage.setItem(`language-${currentUserId}`, "en"); // Update stored value
+      }
     } else {
+      // Default fallback when no user is logged in
       document.documentElement.classList.remove("dark");
       i18n.changeLanguage("en");
     }
   }, []);
+
   return <AppRoutes />;
 }
 

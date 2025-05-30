@@ -1,5 +1,5 @@
 import { TaskPriorityEnumType, TaskStatusEnumType } from '@/constant';
-import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, UserWorkspacesResponseType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -82,6 +82,18 @@ export const deleteWorkspaceMutationFn = async (
   currentWorkspace: string;
 }> => {
   const response = await API.delete(`/workspace/delete/${workspaceId}`);
+  return response.data;
+};
+
+//checking same workspace
+export const checkWorkspaceNameExistsQueryFn = async ({
+  name,
+}: {
+  name: string;
+}): Promise<{ exists: boolean }> => {
+  const response = await API.get(
+    `/workspace/check-name?name=${encodeURIComponent(name)}`
+  );
   return response.data;
 };
 

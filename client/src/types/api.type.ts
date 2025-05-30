@@ -76,6 +76,19 @@ export type AllWorkspaceResponseType = {
   workspaces: WorkspaceType[];
 };
 
+export interface AllWorkspacePayloadType {
+  pageSize?: number;
+  pageNumber?: number;
+  skip?: boolean;
+}
+
+export interface UserWorkspacesResponseType {
+  workspaces: any[]; 
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+}
+
 export type WorkspaceWithMembersType = WorkspaceType & {
   members: {
     _id: string;

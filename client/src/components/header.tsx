@@ -6,9 +6,12 @@ import { IoLanguage } from "react-icons/io5";
 import { useAuthContext } from "@/context/auth-provider";
 import { Loader } from "lucide-react";
 import LogoutDialog from "./asidebar/logout-dialog";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import i18n from "@/languages/i18n";
+import { MobileSearchButton, NavbarSearchForm } from "@/hooks/use-search-projects";
+import ThemeDialog from "./workspace/user/theme-selection-dialog";
+import LanguageDialog from "./workspace/user/language-selection-dialog";
+
 
 const Header = () => {
   const workspaceId = useWorkspaceId();
@@ -16,15 +19,13 @@ const Header = () => {
   const { isLoading, user } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
+  const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
+  const themeButtonRef = useRef(null);
+  const [, setIsProfileDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isLanguageDialogOpen, setIsLanguageDialogOpen] = useState(false);
+  const languageButtonRef = useRef<HTMLAnchorElement>(null);
 
-  const handleSwitchLanguage = () => {
-    const currentUserId = localStorage.getItem("currentUserId");
-    if (!currentUserId) return;
-    const currentLang = localStorage.getItem(`language-${currentUserId}`) || "en";
-    const newLang = currentLang === "en" ? "vi" : "en";
-    localStorage.setItem(`language-${currentUserId}`, newLang);
-    i18n.changeLanguage(newLang);
-  };
 
   const handleToggleSidebar = () => {
     const body = document.body;
@@ -40,6 +41,31 @@ const Header = () => {
     if (sidebar) {
       sidebar.classList.toggle("active");
     }
+  };
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+
+  // Modified theme button click handler
+  const handleThemeButtonClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsThemeDialogOpen(true);
+  };
+
+
+  const handleLanguageButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLanguageDialogOpen(true);
   };
 
 
@@ -61,17 +87,14 @@ const Header = () => {
           <span className="mdi mdi-menu"></span>
         </button>
 
-
         {/* Thanh tìm kiếm */}
         <ul className="navbar-nav w-100">
           <li className="nav-item w-100">
-            <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-              <input type="text" className="form-control bg-navbar border-sidebar-border text-sidebar-text" placeholder={t("navbar-search-placeholder")}></input>
-            </form>
+            <NavbarSearchForm />
           </li>
         </ul>
 
-        {/* Tạo mới dự án */}
+        {/* right header */}
         <ul className="navbar-nav navbar-nav-right">
           <li className="nav-item dropdown d-none d-lg-block">
             <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
@@ -87,15 +110,26 @@ const Header = () => {
             </PermissionsGuard>
           </li>
 
+          {/* Mobile icon button */}
+          <li className="nav-item dropdown d-lg-none relative group">
+            <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
+              <button
+                className="nav-link btn icon-only-btn bg-sidebar-frameicon 
+                hover:bg-navbar-createbtn-hover btn-cus ml-1 w-7 h-7 rounded-full flex items-center justify-center"
+                onClick={onOpen}
+                type="button"
+              >
+                <i className="mdi mdi-plus mdi-c"></i>
+              </button>
+            </PermissionsGuard>
+            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded bg-sidebar text-sidebar-text text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+              {t("create-project-btn")}
+            </div>
+          </li>
 
           {/* Icon 1 */}
-          <li className="nav-item dropdown">
-            <a className="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-              <i className="mdi mdi-account-plus" style={{ color: 'hsl(var(--navbar-icon))' }}></i>
-            </a>
-            <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <h6 className="p-3 mb-0 text-sidebar-text">{t("navbar-dialog-announce")}</h6>
-            </div>
+          <li className="nav-item dropdown d-lg-none">
+            <MobileSearchButton />
           </li>
 
           {/* Icon mail */}
@@ -118,7 +152,6 @@ const Header = () => {
             </div>
           </li>
 
-
           {/* profile */}
           {isLoading ? (
             <Loader />
@@ -139,7 +172,8 @@ const Header = () => {
               </a>
 
               {/* dropdown menu */}
-              <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+              <div className="bg-sidebar dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="profileDropdown">
                 <h6 className="text-sidebar-text p-3 mb-0">{t("navbar-profile-title")}</h6>
 
                 <div className="dropdown-divider"></div>
@@ -158,22 +192,9 @@ const Header = () => {
                 {/* Đổi theme */}
                 <div className="dropdown-divider"></div>
                 <a
+                  ref={themeButtonRef}
                   className="dropdown-item preview-item cursor-pointer"
-                  onClick={() => {
-                    const html = document.documentElement;
-                    const isDark = html.classList.contains("dark");
-                    const currentUserId = localStorage.getItem("currentUserId");
-
-                    if (!currentUserId) return;
-
-                    if (isDark) {
-                      html.classList.remove("dark");
-                      localStorage.setItem(`theme-${currentUserId}`, "light");
-                    } else {
-                      html.classList.add("dark");
-                      localStorage.setItem(`theme-${currentUserId}`, "dark");
-                    }
-                  }}
+                  onClick={handleThemeButtonClick}
                 >
                   <div className="preview-thumbnail">
                     <div className="preview-icon bg-sidebar-frameicon rounded-circle">
@@ -187,10 +208,13 @@ const Header = () => {
                   </div>
                 </a>
 
-
                 {/* Đổi ngôn ngữ */}
                 <div className="dropdown-divider"></div>
-                <a className="dropdown-item preview-item" onClick={handleSwitchLanguage}>
+                <a
+                  ref={languageButtonRef}
+                  className="dropdown-item preview-item cursor-pointer"
+                  onClick={handleLanguageButtonClick}
+                >
                   <div className="preview-thumbnail">
                     <div className="preview-icon bg-sidebar-frameicon rounded-circle">
                       <i><IoLanguage /></i>
@@ -202,7 +226,6 @@ const Header = () => {
                     </p>
                   </div>
                 </a>
-
 
                 {/* Đăng xuất */}
                 <div className="dropdown-divider"></div>
@@ -223,6 +246,22 @@ const Header = () => {
                 <div className="dropdown-divider"></div>
                 <p className="p-3 mb-0 text-center text-sidebar-text">{t("navbar-advanced-settings")}</p>
               </div>
+
+              <ThemeDialog
+                isOpen={isThemeDialogOpen}
+                setIsOpen={setIsThemeDialogOpen}
+                triggerRef={themeButtonRef}
+                onThemeSelected={() => setIsProfileDropdownOpen(false)}
+                isMobile={isMobile}
+              />
+
+              <LanguageDialog
+                isOpen={isLanguageDialogOpen}
+                setIsOpen={setIsLanguageDialogOpen}
+                triggerRef={languageButtonRef}
+                onLanguageSelected={() => setIsProfileDropdownOpen(false)}
+                isMobile={isMobile}
+              />
             </li>
           )}
         </ul>

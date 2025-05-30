@@ -8,23 +8,14 @@ import { FaEye, FaUserCircle } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { MdAttachEmail } from "react-icons/md";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  // FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import Logo from "@/components/logo";
 import GoogleOauthButton from "@/components/auth/google-oauth-button";
 import { useMutation } from "@tanstack/react-query";
 import { registerMutationFn } from "@/lib/api";
@@ -111,7 +102,7 @@ const SignUp = () => {
                 LOGIN
               </Link>
             </button>
-            <button className="text-lg font-semibold text-pink-500 border-b-2 border-pink-500 pb-1">
+            <button className="text-lg font-semibold text-sidebar-frameicon border-b-2 border-sidebar-frameicon pb-1">
               SIGN UP
             </button>
           </div>
@@ -127,13 +118,15 @@ const SignUp = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                           <FaUserCircle />
                         </span>
                         <FormControl>
                           <Input
                             placeholder="Name"
-                            className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                            className="pl-10 h-12 rounded-lg border-gray-300 
+                            focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
+                            text-black"
                             {...field}
                           />
                         </FormControl>
@@ -150,13 +143,15 @@ const SignUp = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                           <MdAttachEmail />
                         </span>
                         <FormControl>
                           <Input
                             placeholder="Email"
-                            className="pl-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                            className="pl-10 h-12 rounded-lg border-gray-300
+                             focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
+                             text-black"
                             {...field}
                           />
                         </FormControl>
@@ -175,14 +170,16 @@ const SignUp = () => {
                     return (
                       <FormItem>
                         <div className="relative">
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                             <RiLockPasswordFill />
                           </span>
                           <FormControl>
                             <Input
                               type={showPassword ? "text" : "password"}
                               placeholder="Password"
-                              className="pl-10 pr-10 h-12 rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                              className="pl-10 pr-10 h-12 rounded-lg border-gray-300 
+                              focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
+                              text-black"
                               {...field}
                             />
                           </FormControl>

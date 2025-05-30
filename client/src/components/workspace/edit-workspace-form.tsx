@@ -3,15 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "../ui/textarea";
 import { useAuthContext } from "@/context/auth-provider";
 import { useEffect } from "react";
 import useWorkspaceId from "@/hooks/use-workspace-id";
@@ -21,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 import { Permissions } from "@/constant";
 import { useTranslation } from "react-i18next";
+import useGetAllWorkspacesQuery from "@/hooks/api/use-get-all-workspaces";
 
 export default function EditWorkspaceForm() {
 
@@ -34,11 +28,31 @@ export default function EditWorkspaceForm() {
     mutationFn: editWorkspaceMutationFn,
   });
 
+  // Get existing workspaces to check for duplicates
+  const { data: workspacesResponse } = useGetAllWorkspacesQuery();
+  const existingWorkspaces = workspacesResponse?.workspaces || [];
+
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Workspace name is required",
+      message: t("sidebar-create-workspace-name-require"),
     }),
     description: z.string().trim(),
+  }).superRefine((data, ctx) => {
+    const normalizedName = data.name.toLowerCase().trim();
+
+    const isDuplicate = existingWorkspaces.some(
+      (existingWorkspace: any) =>
+        existingWorkspace._id !== workspaceId &&
+        existingWorkspace.name.toLowerCase().trim() === normalizedName
+    );
+
+    if (isDuplicate) {
+      ctx.addIssue({
+        path: ["name"],
+        code: z.ZodIssueCode.custom,
+        message: t("sidebar-create-workspace-name-duplicate"),
+      });
+    }
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -55,12 +69,34 @@ export default function EditWorkspaceForm() {
     }
   }, [form, workspace]);
 
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
+
+    // Additional client-side check before submission
+    if (existingWorkspaces && Array.isArray(existingWorkspaces)) {
+      const normalizedName = values.name.toLowerCase().trim();
+
+      const isDuplicate = existingWorkspaces.some(
+        (existingWorkspace: any) =>
+          existingWorkspace._id !== workspaceId &&
+          existingWorkspace.name.toLowerCase().trim() === normalizedName
+      );
+
+      if (isDuplicate) {
+        form.setError("name", {
+          type: "manual",
+          message: t("sidebar-create-workspace-name-duplicate"),
+        });
+        return;
+      }
+    }
+
     const payload = {
       workspaceId: workspaceId,
       data: { ...values },
     };
+
     mutate(payload, {
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -100,7 +136,7 @@ export default function EditWorkspaceForm() {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <>
                     <label htmlFor="exampleInputName1">{t("sidebar-createworkspace-name")}</label>
                     <input
@@ -108,9 +144,20 @@ export default function EditWorkspaceForm() {
                       className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
                       id="exampleInputName1"
                       placeholder={t("sidebar-createworkspace-placeholdername")}
+                      maxLength={12}
                       disabled={!canEditWorkspace}
                       {...field}
                     />
+                    <div className="flex justify-between items-center mt-1">
+                      <div>
+                        {fieldState.error && (
+                          <p className="text-red-500 text-sm">{fieldState.error.message}</p>
+                        )}
+                      </div>
+                      <span className="text-sm text-muted">
+                        {field.value?.length || 0}/12
+                      </span>
+                    </div>
                   </>
                 )}
               />
@@ -141,7 +188,7 @@ export default function EditWorkspaceForm() {
             <button
               disabled={isPending}
               type="submit"
-              className="btn btn-bg mr-2"
+              className="btn bg-sidebar-frameicon mr-2"
             >
               {isPending && <Loader />}
               {t("settingboard-edit-btn")}

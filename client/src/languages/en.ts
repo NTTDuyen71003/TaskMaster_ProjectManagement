@@ -28,16 +28,24 @@ const en = {
         "sidebar-project-deletebtn": "Delete",
         "sidebar-project-delete-desc":"All project data has been deleted.",
         "sidebar-workspace-name-require":"Workspace name is required",
+        "sidebar-workspace-search-placeholder": "Search workspaces...",
+        "sidebar-create-workspace-success-desc":"Workspace created successfully",
+        "sidebar-no-workspace": "No workspace found here. Create a new one or join someone else's workspace.",
+        "sidebar-create-workspace-name-require":"Workspace name is required",
+        "sidebar-create-workspace-name-duplicate":"Workspace with this name already exists",
 
 
         // Navbar
-        "navbar-search-placeholder": "Search products or workspaces",
+        "navbar-search-placeholder": "Search projects...",
         "create-project-btn": "+ Create New Project",
         "navbar-dialog-announce": "TBA",
         "navbar-profile-title": "Profile",
         "navbar-profile-settings": "Profile settings (TBA)",
         "navbar-change-theme": "Change theme",
-        "switch-language": "Switch to Vietnamese",
+        "switch-language": "Change language",
+        "switch-language-en":"English",
+        "switch-language-vi":"Vietnamese",
+        "switch-language-es":"Spanish (TBA)",
         "navbar-logout": "Log out",
         "navbar-advanced-settings": "Advanced settings (TBA)",
         "navbar-create-project-title1": "Create Project",
@@ -56,6 +64,20 @@ const en = {
         "navbar-create-project-error-desc":"There is something wrong,please try again later.",
         "navbar-create-title-require":"Project title is required",
         "navbar-create-name-require":"A project with this name and icon already exists",
+        "navbar-search-createdby": "Created by",
+        "navbar-search-notfound": "No projects found for",
+        "navbar-search-notfound1": "No projects found",
+        "navbar-theme-search":"Search themes...",
+        "navbar-theme-search-notfound":"No themes found",
+        "navbar-theme-light":"Light Mode",
+        "navbar-theme-light-desc":"Clean and bright interface",
+        "navbar-theme-dark":"Dark Mode",
+        "navbar-theme-dark-desc":"Easy on the eyes",
+        "navbar-theme-special":"Special Mode",
+        "navbar-theme-title-mobi":"Choose a theme",
+        "navbar-language-title-mobi":"Choose a language",
+        "navbar-language-search":"Search languages...",
+        "navbar-language-search-notfound":"No languages found",
 
 
         // Dashboard 
@@ -87,6 +109,12 @@ const en = {
         "dashboard-admin": "Admin",
         "dashboard-member": "Member",
         "dashboard-member-joinday": "Joined",
+
+
+        //Project dashboard
+        "projectboard-edit-title":"Edit Project",
+        "projectboard-edit-updatebtn":"Update",
+        "projectboard-task-assign":"Assigned To",
 
 
         //Task dashboard

@@ -23,9 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../../ui/textarea";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { getAvatarColor, getAvatarFallbackText, transformOptions } from "@/lib/helper";
@@ -232,94 +230,40 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
-            {/* {ProjectId} */}
-            {!projectId && (
-              <div>
-                <FormField
-                  control={form.control}
-                  name="projectId"
-                  render={({ field }) => (
-                    // <FormItem>
-                    //   <FormLabel>Project</FormLabel>
-                    //   <Select
-                    //     onValueChange={field.onChange}
-                    //     defaultValue={field.value}
-                    //   >
-                    //     <FormControl>
-                    //       <SelectTrigger>
-                    //         <SelectValue placeholder="Select a project" />
-                    //       </SelectTrigger>
-                    //     </FormControl>
-                    //     <SelectContent>
-                    //       {isLoading && (
-                    //         <div className="my-2">
-                    //           <Loader className="w-4 h-4 place-self-center flex animate-spin" />
-                    //         </div>
-                    //       )}
-
-                    //       {/* lay du lieu project de tao task cho project do */}
-                    //       <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                    //         {projectOptions?.map((option) => (
-                    //           <SelectItem
-                    //             key={option.value}
-                    //             className="!capitalize cursor-pointer"
-                    //             value={option.value}>
-                    //             {option.label}
-                    //           </SelectItem>
-                    //         ))}
-                    //       </div>
-
-                    //     </SelectContent>
-                    //   </Select>
-                    //   <FormMessage />
-                    // </FormItem>
-                    <div className="form-group ">
-                        <label htmlFor="exampleSelectGender">{t("taskboard-form-create-project")}</label>
-                        <select className="form-control bg-sidebar-input border-sidebar-border" id="exampleSelectGender">
-                          <option>Male</option>
-                        </select>
-                      </div>
-                  )}
-                />
-              </div>
-            )}
-
-            {/* {Members AssigneeTo} */}
-            <div>
+            {/*Members AssigneeTo*/}
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="assignedTo"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Assigned To</FormLabel>
+                  <>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a assignee" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      {/* lay du lieu member tu db de add vao task */}
-                      <SelectContent>
-                        <div className="w-full max-h-[200px]overflow-y-auto scrollbar">
-                          {membersOptions?.map((option) => (
-                            <SelectItem
-                              className="cursor-pointer"
-                              key={option.value}
-                              value={option.value}
-                            >
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </div>
-                      </SelectContent>
-
+                      <label htmlFor="exampleSelectGender">{t("projectboard-task-assign")}</label>
+                      <select className="form-control" id="exampleSelectGender" defaultValue="">
+                        <option value="" disabled>
+                          Select an assignee
+                        </option>
+                        {/* <option>Male</option>
+                      <option>Female</option> */}
+                        <SelectContent>
+                          <div className="w-full max-h-[200px]overflow-y-auto scrollbar">
+                            {membersOptions?.map((option) => (
+                              <SelectItem
+                                className="cursor-pointer"
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </div>
+                        </SelectContent>
+                      </select>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
+                  </>
                 )}
               />
             </div>
