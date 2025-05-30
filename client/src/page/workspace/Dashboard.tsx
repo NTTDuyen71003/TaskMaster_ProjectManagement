@@ -29,9 +29,7 @@ const WorkspaceDashboard = () => {
             <TabsTrigger className="py-2" value="members">
               <h4 className="card-title mb-1 title-font">{t("dashboard-recent-members")}</h4>
             </TabsTrigger>
-            {activeTab === "projects" && (
               <p className="text-muted mb-1 py-2 ms-auto">{t("dashboard-data-status")}</p>
-            )}
           </TabsList>
 
           <div className="row">

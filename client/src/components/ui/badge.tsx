@@ -25,6 +25,7 @@ const badgeVariants = cva(
         [TaskPriorityEnum.HIGH]: "badge-danger",
         [TaskPriorityEnum.MEDIUM]: "badge-warning",
         [TaskPriorityEnum.LOW]: "badge-success",
+        create: "bg-sidebar-frameicon text-white",
       },
     },
     defaultVariants: {

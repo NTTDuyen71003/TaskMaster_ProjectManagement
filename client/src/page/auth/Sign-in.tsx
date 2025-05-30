@@ -8,7 +8,6 @@ import { FaUserCircle } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { FaEye } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -22,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { useStore } from "@/store/store";
+import { useTranslation } from "react-i18next";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const SignIn = () => {
   const returnUrl = searchParams.get("returnUrl");
   const currentUserId = localStorage.getItem("currentUserId");
   const userTheme = currentUserId ? localStorage.getItem(`theme-${currentUserId}`) : null;
+  const { t } = useTranslation();
 
   if (userTheme === "dark") {
     document.documentElement.classList.add("dark");
@@ -44,11 +45,11 @@ const SignIn = () => {
   });
 
   const formSchema = z.object({
-    email: z.string().trim().email("Invalid email address").min(1, {
-      message: "Workspace name is required",
+    email: z.string().trim().email(t("login-email-invalid")).min(1, {
+      message: t("login-email-require"),
     }),
     password: z.string().trim().min(1, {
-      message: "Password is required",
+      message: t("login-password-require"),
     }),
   });
 
@@ -83,6 +84,7 @@ const SignIn = () => {
           title: "Error",
           description: error.message,
           variant: "destructive",
+          duration: 2500,
         });
       },
     });
@@ -121,13 +123,13 @@ const SignIn = () => {
           {/* Tabs (Login / Sign Up) */}
           <div className="flex justify-center gap-4 mb-6">
             <button className="text-lg font-semibold text-pink-500 border-b-2 border-pink-500 pb-1">
-              LOGIN
+              {t("login-title")}
             </button>
             <button className="text-lg font-semibold text-gray-500 pb-1">
               <Link
                 to="/sign-up"
                 className="">
-                SIGN UP
+                {t("signup-title")}
               </Link>
             </button>
           </div>
@@ -148,10 +150,10 @@ const SignIn = () => {
                         </span>
                         <FormControl>
                           <Input
-                            placeholder="Email"
+                            placeholder={t("login-email-placeholder")}
                             className="pl-10 h-12 rounded-lg border-gray-300 
                             focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
-                            text-black"
+                            !text-black !bg-white"
                             {...field}
                           />
                         </FormControl>
@@ -178,16 +180,16 @@ const SignIn = () => {
                           <FormControl>
                             <Input
                               type={showPassword ? "text" : "password"} // Toggle between text and password
-                              placeholder="Password"
+                              placeholder={t("login-password-placeholder")}
                               className="pl-10 pr-10 h-12 rounded-lg border-gray-300
                               focus:border-pink-500 focus:ring-pink-500
-                              text-black"
+                              !text-black !bg-white"
                               {...field}
                             />
                           </FormControl>
                           {/* Eye icon on the right */}
                           <span
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                            className="text-black absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                             onClick={() => setShowPassword(!showPassword)}
                             aria-label={showPassword ? "Hide password" : "Show password"}
                           >
@@ -220,13 +222,13 @@ const SignIn = () => {
                   className="w-full bg-sidebar-frameicon hover:bg-pink-600
                    text-white h-12 rounded-lg"
                 >
-                  LOGIN
+                  {t("login-title")}
                 </Button>
               </div>
 
               {/* Social Login */}
               <div className="text-center">
-                <p className="text-sm text-gray-500 mb-4">Or Log in with</p>
+                <p className="text-sm text-gray-500 mb-4">{t("login-social-title")}</p>
                 <div className="flex justify-center gap-4">
                   <GoogleOauthButton />
                 </div>

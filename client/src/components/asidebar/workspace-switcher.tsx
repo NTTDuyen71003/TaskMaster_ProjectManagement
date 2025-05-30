@@ -19,6 +19,9 @@ export function WorkspaceSwitcher() {
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspaceType>();
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [showAll, setShowAll] = React.useState(false);
+  const maxVisible = 5;
+
 
   const { data, isPending } = useQuery({
     queryKey: ["userWorkspaces"],
@@ -50,7 +53,11 @@ export function WorkspaceSwitcher() {
     workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const visibleWorkspaces = showAll
+    ? filteredWorkspaces
+    : filteredWorkspaces?.slice(0, maxVisible);
 
+    
   return (
     <li className="nav-item profile">
       <div className="profile-desc">
@@ -98,30 +105,53 @@ export function WorkspaceSwitcher() {
             />
           </div>
 
-          {isPending ? <Loader className=" w-5 h-5 animate-spin" /> : null}
+          {isPending ? (
+            <Loader className="w-8 h-8 animate-spin place-self-center flex" />
+          ) : (filteredWorkspaces?.length ?? 0) === 0 ? (
+            <p className="text-center text-muted mt-3 border-b border-sidebar-border pb-3">
+              {t("sidebar-workspace-not-found")}
+            </p>
+          ) : (
+            <>
+              {visibleWorkspaces?.map((workspace) => (
+                <React.Fragment key={workspace._id}>
+                  <a
+                    className="dropdown-item preview-item cursor-pointer hover:bg-dropdown-hover-bg"
+                    onClick={() => onSelect(workspace)}
+                  >
+                    <div className="preview-thumbnail">
+                      <div className="preview-icon bg-sidebar-frameicon rounded-circle">
+                        {workspace?.name?.split(" ")?.[0]?.charAt(0)}
+                      </div>
+                    </div>
+                    <div className="preview-item-content text-sidebar-text mt-2">
+                      <p className="preview-subject ellipsis mb-1 text-small">
+                        {workspace.name}
+                      </p>
+                    </div>
+                  </a>
+                  <div className="dropdown-divider"></div>
+                </React.Fragment>
+              ))}
 
-          {filteredWorkspaces?.map((workspace) => (
-            <React.Fragment key={workspace._id}>
-              <a
-                className="dropdown-item preview-item cursor-pointer 
-                hover:bg-dropdown-hover-bg"
-                onClick={() => onSelect(workspace)}
-              >
-                <div className="preview-thumbnail">
-                  <div className="preview-icon bg-sidebar-frameicon rounded-circle">
-                    {workspace?.name?.split(" ")?.[0]?.charAt(0)}
-                  </div>
-                </div>
-                <div className="preview-item-content text-sidebar-text">
-                  <p className="preview-subject ellipsis mb-1 text-small">
-                    {workspace.name}
-                  </p>
-                </div>
-              </a>
-              <div className="dropdown-divider"></div>
-            </React.Fragment>
-          ))}
-          <a className="dropdown-item hover:bg-dropdown-hover-bg preview-item cursor-pointer"
+              {/* Show More / Show Less Toggle */}
+              {filteredWorkspaces && filteredWorkspaces.length > maxVisible && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowAll(!showAll);
+                  }}
+                  className="w-full text-sm text-center text-sidebar-text py-3 hover:bg-dropdown-hover-bg border-b"
+                >
+                  {showAll ? t("sidebar-workspace-show-less") : t("sidebar-workspace-show-more")}
+                </button>
+              )}
+            </>
+          )}
+
+
+          <a className="dropdown-item hover:bg-dropdown-hover-bg preview-item cursor-pointer "
             onClick={onOpen}>
             <div className="preview-item-content text-sidebar-text">
               <p className="p-3 mb-0 text-center ellipsis">{t("workspace-dialog-add")}</p>

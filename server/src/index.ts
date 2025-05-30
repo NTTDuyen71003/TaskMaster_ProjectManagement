@@ -16,6 +16,8 @@ import projectRoutes from "./routes/project.routes";
 import taskRoutes from "./routes/task.routes";
 import { passportAuthenticateJWT } from "./config/passport.config";
 import path from "path";
+import notificationRoutes from "./routes/notification.routes";
+
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -24,7 +26,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use('/template', express.static(path.join(__dirname, 'template')));
-
 
 
 app.use(
@@ -49,6 +50,7 @@ app.use(`${BASE_PATH}/workspace`, passportAuthenticateJWT, workspaceRoutes);
 app.use(`${BASE_PATH}/member`, passportAuthenticateJWT, memberRoutes);
 app.use(`${BASE_PATH}/project`, passportAuthenticateJWT, projectRoutes);
 app.use(`${BASE_PATH}/task`, passportAuthenticateJWT, taskRoutes);
+app.use(`${BASE_PATH}/notifications`, passportAuthenticateJWT, notificationRoutes);
 app.use(errorHandler);
 
 app.listen(config.PORT, async () => {

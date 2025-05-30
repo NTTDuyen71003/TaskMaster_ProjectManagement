@@ -36,11 +36,12 @@ const LogoutDialog = (props: {
       navigate("/");
       setIsOpen(false);
     },
-    onError: (error) => {
+    onError: () => {
       toast({
-        title: "Error",
-        description: error.message,
+        title: t("memberdashboard-changerole-error"),
+        description: t("navbar-create-project-error-desc"),
         variant: "destructive",
+        duration: 2500,
       });
     },
   });

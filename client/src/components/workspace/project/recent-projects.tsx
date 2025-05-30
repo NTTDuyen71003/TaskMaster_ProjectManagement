@@ -49,7 +49,7 @@ const RecentProjects = () => {
               key={project._id}
               to={`/workspace/${workspaceId}/project/${project._id}`}
               className="preview-item no-underline text-inherit hover:no-underline 
-              hover:text-inherit hover:bg-dropdown-hover-bg border-b border-border last:border-b-0
+              hover:text-inherit hover:bg-dropdown-hover-bg border-b border-sidebar-border last:border-b-0
               group transition-all duration-300 ease-in-out block relative"
             >
               <div className="flex w-full">

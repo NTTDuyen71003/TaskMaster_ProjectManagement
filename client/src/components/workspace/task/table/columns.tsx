@@ -19,8 +19,17 @@ import {
 import { priorities, statuses } from "./data";
 import { TaskType } from "@/types/api.type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
+import i18n from "@/languages/i18n";
+import { getDateFnsLocale } from "@/languages/getDateFnsLocale";
 
+// Header table task
 export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
+  const { t } = useTranslation();
+  const lang = i18n.language;
+  const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
+  const dateLocale = getDateFnsLocale();
+
   const columns: ColumnDef<TaskType>[] = [
     {
       id: "_id",
@@ -47,53 +56,56 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       enableHiding: false,
     },
     {
+      accessorKey: "taskCode",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t("dashboard-task-code")} />
+      ),
+      cell: ({ row }) => (
+        <Badge variant="outline" className="capitalize h-[25px]">
+          {row.original.taskCode}
+        </Badge>
+      ),
+    },
+    {
       accessorKey: "title",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title={t("dashboard-task-title")} />
       ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex flex-wrap space-x-2">
-            <Badge variant="outline" className="capitalize shrink-0 h-[25px]">
-              {row.original.taskCode}
-            </Badge>
-            <span className="block lg:max-w-[220px] max-w-[200px] font-medium">
-              {row.original.title}
-            </span>
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <span className="block font-medium ml-2">{row.original.title}</span>
+      ),
     },
+
     ...(projectId
       ? [] // If projectId exists, exclude the "Project" column
       : [
-          {
-            accessorKey: "project",
-            header: ({ column }: { column: Column<TaskType, unknown> }) => (
-              <DataTableColumnHeader column={column} title="Project" />
-            ),
-            cell: ({ row }: { row: Row<TaskType> }) => {
-              const project = row.original.project;
+        {
+          accessorKey: "project",
+          header: ({ column }: { column: Column<TaskType, unknown> }) => (
+            <DataTableColumnHeader column={column} title={t("taskboard-form-create-project")} />
+          ),
+          cell: ({ row }: { row: Row<TaskType> }) => {
+            const project = row.original.project;
 
-              if (!project) {
-                return null;
-              }
+            if (!project) {
+              return null;
+            }
 
-              return (
-                <div className="flex items-center gap-1">
-                  <span className="rounded-full border">{project.emoji}</span>
-                  <span className="block capitalize truncate w-[100px] text-ellipsis">
-                    {project.name}
-                  </span>
-                </div>
-              );
-            },
+            return (
+              <div className="flex items-center gap-1">
+                <span className="rounded-full border">{project.emoji}</span>
+                <span className="block capitalize truncate w-[120px] text-ellipsis">
+                  {project.name}
+                </span>
+              </div>
+            );
           },
-        ]),
+        },
+      ]),
     {
       accessorKey: "assignedTo",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Assigned To" />
+        <DataTableColumnHeader column={column} title={t("dashboard-task-user")} />
       ),
       cell: ({ row }) => {
         const assignee = row.original.assignedTo || null;
@@ -105,13 +117,13 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         return (
           name && (
             <div className="flex items-center gap-1">
-              <Avatar className="h-6 w-6">
+              <Avatar className="h-9 w-9">
                 <AvatarImage src={assignee?.profilePicture || ""} alt={name} />
                 <AvatarFallback className={avatarColor}>
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="block text-ellipsis w-[100px] truncate">
+              <span className="block text-ellipsis w-[120px]">
                 {assignee?.name}
               </span>
             </div>
@@ -122,12 +134,14 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     {
       accessorKey: "dueDate",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Due Date" />
+        <DataTableColumnHeader column={column} title={t("taskboard-create-task-duedate")} />
       ),
       cell: ({ row }) => {
         return (
-          <span className="lg:max-w-[100px] text-sm">
-            {row.original.dueDate ? format(row.original.dueDate, "PPP") : null}
+          <span className="lg:max-w-[100px] text-sm ml-1">
+            {row.original.dueDate
+              ? format(new Date(row.original.dueDate), formatStr, { locale: dateLocale })
+              : null}
           </span>
         );
       },
@@ -135,7 +149,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title={t("dashboard-task-status")} />
       ),
       cell: ({ row }) => {
         const status = statuses.find(
@@ -149,20 +163,16 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         const statusKey = formatStatusToEnum(
           status.value
         ) as TaskStatusEnumType;
-        const Icon = status.icon;
 
-        if (!Icon) {
-          return null;
-        }
+        const translationKey = statusKey.toLowerCase().replace(/_/g, '_');
 
         return (
           <div className="flex lg:w-[120px] items-center">
             <Badge
               variant={TaskStatusEnum[statusKey]}
-              className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
+              className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0 ml-1"
             >
-              {/* <Icon className="h-4 w-4 rounded-full text-inherit" /> */}
-              <span>{status.label}</span>
+              <span>{t(`dashboard-status-${translationKey}`)}</span>
             </Badge>
           </div>
         );
@@ -171,7 +181,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     {
       accessorKey: "priority",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Priority" />
+        <DataTableColumnHeader column={column} title={t("dashboard-task-priority")} />
       ),
       cell: ({ row }) => {
         const priority = priorities.find(
@@ -185,20 +195,16 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         const statusKey = formatStatusToEnum(
           priority.value
         ) as TaskPriorityEnumType;
-        const Icon = priority.icon;
 
-        if (!Icon) {
-          return null;
-        }
+        const translationKey = statusKey.toLowerCase().replace(/_/g, '_');
 
         return (
           <div className="flex items-center">
             <Badge
               variant={TaskPriorityEnum[statusKey]}
-              className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
+              className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0 ml-2"
             >
-              {/* <Icon className="h-4 w-4 rounded-full text-inherit" /> */}
-              <span>{priority.label}</span>
+              <span>{t(`dashboard-priority-${translationKey}`)}</span>
             </Badge>
           </div>
         );
@@ -206,6 +212,9 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       id: "actions",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t("taskboard-column-actions")} />
+      ),
       cell: ({ row }) => {
         return (
           <>

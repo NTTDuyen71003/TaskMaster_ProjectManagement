@@ -3,11 +3,12 @@ import { Request } from 'express';
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { changeRoleSchema, createWorkspaceSchema, updateWorkspaceSchema, workspaceIdSchema } from '../validation/workspace.validation';
 import { HTTPSTATUS } from '../config/http.config';
-import { changeMemberRoleService, createWorkspaceService, deleteWorkspaceService, getAllWorkspacesUserIsMemberService, getWorkspaceAnalyticsService, getWorkspaceByIdService, getWorkspaceMembersService, updateWorkspaceByIdService } from '../services/workspace.service';
+import { changeMemberRoleService, getWorkspaceMembersService, createWorkspaceService, deleteWorkspaceService, getAllWorkspacesUserIsMemberService, getWorkspaceAnalyticsService, getWorkspaceByIdService, removeMemberFromWorkspaceService, updateWorkspaceByIdService } from '../services/workspace.service';
 import { getMemberRoleInWorkspace } from '../services/member.service';
 import { roleGuard } from '../utils/roleGuard';
 import { Permissions } from "../enums/role.enum";
 import WorkspaceModel from '../models/workspace.model';
+import { z } from 'zod';
 
 export const createWorkspaceController = asyncHandler(
     async (req: Request, res: Response) => {
@@ -124,19 +125,78 @@ export const changeWorkspaceMemberRoleController = asyncHandler(
     }
 );
 
+// Check user before delete controller
+// const checkMemberTasksSchema = z.object({
+//     memberId: z.string(),
+// });
+
+// export const checkMemberHasTasksController = asyncHandler(
+//     async (req: Request, res: Response) => {
+//         const workspaceId = workspaceIdSchema.parse(req.params.id);
+//         const { memberId } = checkMemberTasksSchema.parse(req.body);
+//         const requestingUserId = req.user?._id;
+
+//         // Check if requesting user has permission
+//         const { role } = await getMemberRoleInWorkspace(requestingUserId, workspaceId);
+//         roleGuard(role, [Permissions.REMOVE_MEMBER]);
+
+//         const result = await checkMemberHasTasksService(workspaceId, memberId);
+
+//         return res.status(HTTPSTATUS.OK).json({
+//             message: "Member task check completed",
+//             ...result,
+//         });
+//     }
+// );
+
+
+// Remove member controller
+const removeMemberSchema = z.object({
+    memberId: z.string(),
+});
+
+export const removeMemberFromWorkspaceController = asyncHandler(
+    async (req: Request, res: Response) => {
+        const workspaceId = workspaceIdSchema.parse(req.params.id);
+        const { memberId } = removeMemberSchema.parse(req.body);
+        const requestingUserId = req.user?._id;
+
+        const result = await removeMemberFromWorkspaceService(
+            workspaceId,
+            memberId,
+            requestingUserId
+        );
+
+        return res.status(HTTPSTATUS.OK).json({
+            message: result.message,
+            removedMember: result.removedMember,
+        });
+    }
+);
+
+
+// Update workspace controller
 export const updateWorkspaceByIdController = asyncHandler(
     async (req: Request, res: Response) => {
         const workspaceId = workspaceIdSchema.parse(req.params.id);
         const body = updateWorkspaceSchema.parse(req.body);
-
         const userId = req.user?._id;
 
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.EDIT_WORKSPACE]);
 
+        // Get the current workspace to compare names
+        const currentWorkspace = await WorkspaceModel.findById(workspaceId);
+        if (!currentWorkspace) {
+            return res.status(HTTPSTATUS.NOT_FOUND).json({
+                message: "Workspace not found"
+            });
+        }
+
         const { updatedWorkspace } = await updateWorkspaceByIdService(
             workspaceId,
-            body
+            body,
+            userId // pass userId to service
         );
 
         return res.status(HTTPSTATUS.OK).json({
@@ -146,10 +206,21 @@ export const updateWorkspaceByIdController = asyncHandler(
     }
 );
 
+
+// Count number of workspace
+export const getOwnerWorkspacesCountController = asyncHandler(
+    async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const count = await WorkspaceModel.countDocuments({ owner: userId });
+        return res.status(HTTPSTATUS.OK).json({ count });
+    }
+);
+
+
+// Delete workspace controller
 export const deleteWorkspaceByIdController = asyncHandler(
     async (req: Request, res: Response) => {
         const workspaceId = workspaceIdSchema.parse(req.params.id);
-
         const userId = req.user?._id;
 
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);

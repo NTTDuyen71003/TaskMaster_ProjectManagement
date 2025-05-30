@@ -2,13 +2,12 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader } from "lucide-react";
+import { CalendarIcon, Loader, Search } from "lucide-react";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -26,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { getAvatarColor, getAvatarFallbackText, transformOptions } from "@/lib/helper";
+import { getAvatarColor, getAvatarFallbackText } from "@/lib/helper";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
@@ -36,6 +35,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTaskMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import i18n from "@/languages/i18n";
+import { getDateFnsLocale } from "@/languages/getDateFnsLocale";
+import { useState } from "react";
 
 
 export default function CreateTaskForm(props: {
@@ -46,30 +48,34 @@ export default function CreateTaskForm(props: {
   const workspaceId = useWorkspaceId();
   const queryClient = useQueryClient();
   const { data: menberData } = useGetWorkspaceMembers(workspaceId);
+  const lang = i18n.language;
+  const dateLocale = getDateFnsLocale();
+  const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchMem, setSearchMem] = useState("");
 
-  const { data, isLoading } = useGetProjectsInWorkspaceQuery({
+
+  const { data } = useGetProjectsInWorkspaceQuery({
     workspaceId,
+    pageSize: 100, // Get more projects for search
     skip: !!projectId,
   });
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: createTaskMutationFn,
   })
+
 
   const projects = data?.projects || [];
   const members = menberData?.members || [];
   const { t } = useTranslation();
 
 
-  //Workspace Projects
   const projectOptions = projects?.map((project) => {
     return {
-      label: (
-        <div className="flex items-center gap-1">
-          <span>{project.emoji}</span>
-          <span>{project.name}</span>
-        </div>
-      ),
+      label: `${project.emoji} ${project.name}`,
       value: project._id,
     };
   });
@@ -98,31 +104,32 @@ export default function CreateTaskForm(props: {
 
   const formSchema = z.object({
     title: z.string().trim().min(1, {
-      message: "Title is required",
+      message: t("taskboard-create-task-title-require"),
     }),
     description: z.string().trim(),
     projectId: z.string().trim().min(1, {
-      message: "Project is required",
+      message: t("taskboard-create-task-project-require"),
+    }),
+    assignedTo: z.string().trim().min(1, {
+      message: t("taskboard-create-task-assignedto-require"),
+    }),
+    dueDate: z.date({
+      required_error: t("taskboard-create-task-duedate-require"),
     }),
     status: z.enum(
       Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum],
       {
-        required_error: "Status is required",
+        required_error: t("taskboard-create-task-status-require"),
       }
     ),
     priority: z.enum(
       Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum],
       {
-        required_error: "Priority is required",
+        required_error: t("taskboard-create-task-priority-require"),
       }
     ),
-    assignedTo: z.string().trim().min(1, {
-      message: "AssignedTo is required",
-    }),
-    dueDate: z.date({
-      required_error: "A date of birth is required.",
-    }),
   });
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -130,14 +137,23 @@ export default function CreateTaskForm(props: {
       title: "",
       description: "",
       projectId: projectId ? projectId : "",
+      assignedTo: "",
     },
   });
 
-  const taskStatusList = Object.values(TaskStatusEnum);
-  const taskPriorityList = Object.values(TaskPriorityEnum); // ["LOW", "MEDIUM", "HIGH", "URGENT"]
 
-  const statusOptions = transformOptions(taskStatusList);
-  const priorityOptions = transformOptions(taskPriorityList);
+  const taskStatusList = Object.values(TaskStatusEnum);
+  const statusOptions = taskStatusList.map(status => ({
+    value: status,
+    label: t(`status-${status.toLowerCase().replace('_', '-')}`)
+  }));
+
+
+  const taskPriorityList = Object.values(TaskPriorityEnum); // ["LOW", "MEDIUM", "HIGH"]
+  const priorityOptions = taskPriorityList.map(priority => ({
+    value: priority,
+    label: t(`priority-${priority.toLowerCase().replace('_', '-')}`)
+  }));
 
 
   //nút tạo task
@@ -151,7 +167,6 @@ export default function CreateTaskForm(props: {
         dueDate: values.dueDate.toISOString(),
       },
     };
-
     mutate(payload, {
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -161,22 +176,41 @@ export default function CreateTaskForm(props: {
           queryKey: ["all-tasks", workspaceId],
         });
         toast({
-          title: "Success",
-          description: "Task created successfully",
+          title: t("navbar-create-project-success"),
+          description: t("taskboard-create-task-success-desc"),
           variant: "success",
+          duration: 2500,
         });
         onClose();
         // setTimeout(() => onClose(), 100);
       },
-      onError: (error) => {
+      onError: () => {
         toast({
-          title: "Error",
-          description: error.message,
+          title: t("settingboard-edit-error"),
+          description: t("settingboard-edit-error-description"),
           variant: "destructive",
+          duration: 2500,
         });
       },
     });
   };
+
+
+  const filteredOptions = projectOptions?.filter((option) => {
+    const projectName =
+      typeof option.label === "string"
+        ? option.label
+        : (projects.find((p) => p._id === option.value)?.name ?? "");
+    return projectName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+
+  const filteredMembersOptions = membersOptions?.filter((option) => {
+    const member = members.find((m) => m.userId._id === option.value);
+    const memberName = member?.userId?.name || "";
+    return memberName.toLowerCase().includes(searchMem.toLowerCase());
+  });
+
 
   return (
     <div className="card">
@@ -195,7 +229,9 @@ export default function CreateTaskForm(props: {
                 name="title"
                 render={({ field }) => (
                   <>
-                    <label htmlFor="exampleInputName1">{t("taskboard-form-create-title")}</label>
+                    <label htmlFor="exampleInputName1">
+                      {t("taskboard-form-create-title")}
+                    </label>
                     <input
                       type="text"
                       className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white rounded-lg"
@@ -203,10 +239,12 @@ export default function CreateTaskForm(props: {
                       placeholder={t("taskboard-form-create-title-placeholder")}
                       {...field}
                     />
+                    <FormMessage className="text-red-500 text-sm" />
                   </>
                 )}
               />
             </div>
+
 
             {/* {Description} */}
             <div className="form-group">
@@ -230,27 +268,58 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
-            {/*Members AssigneeTo*/}
+
+            {/* {Project} */}
             <div className="form-group">
               <FormField
                 control={form.control}
-                name="assignedTo"
+                name="projectId"
                 render={({ field }) => (
-                  <>
+                  <FormItem>
+                    <label>{t("taskboard-form-create-project")}</label>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <label htmlFor="exampleSelectGender">{t("projectboard-task-assign")}</label>
-                      <select className="form-control" id="exampleSelectGender" defaultValue="">
-                        <option value="" disabled>
-                          Select an assignee
-                        </option>
-                        {/* <option>Male</option>
-                      <option>Female</option> */}
-                        <SelectContent>
-                          <div className="w-full max-h-[200px]overflow-y-auto scrollbar">
-                            {membersOptions?.map((option) => (
+                      <FormControl>
+                        <SelectTrigger
+                          className={cn(
+                            "p-h",
+                            !field.value ? "text-muted" : "text-black dark:text-white"
+                          )}
+                        >
+                          <SelectValue placeholder={t("taskboard-form-create-project-placeholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      {/* lay du lieu project tu db de add vao task */}
+                      <SelectContent className="z-[9999]">
+                        {/* Search Input */}
+                        <ul className="navbar-nav w-100">
+                          <li className="nav-item w-100">
+                            <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                              <div className="relative w-full">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                  <Search className="w-4 h-4 text-muted" />
+                                </span>
+                                <input
+                                  type="text"
+                                  value={searchTerm}
+                                  onChange={(e) => setSearchTerm(e.target.value)}
+                                  onKeyDown={(e) => e.stopPropagation()}
+                                  onKeyUp={(e) => e.stopPropagation()}
+                                  className="form-control w-full pl-10 rounded-lg bg-sidebar border-sidebar-border text-black dark:text-white"
+                                  placeholder={t("memberdashboard-search-placeholder")}
+                                />
+                              </div>
+                            </form>
+                          </li>
+                        </ul>
+
+                        {/*Filtered List or No Match */}
+                        <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                          {filteredOptions && filteredOptions.length > 0 ? (
+                            filteredOptions.map((option) => (
                               <SelectItem
                                 className="cursor-pointer"
                                 key={option.value}
@@ -258,53 +327,143 @@ export default function CreateTaskForm(props: {
                               >
                                 {option.label}
                               </SelectItem>
-                            ))}
-                          </div>
-                        </SelectContent>
-                      </select>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-sm text-muted">
+                              {t("taskboard-create-task-no-member")}
+                            </div>
+                          )}
+                        </div>
+                      </SelectContent>
+
                     </Select>
-                  </>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
 
+
+            {/*Members AssigneeTo*/}
+            <div className="form-group">
+              <FormField
+                control={form.control}
+                name="assignedTo"
+                render={({ field }) => (
+                  <FormItem>
+                    <label>{t("taskboard-assignedto")}</label>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          className={cn(
+                            "p-h",
+                            !field.value ? "text-muted" : "text-black dark:text-white"
+                          )}
+                        >
+                          <SelectValue placeholder={t("taskboard-create-task-assignedto-placeholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      {/* lay du lieu member tu db de add vao task */}
+                      <SelectContent className="z-[9999]">
+                        {/* Search Input */}
+                        <ul className="navbar-nav w-100">
+                          <li className="nav-item w-100">
+                            <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                              <div className="relative w-full">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                  <Search className="w-4 h-4 text-muted" />
+                                </span>
+                                <input
+                                  type="text"
+                                  value={searchMem}
+                                  onChange={(e) => setSearchMem(e.target.value)}
+                                  onKeyDown={(e) => e.stopPropagation()}
+                                  onKeyUp={(e) => e.stopPropagation()}
+                                  className="form-control w-full pl-10 rounded-lg bg-sidebar border-sidebar-border text-black dark:text-white"
+                                  placeholder={t("memberdashboard-search-placeholder")}
+                                />
+                              </div>
+                            </form>
+                          </li>
+                        </ul>
+
+                        {/*Filtered List or No Match */}
+                        <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                          {filteredMembersOptions && filteredMembersOptions.length > 0 ? (
+                            filteredMembersOptions.map((option) => (
+                              <SelectItem
+                                className="cursor-pointer"
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-sm text-muted">
+                              {t("taskboard-create-task-no-member")}
+                            </div>
+                          )}
+                        </div>
+                      </SelectContent>
+
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+
             {/* {Due Date} */}
-            <div className="!mt-2">
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
-                    <Popover>
+                    <label>{t("taskboard-create-task-duedate")}</label>
+                    <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="datefield"
+                            size="date"
                             className={cn(
-                              "w-full flex-1 pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              "p-h w-full flex-1 text-left font-normal justify-between",
+                              !field.value ? "text-muted" : "text-black dark:text-white"
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, formatStr, { locale: dateLocale })
                             ) : (
-                              <span>Pick a date</span>
+                              <span className="text-muted">{t("taskboard-create-task-duedate-placeholder")}</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarIcon
+                              className={cn(
+                                "h-4 w-4",
+                                field.value ? "text-black dark:text-white" : "text-muted"
+                              )}
+                            />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0 z-[9999]" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={
-                            (date) =>
-                              date <
-                              new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
-                              date > new Date("2100-12-31") //Prevent selection beyond a far future date
+                          onSelect={(date) => {
+                            field.onChange(date)
+                            setOpen(false)
+                          }}
+                          locale={getDateFnsLocale()}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                            date > new Date("2100-12-31")
                           }
                           initialFocus
                           defaultMonth={new Date()}
@@ -318,29 +477,32 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
+
             {/* {Status} */}
-            <div>
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <label>{t("dashboard-task-status")}</label>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            className="!text-muted-foreground !capitalize"
-                            placeholder="Select a status"
-                          />
+                        <SelectTrigger
+                          className={cn(
+                            "p-h",
+                            !field.value ? "text-muted" : "text-black dark:text-white"
+                          )}
+                        >
+                          <SelectValue placeholder={t("taskboard-create-task-status-placeholder")} />
                         </SelectTrigger>
                       </FormControl>
 
                       {/* lay du lieu trang thai tu db de add vao task */}
-                      <SelectContent>
+                      <SelectContent className="z-[9999]">
                         {statusOptions?.map((status) => (
                           <SelectItem
                             className="!capitalize"
@@ -359,24 +521,31 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
+
             {/* {Priority} */}
-            <div>
+            <div className="form-group">
               <FormField
                 control={form.control}
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Priority</FormLabel>
+                    <label>{t("dashboard-task-priority")}</label>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a priority" />
+                        <SelectTrigger
+                          className={cn(
+                            "p-h",
+                            !field.value ? "text-muted" : "text-black dark:text-white"
+                          )}
+                        >
+                          <SelectValue placeholder={t("taskboard-create-task-priority-placeholder")} />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+
+                      <SelectContent className="z-[9999]">
                         {priorityOptions?.map((priority) => (
                           <SelectItem
                             className="!capitalize"
@@ -394,14 +563,20 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
+
             {/* nút tạo task */}
-            <Button
-              className="flex place-self-end  h-[40px] text-white font-semibold"
+            <button
+              disabled={isPending}
               type="submit"
-              disabled={isPending}>
-              {isPending && <Loader className="animate-spin" />}
-              Create
-            </Button>
+              className="btn bg-sidebar-frameicon mr-2"
+            >
+              {isPending && <Loader />}
+              {t("taskboard-create-task-btn")}
+            </button>
+            <button
+              className="btn btn-dark" type="button"
+              onClick={onClose} >{t("sidebar-createworkspace-cancelbtn")}
+            </button>
 
           </form>
         </Form>
@@ -409,3 +584,4 @@ export default function CreateTaskForm(props: {
     </div>
   );
 }
+

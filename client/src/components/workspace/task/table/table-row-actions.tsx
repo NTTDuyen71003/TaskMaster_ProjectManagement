@@ -19,6 +19,7 @@ import { toast } from "@/hooks/use-toast";
 import EditTaskDialog from "../edit-task-dialog";
 import { useAuthContext } from "@/context/auth-provider"; // Import useAuthContext
 import { Permissions } from "@/constant"; // Import Permissions
+import { useTranslation } from "react-i18next";
 
 interface DataTableRowActionsProps {
   row: Row<TaskType>;
@@ -30,8 +31,8 @@ export function DataTableRowActions({ row, projectId }: DataTableRowActionsProps
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
   const { hasPermission } = useAuthContext(); // Get permission checker
-
   const canDeleteTask = hasPermission(Permissions.DELETE_TASK); // Check DELETE_TASK permission
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useMutation({
     mutationFn: deleteTaskMutationFn,
@@ -39,8 +40,10 @@ export function DataTableRowActions({ row, projectId }: DataTableRowActionsProps
 
   const task = row.original;
   const taskId = task._id as string;
-  const taskCode = task.taskCode;
+  const [open, setOpen] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
+  // Delete task handler
   const handleConfirm = () => {
     mutate(
       {
@@ -48,59 +51,63 @@ export function DataTableRowActions({ row, projectId }: DataTableRowActionsProps
         taskId,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: ["all-tasks", workspaceId],
           });
           toast({
-            title: "Success",
-            description: data.message,
+            title: t("navbar-create-project-success"),
+            description: t("taskboard-table-delete-desc"),
             variant: "success",
+            duration: 2500,
           });
           setTimeout(() => setOpenDeleteDialog(false), 100);
         },
-        onError: (error) => {
+        onError: () => {
           toast({
-            title: "Error",
-            description: error.message,
+            title: t("settingboard-edit-error"),
+            description: t("settingboard-edit-error-description"),
             variant: "destructive",
+            duration: 2500,
           });
         },
       }
     );
   };
 
+
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+            className="flex h-8 w-8 p-0 data-[state=open]:bg-dropdown-hover-bg ml-3"
           >
             <MoreHorizontal />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[160px]">
-          <EditTaskDialog task={task} projectId={projectId}>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-              }}
-            >
-              Edit
-            </DropdownMenuItem>
-          </EditTaskDialog>
 
-          {canDeleteTask && ( // Conditionally render Delete option
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setOpen(false); // Close dropdown
+              setOpenEditDialog(true); // Open edit dialog
+            }}
+          >
+            {t("sidebar-projects-edit")}
+          </DropdownMenuItem>
+
+          {canDeleteTask && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className={`!text-destructive cursor-pointer ${taskId}`}
+                className={`text-red-500 dark:text-white cursor-pointer ${taskId}`}
                 onClick={() => setOpenDeleteDialog(true)}
               >
-                Delete Task
+                {t("sidebar-projects-delete")}
                 <DropdownMenuShortcut></DropdownMenuShortcut>
               </DropdownMenuItem>
             </>
@@ -108,18 +115,28 @@ export function DataTableRowActions({ row, projectId }: DataTableRowActionsProps
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {canDeleteTask && ( // Conditionally render ConfirmDialog
+      {/* Separate Edit Dialog */}
+      <EditTaskDialog
+        task={task}
+        projectId={projectId}
+        open={openEditDialog}
+        onOpenChange={setOpenEditDialog}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      {canDeleteTask && (
         <ConfirmDialog
           isOpen={openDeleteDialog}
           isLoading={isPending}
           onClose={() => setOpenDeleteDialog(false)}
           onConfirm={handleConfirm}
-          title="Delete Task"
-          description={`Are you sure you want to delete ${taskCode}`}
-          confirmText="Delete"
-          cancelText="Cancel"
+          title={t("taskboard-delete-task-title")}
+          description={t("taskboard-delete-task-description")}
+          confirmText={t("sidebar-projects-delete")}
+          cancelText={t("sidebar-createworkspace-cancelbtn")}
         />
       )}
     </>
+
   );
 }

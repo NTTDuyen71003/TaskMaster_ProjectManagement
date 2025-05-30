@@ -3,6 +3,8 @@ import MemberModel from "../models/member.model";
 import ProjectModel from "../models/project.model";
 import TaskModel from "../models/task.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
+import { taskAssignedNotificationService, taskDeletedNotificationService, taskStatusChangedNotificationService, taskUnassignedNotificationService } from "./notification.service";
+
 
 export const createTaskService = async (
     workspaceId: string,
@@ -26,6 +28,7 @@ export const createTaskService = async (
             "Project not found or does not belong to this workspace"
         );
     }
+    
     if (assignedTo) {
         const isAssignedUserMember = await MemberModel.exists({
             userId: assignedTo,
@@ -36,6 +39,7 @@ export const createTaskService = async (
             throw new Error("Assigned user is not a member of this workspace.");
         }
     }
+    
     const task = new TaskModel({
         title,
         description,
@@ -50,8 +54,25 @@ export const createTaskService = async (
 
     await task.save();
 
+    // Send notification if task is assigned to someone other than the creator
+    if (assignedTo && assignedTo !== userId) {
+        try {
+            await taskAssignedNotificationService(
+                userId,
+                assignedTo,
+                workspaceId,
+                (task._id as string | { toString(): string }).toString(),
+                title,
+                projectId
+            );
+        } catch (error) {
+            console.error('Error sending task assigned notification:', error);
+        }
+    }
+
     return { task };
 };
+
 
 export const getAllTasksService = async (
     workspaceId: string,
@@ -131,6 +152,7 @@ export const getAllTasksService = async (
     };
 };
 
+
 export const getTaskByIdService = async (
     workspaceId: string,
     projectId: string,
@@ -157,10 +179,13 @@ export const getTaskByIdService = async (
     return task;
 };
 
+
+// Update task service
 export const updateTaskService = async (
     workspaceId: string,
     projectId: string,
     taskId: string,
+    userId: string, // Add userId parameter
     body: {
         title: string;
         description?: string;
@@ -186,6 +211,10 @@ export const updateTaskService = async (
         );
     }
 
+    // Store old values for comparison - ensure consistent string format
+    const oldAssignedTo = task.assignedTo?.toString();
+    const oldStatus = task.status;
+
     const updatedTask = await TaskModel.findByIdAndUpdate(
         taskId,
         {
@@ -198,22 +227,110 @@ export const updateTaskService = async (
         throw new BadRequestException("Failed to update task");
     }
 
+    // Handle assignment change notifications
+    const newAssignedTo = body.assignedTo;
+    
+    if (oldAssignedTo !== newAssignedTo) {
+        try {
+            // If someone was unassigned
+            if (oldAssignedTo && oldAssignedTo !== newAssignedTo) {
+                // Convert userId to string for consistent comparison
+                const userIdString = userId.toString();
+                
+                // Only send notification if the person being unassigned is NOT the one making the change
+                if (oldAssignedTo !== userIdString) {
+                    await taskUnassignedNotificationService(
+                        userId,
+                        oldAssignedTo,
+                        workspaceId,
+                        taskId,
+                        body.title,
+                        projectId
+                    );
+                }
+            }
+            
+            // If someone new was assigned
+            if (newAssignedTo) {
+                // Convert userId to string for consistent comparison
+                const userIdString = userId.toString();
+                
+                // Only send notification if the person being assigned is NOT the one making the change
+                if (newAssignedTo !== userIdString) {
+                    await taskAssignedNotificationService(
+                        userId,
+                        newAssignedTo,
+                        workspaceId,
+                        taskId,
+                        body.title,
+                        projectId
+                    );
+                }
+            }
+        } catch (error) {
+            console.error('Error sending task assignment change notifications:', error);
+        }
+    }
+
+    // Handle status change notifications
+    if (oldStatus !== body.status) {
+        try {
+            await taskStatusChangedNotificationService(
+                userId,
+                taskId,
+                body.title,
+                oldStatus,
+                body.status,
+                workspaceId,
+                projectId,
+                newAssignedTo || undefined
+            );
+        } catch (error) {
+            console.error('Error sending task status change notification:', error);
+        }
+    }
+
     return { updatedTask };
 };
 
+
 export const deleteTaskService = async (
     workspaceId: string,
-    taskId: string
+    taskId: string,
+    userId: string // Add userId parameter to know who is deleting the task
 ) => {
-    const task = await TaskModel.findOneAndDelete({
+    const task = await TaskModel.findOne({
         _id: taskId,
         workspace: workspaceId,
-    });
+    }).populate('project', '_id name emoji'); // Populate project details
 
     if (!task) {
         throw new NotFoundException(
             "Task not found or does not belong to the specified workspace"
         );
+    }
+
+    // Store task details before deletion for notification
+    const taskTitle = task.title;
+    const projectId = task.project._id.toString();
+    const assignedUserId = task.assignedTo?.toString();
+
+    // Delete the task
+    await TaskModel.findByIdAndDelete(taskId);
+
+    // Send notification after successful deletion
+    try {
+        await taskDeletedNotificationService(
+            userId,
+            workspaceId,
+            projectId,
+            taskId,
+            taskTitle,
+            assignedUserId
+        );
+    } catch (error) {
+        console.error('Error sending task deleted notification:', error);
+        // Don't throw here - task deletion was successful, just notification failed
     }
 
     return;

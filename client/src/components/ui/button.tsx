@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input shadow-sm bg-dropdown-hover-bg hover:bg-dropdown-hover-bg hover:text-accent-foreground",
+          "border border-input shadow-sm bg-dropdown-hover-bg hover:bg-dropdown-hover-bg/20 hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:dropdown-hover-bg hover:text-accent-foreground",
@@ -25,12 +25,19 @@ const buttonVariants = cva(
           "border border-input shadow-sm bg-background hover:bg-dropdown-hover-bg hover:text-accent-foreground",
         static:
           "bg-[#F2F4FF] text-black/50",
+        datefield:
+          "bg-sidebar-input",
+        status:
+          "bg-sidebar text-muted hover:bg-sidebar/20",
+        statusHover:"text-muted hover:bg-sidebar",
+        column:"bg-dropdown-hover-bg border border-sidebar-border hover:bg-dropdown-hover-bg/20 mb-2"
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        date:"h-9 px-3 py-2"
       },
     },
     defaultVariants: {

@@ -20,6 +20,8 @@ interface ConfirmDialogProps {
   confirmText?: string;
   cancelText?: string;
   children?: React.ReactNode;
+  confirmDisabled?: boolean;
+  showConfirmButton?: boolean;
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -31,12 +33,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   description = "Are you sure you want to perform this action?",
   confirmText = "Confirm",
   cancelText = "Cancel",
+  showConfirmButton = true,
   children,
 }) => {
   const handleClose = () => {
     if (isLoading) return;
     onClose();
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
@@ -51,10 +55,15 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <Button variant="outline" onClick={handleClose}>
             {cancelText}
           </Button>
-          <Button onClick={onConfirm} disabled={isLoading}>
-            {isLoading && <Loader className="w-4 h-4 animate-spin" />}
-            {confirmText}
-          </Button>
+          {showConfirmButton && (
+            <Button
+              onClick={onConfirm}
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader className="w-4 h-4 animate-spin mr-2" /> : null}
+              {confirmText}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

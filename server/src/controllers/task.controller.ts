@@ -110,6 +110,7 @@ export const updateTaskController = asyncHandler(
             workspaceId,
             projectId,
             taskId,
+            userId,
             body
         );
 
@@ -119,6 +120,7 @@ export const updateTaskController = asyncHandler(
         });
     }
 );
+
 
 export const deleteTaskController = asyncHandler(
     async (req: Request, res: Response) => {
@@ -130,7 +132,7 @@ export const deleteTaskController = asyncHandler(
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.DELETE_TASK]);
 
-        await deleteTaskService(workspaceId, taskId);
+        await deleteTaskService(workspaceId, taskId, userId); // Pass userId
 
         return res.status(HTTPSTATUS.OK).json({
             message: "Task deleted successfully",

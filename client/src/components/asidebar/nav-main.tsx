@@ -4,8 +4,8 @@ import {
   Users,
   CheckCircle,
   LayoutDashboard,
-  Briefcase,
   ChevronDown,
+  FolderKanban,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -37,12 +37,10 @@ export function NavMain() {
   const [showHoverSubmenu, setShowHoverSubmenu] = useState(false);
 
   useEffect(() => {
-    const workspaceSubRoutes = ["/overview", "/activity"];
-    const isSubRoute = workspaceSubRoutes.some((route) =>
-      pathname.includes(`/workspace/${workspaceId}${route}`)
-    );
+    const isSubRoute = pathname.startsWith(`/workspace/${workspaceId}`);
     setIsWorkspaceOpen(isSubRoute);
   }, [pathname, workspaceId]);
+
 
   const items: ItemType[] = [
     {
@@ -87,11 +85,10 @@ export function NavMain() {
             </li>
 
             {/* Insert Projects menu after Dashboard */}
-            {index === 0 && ( 
-              <li
-                className={`nav-item menu-items ${
-                  isWorkspaceOpen || pathname.includes(`/workspace/${workspaceId}/project/`) ? "active" : ""
-                }`}
+            {index === 0 && (
+              <div
+                className={`nav-item menu-items ${isWorkspaceOpen || pathname.includes(`/workspace/${workspaceId}/project/`) ? "active" : ""
+                  } relative`}
                 onMouseEnter={() => isSidebarIconOnly && setShowHoverSubmenu(true)}
                 onMouseLeave={() => isSidebarIconOnly && setShowHoverSubmenu(false)}
               >
@@ -102,55 +99,44 @@ export function NavMain() {
                 >
                   <span className="flex items-center">
                     <span className="menu-icon bg-sidebar-frameicon">
-                      <Briefcase className="w-4 h-4" />
+                      <FolderKanban className="w-4 h-4" />
                     </span>
                     <span className="menu-title">{t("sidebar-projects")}</span>
                   </span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${
-                      isWorkspaceOpen ? "rotate-180" : ""
-                    }`}
-                  />
+                  {!isSidebarIconOnly && (
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${isWorkspaceOpen ? "rotate-180" : ""
+                        }`}
+                    />
+                  )}
                 </a>
 
                 {/* Projects Submenu - Normal Sidebar */}
                 {!isSidebarIconOnly && (
-                  <div 
-                    className={`transition-all duration-300 overflow-hidden ${
-                      isWorkspaceOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-                    }`}
+                  <div
+                    className={`transition-all duration-300 overflow-hidden ${isWorkspaceOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+                      }`}
                   >
-                    <ul className="nav flex-column sub-menu">
+                    <span className="nav flex-column sub-menu">
                       <NavProjects />
-                    </ul>
+                    </span>
                   </div>
                 )}
 
-                {/* Projects Submenu - Icon Only Sidebar (Hover) */}
-                <div 
-                  className={`absolute left-full bg-sidebar-submenu top-0 z-50 min-w-[200px] transition-all duration-300 ${
-                    isSidebarIconOnly && showHoverSubmenu 
-                      ? 'opacity-100 visible transform translate-x-0' 
-                      : 'opacity-0 invisible transform -translate-x-2'
-                  }`}
-                  style={{
-                    transitionProperty: 'opacity, visibility, transform',
-                    transitionDuration: '0.25s',
-                    transitionTimingFunction: 'ease-out'
-                  }}
-                  onMouseEnter={() => setShowHoverSubmenu(true)}
-                  onMouseLeave={() => setShowHoverSubmenu(false)}
-                >
-                  <div className="p-2 mt-1">
-                    <span className="menu-title mb-2 ml-3 text-custom-sm">
-                      {t("sidebar-projects")}
-                    </span>
-                    <ul className="nav flex-column sub-menu mt-2">
-                      <NavProjects />
-                    </ul>
+                {/* Projects Submenu - Icon Only Mode (Hover) */}
+                {isSidebarIconOnly && showHoverSubmenu && (
+                  <div className="absolute left-full top-0 bg-sidebar-submenu shadow-lg rounded-tr-lg rounded-br-lg min-w-48 z-50">
+                    <div className="p-2">
+                      <div className="text-submenu text-sidebar-text px-3 py-1 border-b border-sidebar-border">
+                        {t("sidebar-projects")}
+                      </div>
+                      <div className="mt-2 hover-projects-menu">
+                        <NavProjects />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </li>
+                )}
+              </div>
             )}
           </React.Fragment>
         );

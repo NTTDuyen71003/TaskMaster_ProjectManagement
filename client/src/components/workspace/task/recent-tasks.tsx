@@ -89,7 +89,7 @@ const RecentTasks = () => {
                           </td>
 
                           {/* Task project */}
-                          <td>{task.project?.name}</td>
+                          <td>{task.project?.emoji} {task.project?.name}</td>
 
                           {/* Task code */}
                           <td>{task.taskCode}</td>
@@ -115,7 +115,9 @@ const RecentTasks = () => {
                                   ? "badge-success"
                                   : task.status === "TODO"
                                     ? "badge-info"
-                                    : "badge-danger"
+                                    : task.status === "IN_REVIEW"
+                                      ? "badge-primary"
+                                      : "badge-danger"
                                 }`}
                             >
                               {t(`dashboard-status-${task.status.toLowerCase()}`)}

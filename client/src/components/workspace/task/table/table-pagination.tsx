@@ -1,123 +1,190 @@
-import { Table } from "@tanstack/react-table";
+import React, { useState } from "react";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  MoreHorizontal,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>;
+
+// Mock table interface
+const mockTable = {
+  getState: () => ({ pagination: { pageIndex: 0, pageSize: 10 } }),
+  setPageSize: () => { },
+  setPageIndex: () => { },
+};
+
+interface DataTablePaginationProps {
+  table?: any;
   pageNumber: number;
   pageSize: number;
-  totalCount: number; // Total rows from the API
+  totalCount: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
 }
 
-export function DataTablePagination<TData>({
-  table,
-  pageNumber,
-  pageSize,
-  totalCount,
+export function DataTablePagination({
+  table = mockTable,
+  pageNumber = 1,
+  pageSize = 10,
+  totalCount = 150,
   onPageChange,
   onPageSizeChange,
-}: DataTablePaginationProps<TData>) {
-  const pageIndex = table.getState().pagination.pageIndex;
-  //const pageSize = table.getState().pagination.pageSize;
+}: DataTablePaginationProps) {
   const pageCount = Math.ceil(totalCount / pageSize);
 
   const handlePageSizeChange = (size: number) => {
     table.setPageSize(size);
-    onPageSizeChange?.(size); // Trigger external handler if provided
+    onPageSizeChange?.(size);
+    setIsOpen(false);
   };
 
-  const handlePageChange = (index: number) => {
-    table.setPageIndex(index); // Update table state
-    onPageChange?.(index + 1); // Trigger external handler if provided
+  const handlePageChange = (page: number) => {
+    table.setPageIndex(page - 1);
+    onPageChange?.(page);
   };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (pageCount <= maxVisible) {
+      for (let i = 1; i <= pageCount; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (pageNumber <= 3) {
+        pages.push(1, 2, 3, 4, '...', pageCount);
+      } else if (pageNumber >= pageCount - 2) {
+        pages.push(1, '...', pageCount - 3, pageCount - 2, pageCount - 1, pageCount);
+      } else {
+        pages.push(1, '...', pageNumber - 1, pageNumber, pageNumber + 1, '...', pageCount);
+      }
+    }
+
+    return pages;
+  };
+
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  // Define available page size options
+  const pageSizeOptions = [10, 20, 30, 50, 100];
+
 
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-2">
-      {/* Showing X to Y of Z Rows */}
-      <div className="flex-1 text-sm text-muted-foreground">
-        Showing {(pageNumber - 1) * pageSize + 1}-
-        {Math.min(pageNumber * pageSize, totalCount)} of {totalCount}
-      </div>
-      <div className="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-x-8 lg:space-y-0">
-        {/* Rows Per Page Selector */}
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
-          <Select
-            value={`${pageSize}`}
-            onValueChange={(value) => handlePageSizeChange(Number(value))}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={`${pageSize}`} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((size) => (
-                <SelectItem key={size} value={`${size}`}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="bg-sidebar rounded-lg shadow-sm">
+      {/* Header with summary info */}
+      <div className="px-6 py-4 bg-sidebar">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-        {/* Page Info */}
-        <div className="flex items-center">
-          <div className="flex lg:w-[100px] items-center justify-center text-sm font-medium">
-            Page {pageIndex + 1} of {pageCount}
+          {/* Left: Display rows */}
+          <div className="inline-flex items-center gap-3 p-3 flex-wrap bg-dropdown-hover-bg rounded-lg border border-sidebar-border">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted">{t("taskboard-displayrows")}</span>
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-sidebar border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent shadow-sm transition-all cursor-pointer min-w-[80px] justify-between"
+              >
+                <span>{pageSize}</span>
+                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isOpen && (
+                <div className="absolute top-full left-0 mt-1 bg-sidebar border border-sidebar-border rounded-md shadow-lg z-10 min-w-full">
+                  {pageSizeOptions.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => handlePageSizeChange(size)}
+                      className={`w-full px-3 py-2 text-left text-sm transition-colors cursor-pointer first:rounded-t-md last:rounded-b-md ${size === pageSize
+                        ? 'bg-dropdown-hover-bg text-sidebar-text'
+                        : 'text-muted hover:bg-dropdown-hover-bg hover:text-sidebar-text'
+                        }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Pagination Controls */}
-          <div className="flex items-center space-x-2">
+          {/* Right: Pagination */}
+          <div className="flex flex-wrap items-center gap-1 overflow-x-auto sm:overflow-visible">
+
+            {/* First page - hidden on mobile */}
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => handlePageChange(0)}
-              disabled={pageIndex === 0}
+              size="icon"
+              onClick={() => handlePageChange(1)}
+              disabled={pageNumber === 1}
+              className="h-9 w-9 text-muted disabled:opacity-50 hidden sm:flex"
             >
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft />
+              <ChevronsLeft className="w-4 h-4" />
             </Button>
+
+            {/* Previous */}
             <Button
               variant="outline"
-              className=""
-              onClick={() => handlePageChange(pageIndex - 1)}
-              disabled={pageIndex === 0}
+              onClick={() => handlePageChange(pageNumber - 1)}
+              disabled={pageNumber === 1}
+              className="h-9 px-2 sm:px-3 text-muted disabled:opacity-50"
             >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft /> Previous
+              <ChevronLeft className="w-4 h-4 mr-0 sm:mr-1" />
+              <span className="hidden sm:inline">{t("taskboard-previous")}</span>
             </Button>
+
+            {/* Page numbers – visible on all screens */}
+            <div className="flex items-center gap-1 mx-2">
+              {getPageNumbers().map((page, index) => (
+                <React.Fragment key={index}>
+                  {page === '...' ? (
+                    <div className="flex items-center justify-center w-9 h-9 text-muted">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </div>
+                  ) : (
+                    <Button
+                      variant={page === pageNumber ? "default" : "ghost"}
+                      size="icon"
+                      onClick={() => handlePageChange(page as number)}
+                      className={`h-9 w-9 ${page === pageNumber
+                        ? "bg-sidebar-frameicon text-white"
+                        : "text-sidebar-text hover:bg-dropdown-hover-bg"
+                        }`}
+                    >
+                      {page}
+                    </Button>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+
+            {/* Next */}
             <Button
               variant="outline"
-              className=""
-              onClick={() => handlePageChange(pageIndex + 1)}
-              disabled={pageIndex >= pageCount - 1}
+              onClick={() => handlePageChange(pageNumber + 1)}
+              disabled={pageNumber >= pageCount}
+              className="h-9 px-2 sm:px-3 text-muted disabled:opacity-50"
             >
-              <span className="sr-only">Go to next page</span>
-              Next
-              <ChevronRight />
+              <span className="hidden sm:inline">{t("taskboard-after")}</span>
+              <ChevronRight className="w-4 h-4 ml-0 sm:ml-1" />
             </Button>
+
+            {/* Last page - hidden on mobile */}
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => handlePageChange(pageCount - 1)}
-              disabled={pageIndex >= pageCount - 1}
+              size="icon"
+              onClick={() => handlePageChange(pageCount)}
+              disabled={pageNumber >= pageCount}
+              className="h-9 w-9 text-muted disabled:opacity-50 hidden sm:flex"
             >
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight />
+              <ChevronsRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

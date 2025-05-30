@@ -3,6 +3,8 @@ import { TaskStatusEnum } from "../enums/task.enum";
 import ProjectModel from "../models/project.model";
 import TaskModel from "../models/task.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
+import { createProjectCreatedNotificationService, projectDeletedNotificationService, projectNameChangedNotificationService } from "./notification.service";
+
 
 export const createProjectService = async (
     userId: string,
@@ -19,12 +21,26 @@ export const createProjectService = async (
         description: body.description,
         workspace: workspaceId,
         createdBy: userId,
-    });
+    }) as mongoose.Document & { _id: mongoose.Types.ObjectId; name: string };
 
     await project.save();
 
+    //Create project creation notification
+    try {
+        await createProjectCreatedNotificationService(
+            userId,
+            workspaceId,
+            project._id.toString(),
+            project.name
+        );
+    } catch (notificationError) {
+        console.error('Failed to create project creation notifications:', notificationError);
+        // Don’t throw to avoid breaking the project creation process
+    }
+
     return { project };
 };
+
 
 export const getProjectsInWorkspaceService = async (
     workspaceId: string,
@@ -52,6 +68,7 @@ export const getProjectsInWorkspaceService = async (
     return { projects, totalCount, totalPages, skip };
 };
 
+
 export const getProjectByIdAndWorkspaceIdService = async (
     workspaceId: string,
     projectId: string
@@ -69,6 +86,7 @@ export const getProjectByIdAndWorkspaceIdService = async (
 
     return { project };
 };
+
 
 export const getProjectAnalyticsService = async (
     workspaceId: string,
@@ -113,7 +131,10 @@ export const getProjectAnalyticsService = async (
     };
 };
 
+
+// Update project service
 export const updateProjectService = async (
+    userId: string,
     workspaceId: string,
     projectId: string,
     body: {
@@ -130,6 +151,9 @@ export const updateProjectService = async (
         );
     }
 
+    const oldName = project.name;
+    const oldEmoji = project.emoji;
+
     const updatedProject = await ProjectModel.findByIdAndUpdate(
         projectId,
         {
@@ -137,15 +161,40 @@ export const updateProjectService = async (
         },
         { new: true }
     );
+
     if (!updatedProject) {
         throw new BadRequestException("Failed to update project");
     }
+
+    const isNameChanged = oldName && updatedProject.name && oldName !== updatedProject.name;
+    const isEmojiChanged = oldEmoji && updatedProject.emoji && oldEmoji !== updatedProject.emoji;
+
+    if (isNameChanged || isEmojiChanged) {
+        try {
+            await projectNameChangedNotificationService(
+                userId,
+                workspaceId,
+                projectId,
+                oldName,
+                updatedProject.name,
+                oldEmoji,
+                updatedProject.emoji
+            );
+        } catch (notificationError) {
+            console.error('Failed to create project name change notifications:', notificationError);
+            // Swallow the error to avoid blocking the update
+        }
+    }
+
     return { updatedProject };
 };
 
+
+// Delete project service
 export const deleteProjectService = async (
     workspaceId: string,
-    projectId: string
+    projectId: string,
+    deleterUserId: string // Add this parameter
 ) => {
     const project = await ProjectModel.findOne({
         _id: projectId,
@@ -158,11 +207,30 @@ export const deleteProjectService = async (
         );
     }
 
+    // Store project details before deletion for notification
+    const projectName = project.name;
+    const projectEmoji = project.emoji;
+
+    // Delete the project
     await project.deleteOne();
 
+    // Delete all tasks associated with the project
     await TaskModel.deleteMany({
         project: project._id,
     });
+
+    // Send notifications to relevant users
+    try {
+        await projectDeletedNotificationService(
+            deleterUserId,
+            workspaceId,
+            projectName,
+            projectEmoji
+        );
+    } catch (notificationError) {
+        // Log notification error but don't fail the deletion
+        console.error('Failed to send project deletion notifications:', notificationError);
+    }
 
     return project;
 };

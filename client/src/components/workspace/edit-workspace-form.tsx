@@ -106,6 +106,14 @@ export default function EditWorkspaceForm() {
           queryKey: ["userWorkspaces"],
         });
 
+        // Invalidate notifications to refresh the notification list
+        queryClient.invalidateQueries({
+          queryKey: ["notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["unreadNotificationCount"],
+        });
+
         toast({
           title: t("settingboard-edit-success"),
           description: t("settingboard-edit-success-description"),
@@ -186,7 +194,7 @@ export default function EditWorkspaceForm() {
             </div>
 
             <button
-              disabled={isPending}
+              disabled={!canEditWorkspace}
               type="submit"
               className="btn bg-sidebar-frameicon mr-2"
             >

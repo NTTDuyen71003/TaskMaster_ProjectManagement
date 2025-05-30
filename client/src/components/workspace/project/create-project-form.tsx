@@ -124,6 +124,13 @@ export default function CreateProjectForm({
         queryClient.invalidateQueries({
           queryKey: ["allprojects", workspaceId],
         });
+        // Invalidate notifications to refresh the notification list
+        queryClient.invalidateQueries({
+          queryKey: ["notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["unreadNotificationCount"],
+        });
         toast({
           title: t("navbar-create-project-success"),
           description: t("navbar-create-project-success-desc"),

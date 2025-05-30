@@ -9823,8 +9823,9 @@ mark,
 }
 
 .img-fluid {
-  max-width: 100%;
+  max-width: 80%;
   height: auto;
+  margin-left: 1rem;
 }
 
 .img-thumbnail {
@@ -11117,8 +11118,9 @@ pre code {
 .dark .table td,
 .dark .jsgrid .jsgrid-table td {
   padding: 0.9375rem;
-  border-top: 1px solid #2c2e33;
+  border-bottom: 1px solid #2c2e33 !important;
 }
+
 
 .table thead th,
 .jsgrid .jsgrid-table thead th {
@@ -11129,7 +11131,7 @@ pre code {
 .dark .table thead th,
 .dark .jsgrid .jsgrid-table thead th {
   vertical-align: bottom;
-  border-bottom: 2px solid #2c2e33;
+  border-bottom: 1px solid #2c2e33;
 }
 
 .table tbody+tbody,
@@ -22522,7 +22524,7 @@ code {
 }
 
 .page-header {
-  margin: 0 0 1.5rem 1rem;
+  margin-bottom: 1rem;
   font-weight: 800;
 }
 
@@ -24019,6 +24021,8 @@ code {
 .card .card-title {
   margin-bottom: 1.125rem;
   text-transform: capitalize;
+  font-weight: 500;
+  font-size: 1.125rem;
 }
 
 .card .card-subtitle {
@@ -29772,14 +29776,14 @@ div.tagsinput span.tag a {
 .navbar .navbar-menu-wrapper .count-indicator .count {
   position: absolute;
   left: 66%;
-  width: 7px;
-  height: 7px;
+  width: 18px;
+  height: 15px;
   color: #ffffff;
   border-radius: 100%;
   text-align: center;
   font-size: .625rem;
   line-height: 1.5;
-  top: 7px;
+  bottom:20px;
 }
 
 .navbar .navbar-menu-wrapper .navbar-nav {
@@ -29911,8 +29915,6 @@ div.tagsinput span.tag a {
 }
 
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu.navbar-dropdown .dropdown-item .ellipsis {
-  max-width: 200px;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -30951,28 +30953,80 @@ div.tagsinput span.tag a {
   margin-left: 0.35rem;
 }
 
-/* Hide the icon-only dropdown by default */
-.sidebar-icon-only-dropdown {
-  display: none;
+.text-header {
+  font-size: 0.875rem;
 }
 
-/* Show icon-only dropdown and hide normal dropdown in sidebar-icon-only mode */
-.sidebar-icon-only .sidebar-icon-only-dropdown {
-  display: inline-block;
-  margin-left: auto;
+.text-submenu {
+  font-size: 0.9375rem;
 }
 
-.sidebar-icon-only .sidebar-normal-dropdown {
-  display: none;
+/* Styles for projects list in hover menu */
+.hover-projects-menu .nav-item,
+.hover-projects-menu li {
+  display: flex !important;
+  align-items: center !important;
+  padding: 5px 10px !important;
+  margin: 2px 0 !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s !important;
 }
 
-/* Position the dropdown icon properly in sidebar-icon-only mode */
-.sidebar-icon-only .nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+.hover-projects-menu .nav-item:hover,
+.hover-projects-menu li:hover {
+  background-color: #f3f4f6 !important;
 }
+
+.dark .hover-projects-menu .nav-item:hover,
+.dark .hover-projects-menu li:hover {
+  background-color: #191c24 !important;
+}
+
+.hover-projects-menu .nav-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important; /* gap-2 equivalent */
+  text-decoration: none !important;
+  color: #6c7293 !important;
+  font-size: 0.855rem !important; /* text-sm */
+  width: 100% !important;
+}
+
+.hover-projects-menu .menu-icon,
+.hover-projects-menu .project-icon {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+.hover-projects-menu .menu-title,
+.hover-projects-menu .project-name {
+  font-size: 0.875rem !important; /* text-sm */
+  color: #374151 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.hover-projects-menu .active .nav-link {
+  color: #000000 !important;
+  background-color: #eff6ff !important;
+}
+
+.dark .hover-projects-menu .active .nav-link {
+  color: #fff !important;
+  background-color: #13151b !important;
+}
+
+/* Handle "Show less" button */
+.hover-projects-menu .show-less-btn {
+  font-size: 0.75rem !important; /* text-xs */
+  color: #6c7293 !important;
+  padding: 4px 12px !important;
+  cursor: pointer !important;
+}
+
 
 
 /*# sourceMappingURL=maps/style.css.map */

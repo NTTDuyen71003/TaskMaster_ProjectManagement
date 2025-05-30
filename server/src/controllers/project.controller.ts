@@ -20,6 +20,7 @@ import {
 import { HTTPSTATUS } from "../config/http.config";
 import Project from "../models/project.model";
 
+
 export const createProjectController = asyncHandler(
     async (req: Request, res: Response) => {
         const body = createProjectSchema.parse(req.body);
@@ -80,6 +81,7 @@ export const getAllProjectsInWorkspaceController = asyncHandler(
     }
 );
 
+
 export const getProjectByIdAndWorkspaceIdController = asyncHandler(
     async (req: Request, res: Response) => {
         const projectId = projectIdSchema.parse(req.params.id);
@@ -101,6 +103,7 @@ export const getProjectByIdAndWorkspaceIdController = asyncHandler(
         });
     }
 );
+
 
 export const getProjectAnalyticsController = asyncHandler(
     async (req: Request, res: Response) => {
@@ -124,19 +127,19 @@ export const getProjectAnalyticsController = asyncHandler(
     }
 );
 
+
 export const updateProjectController = asyncHandler(
     async (req: Request, res: Response) => {
         const userId = req.user?._id;
-
         const projectId = projectIdSchema.parse(req.params.id);
         const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
-
         const body = updateProjectSchema.parse(req.body);
 
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.EDIT_PROJECT]);
 
         const { updatedProject } = await updateProjectService(
+            userId,
             workspaceId,
             projectId,
             body
@@ -149,6 +152,7 @@ export const updateProjectController = asyncHandler(
     }
 );
 
+
 export const deleteProjectController = asyncHandler(
     async (req: Request, res: Response) => {
         const userId = req.user?._id;
@@ -159,7 +163,8 @@ export const deleteProjectController = asyncHandler(
         const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
         roleGuard(role, [Permissions.DELETE_PROJECT]);
 
-        await deleteProjectService(workspaceId, projectId);
+        // Pass userId to the service for notifications
+        await deleteProjectService(workspaceId, projectId, userId);
 
         return res.status(HTTPSTATUS.OK).json({
             message: "Project deleted successfully",

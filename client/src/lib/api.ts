@@ -1,5 +1,5 @@
 import { TaskPriorityEnumType, TaskStatusEnumType } from '@/constant';
-import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, UserWorkspacesResponseType, WorkspaceByIdResponseType } from './../types/api.type';
+import { AllMembersInWorkspaceResponseType, AllProjectPayloadType, AllProjectResponseType, AllTaskPayloadType, AllTaskResponseType, AllWorkspaceResponseType, AnalyticsResponseType, ChangeWorkspaceMemberRoleType, CreateProjectPayloadType, CreateTaskPayloadType, CreateWorkspaceResponseType, CreateWorkspaceType, EditProjectPayloadType, EditWorkspaceType, LoginResponseType, loginType, ProjectByIdPayloadType, ProjectResponseType, registerType, WorkspaceByIdResponseType } from './../types/api.type';
 import API from "./axios-client";
 import { CurrentUserResponseType } from "@/types/api.type";
 
@@ -60,6 +60,11 @@ export const getMembersInWorkspaceQueryFn = async (
 export const getWorkspaceAnalyticsQueryFn = async (
   workspaceId: string
 ): Promise<AnalyticsResponseType> => {
+  // Validate workspaceId before making the API call
+  if (!workspaceId || workspaceId === 'undefined' || workspaceId === 'null') {
+    throw new Error('Invalid workspace ID: User is not associated with any workspace');
+  }
+
   const response = await API.get(`/workspace/analytics/${workspaceId}`);
   return response.data;
 };
@@ -75,6 +80,19 @@ export const changeWorkspaceMemberRoleMutationFn = async ({
   return response.data;
 };
 
+// Check if workspace has members
+export const checkWorkspaceHasMembersQueryFn = async (
+  workspaceId: string
+): Promise<{
+  hasOtherMembers: boolean;
+  membersCount: number;
+}> => {
+  const response = await API.post(
+    `/workspace/check-members/${workspaceId}`
+  );
+  return response.data;
+};
+
 export const deleteWorkspaceMutationFn = async (
   workspaceId: string
 ): Promise<{
@@ -85,7 +103,7 @@ export const deleteWorkspaceMutationFn = async (
   return response.data;
 };
 
-//checking same workspace
+//checking same workspace name
 export const checkWorkspaceNameExistsQueryFn = async ({
   name,
 }: {
@@ -97,6 +115,13 @@ export const checkWorkspaceNameExistsQueryFn = async ({
   return response.data;
 };
 
+// Check number of workspace onwer has
+export const getOwnerWorkspacesCountQueryFn = async (): Promise<{ count: number }> => {
+  const response = await API.get("/workspace/owner/count");
+  return response.data;
+};
+
+
 //*******MEMBER ****************
 
 export const invitedUserJoinWorkspaceMutationFn = async (
@@ -106,6 +131,47 @@ export const invitedUserJoinWorkspaceMutationFn = async (
   workspaceId: string;
 }> => {
   const response = await API.post(`/member/workspace/${iniviteCode}/join`);
+  return response.data;
+};
+
+
+// Check if member has tasks
+// export const checkMemberHasTasksQueryFn = async ({
+//   workspaceId,
+//   memberId,
+// }: {
+//   workspaceId: string;
+//   memberId: string;
+// }): Promise<{
+//   hasTasks: boolean;
+//   tasksCount: number;
+// }> => {
+//   const response = await API.post(
+//     `/workspace/members/check-tasks/${workspaceId}`,
+//     { memberId }
+//   );
+//   return response.data;
+// };
+
+
+// Remove member api
+export const deleteWorkspaceMemberMutationFn = async ({
+  workspaceId,
+  memberId,
+}: {
+  workspaceId: string;
+  memberId: string;
+}) => {
+  if (!workspaceId || !memberId) {
+    throw new Error('workspaceId and memberId are required');
+  }
+
+  const response = await API.delete(
+    `/workspace/members/delete/${workspaceId}`,
+    {
+      data: { memberId }
+    }
+  );
   return response.data;
 };
 
@@ -199,6 +265,7 @@ export const deleteProjectMutationFn = async ({
   return response.data;
 };
 
+
 //*******TASKS ********************************
 //************************* */
 
@@ -244,6 +311,7 @@ export const getAllTasksQueryFn = async ({
   const response = await API.get(url);
   return response.data;
 };
+
 export const editTaskMutationFn = async ({
   workspaceId,
   taskId,
@@ -283,3 +351,119 @@ export const deleteTaskMutationFn = async ({
   );
   return response.data;
 };
+
+
+//********* NOTIFICATIONS ****************
+//************* */
+export interface Notification {
+  _id: string;
+  userId: string;
+  type:
+  | 'MEMBER_REMOVED'
+  | 'MEMBER_JOINED'
+  | 'WORKSPACE_NAME_CHANGED'
+  | 'WORKSPACE_DELETED'
+  | 'WORKSPACE_DELETED'
+  | 'PROJECT_NAME_CHANGED'
+  | 'PROJECT_CREATED'
+  | 'PROJECT_DELETED'
+  | 'TASK_ASSIGNED'
+  | 'TASK_UNASSIGNED'
+  | 'TASK_STATUS_CHANGED';
+
+  title: string;
+  message: string;
+  data: {
+    workspaceName?: string;
+
+    // For MEMBER_JOINED
+    joinerName?: string;
+    joinerProfilePicture?: string;
+    joinerId?: string;
+    // For MEMBER_REMOVED
+    removerName?: string;
+    removerProfilePicture?: string;
+
+    // For WORKSPACE_NAME_CHANGED
+    oldWorkspaceName?: string;
+    newWorkspaceName?: string;
+    changerName?: string;
+    changerProfilePicture?: string;
+    changerId?: string;
+    // For WORKSPACE_DELETED
+    ownerId?: string;
+
+    // For PROJECT_CREATED
+    projectName?: string;
+    creatorName?: string;
+    creatorProfilePicture?: string;
+    creatorId?: string;
+    // For PROJECT_NAME_CHANGED
+    projectId?: string;
+    oldProjectName?: string;
+    newProjectName?: string;
+    oldProjectEmoji?: string;
+    newProjectEmoji?: string;
+    // For PROJECT_DELETED
+    deleterName?: string;
+    deleterProfilePicture?: string;
+    deleterId?: string;
+
+    // For TASK_ASSIGNED
+    taskId?: string;
+    taskTitle?: string;
+    assignerName?: string;
+    assignerProfilePicture?: string;
+    assignerId?: string;
+    assignedName?: string;
+    assignedProfilePicture?: string;
+    assignedId?: string;
+
+    // For TASK_UNASSIGNED
+    unassignerName?: string;
+    unassignerProfilePicture?: string;
+    unassignerId?: string;
+    unassignedName?: string;
+    unassignedProfilePicture?: string;
+    unassignedId?: string;
+
+    // For TASK_STATUS_CHANGED
+    oldStatus?: string;
+    newStatus?: string;
+
+    workspaceId: string;
+  };
+
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getUserNotificationsQueryFn = async (limit = 10): Promise<{
+  notifications: Notification[];
+}> => {
+  const response = await API.get(`/notifications?limit=${limit}`);
+  return response.data;
+};
+
+export const getUnreadNotificationCountQueryFn = async (): Promise<{
+  count: number;
+}> => {
+  const response = await API.get('/notifications/unread-count');
+  return response.data;
+};
+
+export const markNotificationAsReadMutationFn = async (notificationId: string) => {
+  const response = await API.patch(`/notifications/${notificationId}/read`);
+  return response.data;
+};
+
+export const getAllUserNotificationsQueryFn = async (): Promise<{
+  notifications: Notification[];
+}> => {
+  const response = await API.get('/notifications?limit=1000'); // Get all notifications
+  return response.data;
+};
+
+
+

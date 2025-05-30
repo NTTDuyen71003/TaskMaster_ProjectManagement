@@ -21,22 +21,24 @@ import { useMutation } from "@tanstack/react-query";
 import { registerMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerMutationFn,
   });
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Name is required",
+      message: t("singup-name-require"),
     }),
-    email: z.string().trim().email("Invalid email address").min(1, {
-      message: "Workspace name is required",
+    email: z.string().trim().email(t("login-email-invalid")).min(1, {
+      message:  t("login-email-require"),
     }),
     password: z.string().trim().min(1, {
-      message: "Password is required",
+      message: t("login-password-require"),
     }),
   });
 
@@ -61,6 +63,7 @@ const SignUp = () => {
           title: "Error",
           description: error.message,
           variant: "destructive",
+          duration: 2500,
         });
       },
     });
@@ -99,11 +102,11 @@ const SignUp = () => {
           <div className="flex justify-center gap-4 mb-6">
             <button className="text-lg font-semibold text-gray-500 pb-1">
               <Link to="/" className="">
-                LOGIN
+                {t("login-title")}
               </Link>
             </button>
             <button className="text-lg font-semibold text-sidebar-frameicon border-b-2 border-sidebar-frameicon pb-1">
-              SIGN UP
+              {t("signup-title")}
             </button>
           </div>
 
@@ -123,10 +126,10 @@ const SignUp = () => {
                         </span>
                         <FormControl>
                           <Input
-                            placeholder="Name"
+                            placeholder={t("signup-name-placeholder")}
                             className="pl-10 h-12 rounded-lg border-gray-300 
                             focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
-                            text-black"
+                            !text-black !bg-white"
                             {...field}
                           />
                         </FormControl>
@@ -148,10 +151,10 @@ const SignUp = () => {
                         </span>
                         <FormControl>
                           <Input
-                            placeholder="Email"
+                            placeholder={t("login-email-placeholder")}
                             className="pl-10 h-12 rounded-lg border-gray-300
                              focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
-                             text-black"
+                             !text-black !bg-white"
                             {...field}
                           />
                         </FormControl>
@@ -176,15 +179,15 @@ const SignUp = () => {
                           <FormControl>
                             <Input
                               type={showPassword ? "text" : "password"}
-                              placeholder="Password"
+                              placeholder={t("login-password-placeholder")}
                               className="pl-10 pr-10 h-12 rounded-lg border-gray-300 
                               focus:border-sidebar-frameicon focus:ring-sidebar-frameicon
-                              text-black"
+                              !text-black !bg-white"
                               {...field}
                             />
                           </FormControl>
                           <span
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                            className="text-black absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                             onClick={() => setShowPassword(!showPassword)}
                             aria-label={showPassword ? "Hide password" : "Show password"}
                           >
@@ -204,13 +207,13 @@ const SignUp = () => {
                   className="w-full bg-pink-500 hover:bg-pink-600 text-white h-12 rounded-lg"
                 >
                   {isPending && <Loader className="animate-spin mr-2" />}
-                  SIGN UP
+                  {t("signup-title")}
                 </Button>
               </div>
 
               {/* Social Login */}
               <div className="text-center">
-                <p className="text-sm text-gray-500 mb-4">Or Sign up with</p>
+                <p className="text-sm text-gray-500 mb-4">{t("signup-social-title")}</p>
                 <div className="flex justify-center gap-4">
                   <GoogleOauthButton/>
                 </div>
@@ -218,9 +221,9 @@ const SignUp = () => {
 
               {/* Sign In Link */}
               <div className="text-center text-sm text-gray-600">
-                Already have an account?{" "}
+                {t("already-have-account")}{" "}
                 <Link to="/" className="text-pink-500 hover:underline">
-                  Sign in
+                  {t("signin-title")}
                 </Link>
               </div>
             </form>

@@ -1,4 +1,4 @@
-import { Loader, MoreHorizontal, Trash2, Edit } from "lucide-react";
+import { Loader, Trash2, Edit } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/context/auth-provider";
 import { clsx } from "clsx";
+import EditProjectDialog from "../workspace/project/edit-project-dialog";
 
 
 export function NavProjects() {
@@ -36,9 +37,11 @@ export function NavProjects() {
   const { context, open, onOpenDialog, onCloseDialog } = useConfirmDialog();
   const [pageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [isExpanded, setIsExpanded] = useState(false); // Track expanded state
+  const [editProject, setEditProject] = useState(null); // Track project being edited
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { hasPermission } = useAuthContext();
-
   const { t } = useTranslation();
 
   const { mutate, isPending: isLoading } = useMutation({
@@ -57,6 +60,22 @@ export function NavProjects() {
   const fetchNextPage = () => {
     if (!hasMore || isFetching) return;
     setPageSize((prev) => prev + 5);
+    setIsExpanded(true); // Mark as expanded when loading more
+  };
+
+  const showLess = () => {
+    setPageSize(5); // Reset to initial page size
+    setIsExpanded(false); // Mark as collapsed
+  };
+
+  const handleEditProject = (project: any) => {
+    setEditProject(project);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditProject(null);
   };
 
   const handleConfirm = () => {
@@ -70,7 +89,7 @@ export function NavProjects() {
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: ["allprojects", workspaceId],
-          });;
+          });
           toast({
             title: t("settingboard-delete-workspace-success"),
             description: t("sidebar-project-delete-desc"),
@@ -83,7 +102,7 @@ export function NavProjects() {
         onError: () => {
           toast({
             title: t("memberdashboard-changerole-error"),
-            description: t("memberdashboard-changerole-error-description"),
+            description: t("navbar-create-project-error-desc"),
             variant: "destructive",
             duration: 2500,
           });
@@ -92,25 +111,25 @@ export function NavProjects() {
     );
   };
 
-  
+
   return (
     <>
       {isPending ? (
         <Loader className="w-5 h-5 animate-spin place-self-center" />
       ) : isError || !workspaceId ? (
         // Show only if there's an error OR no workspaceId
-        <li className="nav-item">
+        <span className="nav-item">
           <div className="nav-announce">
             {t("sidebar-no-workspace")}
           </div>
-        </li>
+        </span>
       ) : projects?.length === 0 ? (
         // Show only if workspace exists but no projects
-        <li className="nav-item">
+        <span className="nav-item">
           <div className="nav-announce">
             {t("sidebar-projects-announce")}
           </div>
-        </li>
+        </span>
       ) : (
         <>
           {/* Render project list */}
@@ -119,7 +138,7 @@ export function NavProjects() {
             const isActive = pathname === projectUrl;
 
             return (
-              <li key={item._id} className={`nav-item ${isActive ? "active" : ""}`}>
+              <div key={item._id} className={`nav-item ${isActive ? "active" : ""}`}>
                 <div className="flex items-center justify-between w-full">
                   <a href={projectUrl} className="nav-link">
                     <span>{item.emoji}</span>
@@ -147,7 +166,7 @@ export function NavProjects() {
                       align={isMobile ? "end" : "start"}
                     >
                       <PermissionsGuard requiredPermission={Permissions.EDIT_PROJECT}>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditProject(item)}>
                           <Edit className="mr-2" />
                           <span>{t("sidebar-projects-edit")}</span>
                         </DropdownMenuItem>
@@ -163,24 +182,51 @@ export function NavProjects() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </li>
+              </div>
             );
           })}
 
-          {/* Load more button */}
-          {hasMore && (
-            <li className="nav-item">
+          {/* Show More/Less buttons */}
+          {hasMore && !isExpanded && (
+            <span className="nav-item">
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="text-sidebar-foreground/70 hover:bg-menuSidebar-hover transition-colors"
+                  className="text-gray-400 hover:bg-menuSidebar-hover hover:text-sidebar-text transition-colors"
                   disabled={isFetching}
                   onClick={fetchNextPage}
                 >
-                  <MoreHorizontal className="mr-2 w-4 h-4" />
-                  <span>{isFetching ? "Loading..." : "More"}</span>
+                  <span>{isFetching ? t("sidebar-loading") : t("sidebar-workspace-show-more")}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            </li>
+            </span>
+          )}
+
+          {isExpanded && pageSize > 5 && (
+            <span className="nav-item">
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className="text-gray-400 hover:bg-menuSidebar-hover hover:text-sidebar-text transition-colors"
+                  onClick={showLess}
+                >
+                  <span>{t("sidebar-workspace-show-less") || "Show Less"}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </span>
+          )}
+
+          {/* Show More button when expanded but there are still more items */}
+          {isExpanded && hasMore && (
+            <span className="nav-item">
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className="text-gray-400 hover:bg-menuSidebar-hover hover:text-sidebar-text transition-colors"
+                  disabled={isFetching}
+                  onClick={fetchNextPage}
+                >
+                  <span>{isFetching ? t("sidebar-loading") : t("sidebar-workspace-show-more")}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </span>
           )}
 
           {/* Confirm delete dialog */}
@@ -189,13 +235,23 @@ export function NavProjects() {
             isLoading={isLoading}
             onClose={onCloseDialog}
             onConfirm={handleConfirm}
-            title={`${t("sidebar-project-deletetitle")} "${context?.name || t("sidebar-project-deletedescription2")}"`}
-            description={`${t("sidebar-project-deletedescription1")} ${t("sidebar-project-deletedescription3")}`}
+            title={`${t("sidebar-project-deletetitle")} "${context?.name}"`}
+            description={`${t("sidebar-project-deletedescription1")}? ${t("sidebar-project-deletedescription3")}`}
             confirmText={t("sidebar-project-deletebtn")}
             cancelText={t("sidebar-createworkspace-cancelbtn")}
           />
+
+          {/* Edit project dialog */}
+          {isEditDialogOpen && editProject && (
+            <EditProjectDialog
+              project={editProject}
+              isOpen={isEditDialogOpen}
+              onClose={handleCloseEditDialog}
+            />
+          )}
         </>
       )}
     </>
   );
 }
+

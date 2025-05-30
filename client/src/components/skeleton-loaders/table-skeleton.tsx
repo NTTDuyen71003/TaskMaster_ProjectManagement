@@ -11,9 +11,9 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({
   rows = 20,
 }) => {
   return (
-    <div className="w-full bg-white rounded-lg">
+    <div className="w-full bg-sidebar rounded-lg">
       {/* Table Header Skeleton */}
-      <div className="flex h-10 bg-gray-50 rounded-t-lg">
+      <div className="flex h-10 bg-sidebar rounded-t-lg">
         {[...Array(columns)].map((_, index) => (
           <div key={`header-col-${index}`} className={`flex-1 px-4 py-2`}>
             <Skeleton className="h-4 w-full rounded-lg" />
@@ -22,7 +22,7 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({
       </div>
 
       {/* Table Body Skeleton */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-border-sidebar-border bg-sidebar">
         {[...Array(rows)].map((_, rowIndex) => (
           <div key={`row-${rowIndex}`} className="flex h-10">
             {[...Array(columns)].map((_, colIndex) => (

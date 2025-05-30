@@ -140,10 +140,18 @@ export default function EditProjectForm(props: {
         queryClient.invalidateQueries({
           queryKey: ["allprojects", workspaceId],
         });
+        // Invalidate notifications to refresh the notification list
+        queryClient.invalidateQueries({
+          queryKey: ["notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["unreadNotificationCount"],
+        });
         toast({
           title: t("navbar-create-project-success"),
           description: t("settingboard-edit-success-description"),
           variant: "success",
+          duration:2500,
         });
         setTimeout(() => onClose(), 100);
       },
@@ -152,6 +160,7 @@ export default function EditProjectForm(props: {
           title: t("settingboard-edit-error"),
           description: t("settingboard-edit-error-description"),
           variant: "destructive",
+          duration:2500,
         });
       },
     });

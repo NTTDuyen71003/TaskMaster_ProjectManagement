@@ -1,12 +1,11 @@
 import { ConfirmDialog } from "@/components/resuable/confirm-dialog";
-import { Button } from "@/components/ui/button";
 import { Permissions } from "@/constant";
 import { useAuthContext } from "@/context/auth-provider";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import { toast } from "@/hooks/use-toast";
 import useWorkspaceId from "@/hooks/use-workspace-id";
-import { deleteWorkspaceMutationFn } from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteWorkspaceMutationFn, getOwnerWorkspacesCountQueryFn } from "@/lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -20,11 +19,30 @@ const DeleteWorkspaceCard = () => {
   const { open, onOpenDialog, onCloseDialog } = useConfirmDialog();
   const { t } = useTranslation();
 
-  const { mutate, isPending } = useMutation({
+  const { data: ownerWorkspaceCountData, isLoading: isCountingWorkspaces } = useQuery({
+    queryKey: ["owner-workspaces-count"],
+    queryFn: getOwnerWorkspacesCountQueryFn,
+    enabled: canDeleteWorkspace,
+  });
+
+  const { mutate: deleteWorkspace, isPending: isDeleting } = useMutation({
     mutationFn: deleteWorkspaceMutationFn,
   });
+
+
+  const isLastWorkspace = (ownerWorkspaceCountData?.count || 0) <= 1;
+  const isDisabled = isLastWorkspace;
+
   const handleConfirm = () => {
-    mutate(workspaceId, {
+    if (isLastWorkspace) {
+      return {
+        title: t("settingboard-cannot-delete-last-workspace-title"),
+        description: t("settingboard-cannot-delete-last-workspace-desc"),
+        showConfirmButton: false,
+      };
+    }
+
+    deleteWorkspace(workspaceId, {
       onSuccess: (data) => {
         queryClient.invalidateQueries({
           queryKey: ["userWorkspaces"],
@@ -38,12 +56,14 @@ const DeleteWorkspaceCard = () => {
         navigate(`/workspace/${data.currentWorkspace}`);
         setTimeout(() => onCloseDialog(), 100);
       },
-      onError: () => {
+      onError: (error: any) => {
+        // Handle specific error message for members existing
+        const errorMessage = error?.response?.data?.message || t("settingboard-edit-error-description");
         toast({
           title: t("settingboard-edit-error"),
-          description: t("settingboard-edit-error-description"),
+          description: errorMessage,
           variant: "destructive",
-          duration: 2500,
+          duration: 3000,
         });
       },
     });
@@ -56,19 +76,19 @@ const DeleteWorkspaceCard = () => {
         <h4 className="card-title font-bold">{t("settingboard-delete-title")}</h4>
         <h6 className="mb-3">{t("settingboard-delete-desc")}</h6>
         <button
-          type="submit"
+          type="button"
           onClick={onOpenDialog}
-          disabled={!canDeleteWorkspace}
+          disabled={!canDeleteWorkspace || isDisabled}
           className="btn bg-red-500 mr-2 rounded-lg"
         >
-          {isPending && <Loader />}
+          {(isDeleting || isCountingWorkspaces) && <Loader />}
           {t("settingboard-delete-btn")}
         </button>
       </div>
 
       <ConfirmDialog
         isOpen={open}
-        isLoading={isPending}
+        isLoading={isDeleting}
         onClose={onCloseDialog}
         onConfirm={handleConfirm}
         title={`${t("sidebar-project-deletebtn")} ${t("settingboard-delete-workspace-title")} "${workspace?.name}"`}
@@ -76,7 +96,6 @@ const DeleteWorkspaceCard = () => {
         confirmText={t("sidebar-project-deletebtn")}
         cancelText={t("sidebar-createworkspace-cancelbtn")}
       />
-
     </>
   );
 };

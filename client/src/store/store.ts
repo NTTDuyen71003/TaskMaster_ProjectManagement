@@ -1,6 +1,6 @@
 import { create, StateCreator } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import createSelectors from "./selectors";
 
 type AuthState = {
@@ -21,17 +21,17 @@ const createAuthSlice: StateCreator<AuthState> = (set) => ({
 type StoreType = AuthState;
 
 export const useStoreBase = create<StoreType>()(
-    devtools(
-        persist(
-            immer((...a) => ({
-                ...createAuthSlice(...a),
-            })),
-            {
-                name: "session-storage", // Tên key trong sessionStorage
-                getStorage: () => sessionStorage, // Lưu trữ trong sessionStorage
-            }
-        )
+  devtools(
+    persist(
+      immer((...a) => ({
+        ...createAuthSlice(...a),
+      })),
+      {
+        name: 'session-storage', // Key in sessionStorage
+        storage: createJSONStorage(() => sessionStorage),
+      }
     )
+  )
 );
 
 export const useStore = createSelectors(useStoreBase);

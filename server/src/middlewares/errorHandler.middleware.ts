@@ -15,6 +15,7 @@ const formatZodError = (res: Response, error: z.ZodError) => {
         errorCode: ErrorCodeEnum.VALIDATION_ERROR,
     });
 };
+
 export const errorHandler: ErrorRequestHandler = (
     error,
     req,
