@@ -72,3 +72,21 @@ npm run dev
 - Waring của các trang
 - Lỗi cho phép tạo/chỉnh sửa project trùng (chỉ cho phép icon giống-tên khác và ngược lại)
 - Lỗi cho phép tạo/chỉnh sửa workspace trùng tên
+
+
+## Demo
+![image](https://github.com/user-attachments/assets/77a4d7b3-6db7-4b5f-bb8a-66f904651506)
+![image](https://github.com/user-attachments/assets/c6a1632d-61fe-42f0-9111-36e208910cfd)
+![image](https://github.com/user-attachments/assets/ae8e71a8-6e96-41f5-b0e1-045250f7393b)
+![image](https://github.com/user-attachments/assets/3c9d6866-262b-4a1e-af42-3b01e6531350)
+![image](https://github.com/user-attachments/assets/0b83340d-177e-48a0-a244-8e94b85aa1f7)
+![image](https://github.com/user-attachments/assets/e2c4a102-756f-4ca9-8bdd-d37eb12f7732)
+![image](https://github.com/user-attachments/assets/658740a5-74fa-40da-8fb0-1669f5e2fdef)
+
+
+
+
+
+
+
+
