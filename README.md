@@ -36,10 +36,11 @@ FRONTEND_GOOGLE_CALLBACK_URL=http://localhost:5173/google/callback
 
 
 ## Chạy dự án
-Cài đặt dependencies and khởi động server phát triển:
-npm install  
+- Cài đặt dependencies and khởi động server phát triển:
+npm install
+  
 npm run dev
-Truy cập FE tại http://localhost:5173.
+- Truy cập FE tại http://localhost:5173.
 
 
 ## Các cập nhật mới (Tháng 7 năm 2025)
