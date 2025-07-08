@@ -8,6 +8,7 @@ hody {
   height: 100%;
   font-family: "DM Sans", serif !important;
 }
+
 em-emoji-picker {
   width: 350px;
   height: 400px;
@@ -18,32 +19,41 @@ em-emoji-picker {
 /* Custom scrollbar styles */
 .scrollbar {
   overflow-y: auto;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: rgba(176, 174, 174, 0.7) #ddd; /* Firefox */
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: rgba(176, 174, 174, 0.7) #ddd;
+  /* Firefox */
   transition: scrollbar-color 0.3s ease, scrollbar-width 0.3s ease;
 }
 
 .scrollbar::-webkit-scrollbar {
-  width: 8px; /* Scrollbar width */
+  width: 8px;
+  /* Scrollbar width */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-  background: #ddd; /* Track color */
+  background: #ddd;
+  /* Track color */
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: gray; /* Thumb color */
-  border-radius: 100%; /* Rounded edges */
-  transition: background-color 0.3s ease; /* Smooth color change */
+  background-color: gray;
+  /* Thumb color */
+  border-radius: 100%;
+  /* Rounded edges */
+  transition: background-color 0.3s ease;
+  /* Smooth color change */
 }
 
 .scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: darkgray; /* Hover effect */
+  background-color: darkgray;
+  /* Hover effect */
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* màu nền chính trắng nhẹ #f5f6fb */
+    --background: 228 33% 97%;
 
     --foreground: 0 0% 3.9%;
 
@@ -93,7 +103,8 @@ em-emoji-picker {
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* màu nền khung sidebar - trắng  */
+    --sidebar-background: 0 0% 100%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
 
@@ -108,7 +119,42 @@ em-emoji-picker {
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* màu nền khung logo - trắng  */
+    --sidebar-logo: 0 0% 100%;
+
+    /* màu nền khung icon sidebar */
+    --sidebar-frameicon: 330, 80%, 58%;
+
+    /* màu border khung */
+    --sidebar-border: 216 30% 81%;
+
+    /* màu chữ*/
+    --sidebar-text: 0 0% 3.9%;
+
+    /* màu khung input form create*/
+    --sidebar-input: 230.769, 100%, 98%;
+
+    /* màu hover submenu ở trạng thái thu gọn sidebar */
+    --sidebar-submenu:233.514, 95%, 92%;
+
+    /* màu hover dropdown menu*/
+    --dropdown-hover-bg: 230.769, 100%, 98%;
+
+    /* màu nền khung navbar - trắng */
+    --navbar-background: 0 0% 100%;
+
+    /* màu nền icon navbar*/
+    --navbar-icon: 330, 80%, 58%;
+
+    /* màu hover button create hồng đậm #c03178 */
+    --navbar-createbtn-hover: 330.21 59% 47%;
+
+    /* màu nền icon dashboard*/
+    --dashboard-icon: 233.514, 95%, 92%;
+
   }
+
   .dark {
     --background: 0 0% 3.9%;
 
@@ -158,11 +204,13 @@ em-emoji-picker {
 
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
+    /* màu nền khung sidebar - xám #191c24 */
+    --sidebar-background: 223.636, 18%, 12%;
 
     --sidebar-foreground: 240 4.8% 95.9%;
 
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* màu nền khung workspace - hồng */
+    --sidebar-primary: 330, 80%, 58%;
 
     --sidebar-primary-foreground: 0 0% 100%;
 
@@ -173,18 +221,50 @@ em-emoji-picker {
     --sidebar-border: 240 3.7% 15.9%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* màu nền khung logo */
+    --sidebar-logo: 228 33% 97%;
+
+    /* màu nền khung icon sidebar */
+    --sidebar-frameicon: 330, 80%, 58%;
+
+    /* màu border khung*/
+    --sidebar-border: 222.857, 7%, 19%;
+
+    /* màu chữ*/
+    --sidebar-text: 0 0% 100%;
+
+    /* màu khung input form create*/
+    --sidebar-input: 214.286, 14%, 19%;
+
+     /* màu hover submenu ở trạng thái thu gọn sidebar */
+    --sidebar-submenu:230, 17%, 7%;
+
+    /* màu hover dropdown menu*/
+    --dropdown-hover-bg: 225, 17%, 9%;
+
+    /* màu nền khung navbar*/
+    --navbar-background: 223.636, 18%, 12%;
+
+    /* màu nền icon navbar*/
+    --navbar-icon: 0 0% 100%;
+
+    /* màu nền icon dashboard*/
+    --dashboard-icon: 0 0% 100%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   button[data-placeholder] {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
 }

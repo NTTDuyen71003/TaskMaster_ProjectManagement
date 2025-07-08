@@ -2,13 +2,12 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader } from "lucide-react";
+import { CalendarIcon, Loader, Search } from "lucide-react";
 import {
     Form,
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import {
@@ -23,13 +22,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../../ui/textarea";
-import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { getAvatarColor, getAvatarFallbackText, transformOptions } from "@/lib/helper";
-import useWorkspaceId from "@/hooks/use-workspace-id";
+import { getAvatarColor, getAvatarFallbackText } from "@/lib/helper";
 import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-member";
@@ -38,6 +33,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editTaskMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { TaskType } from "@/types/api.type";
+import { getDateFnsLocale } from "@/languages/getDateFnsLocale";
+import i18n from "@/languages/i18n";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import useWorkspaceId from "@/hooks/use-workspace-id";
+import { cn } from "@/lib/utils";
+
 
 export default function EditTaskForm(props: {
     task: TaskType;
@@ -48,38 +50,45 @@ export default function EditTaskForm(props: {
     const workspaceId = useWorkspaceId();
     const queryClient = useQueryClient();
     const { data: memberData } = useGetWorkspaceMembers(workspaceId);
+    const lang = i18n.language;
+    const dateLocale = getDateFnsLocale();
+    const formatStr = lang === "vi" ? "dd'/'MM'/'yyyy" : "PPP";
+    const [open, setOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchMem, setSearchMem] = useState("");
+    const { t } = useTranslation();
 
-    const { data, isLoading } = useGetProjectsInWorkspaceQuery({
+
+    const { data } = useGetProjectsInWorkspaceQuery({
         workspaceId,
+        pageSize: 100,
         skip: !!projectId,
     });
+
 
     const { mutate, isPending } = useMutation({
         mutationFn: editTaskMutationFn,
     });
 
+
     const projects = data?.projects || [];
     const members = memberData?.members || [];
+
 
     // Workspace Projects
     const projectOptions = projects?.map((project) => {
         return {
-            label: (
-                <div className="flex items-center gap-1">
-                    <span>{project.emoji}</span>
-                    <span>{project.name}</span>
-                </div>
-            ),
+            label: `${project.emoji} ${project.name}`,
             value: project._id,
         };
     });
+
 
     // Workspace Members
     const membersOptions = members?.map((member) => {
         const name = member.userId?.name || "Unknown";
         const initials = getAvatarFallbackText(name);
         const avatarColor = getAvatarColor(name);
-
         return {
             label: (
                 <div className="flex items-center space-x-2">
@@ -94,33 +103,35 @@ export default function EditTaskForm(props: {
         };
     });
 
+
     const formSchema = z.object({
         title: z.string().trim().min(1, {
-            message: "Title is required",
+            message: t("taskboard-create-task-title-require"),
         }),
         description: z.string().trim(),
         projectId: z.string().trim().min(1, {
-            message: "Project is required",
+            message: t("taskboard-create-task-project-require"),
+        }),
+        assignedTo: z.string().trim().min(1, {
+            message: t("taskboard-create-task-assignedto-require"),
+        }),
+        dueDate: z.date({
+            required_error: t("taskboard-create-task-duedate-require"),
         }),
         status: z.enum(
             Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum],
             {
-                required_error: "Status is required",
+                required_error: t("taskboard-create-task-status-require"),
             }
         ),
         priority: z.enum(
             Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum],
             {
-                required_error: "Priority is required",
+                required_error: t("taskboard-create-task-priority-require"),
             }
         ),
-        assignedTo: z.string().trim().min(1, {
-            message: "AssignedTo is required",
-        }),
-        dueDate: z.date({
-            required_error: "A due date is required.",
-        }),
     });
+
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -135,11 +146,20 @@ export default function EditTaskForm(props: {
         },
     });
 
-    const taskStatusList = Object.values(TaskStatusEnum);
-    const taskPriorityList = Object.values(TaskPriorityEnum);
 
-    const statusOptions = transformOptions(taskStatusList);
-    const priorityOptions = transformOptions(taskPriorityList);
+    const taskStatusList = Object.values(TaskStatusEnum);
+    const statusOptions = taskStatusList.map(status => ({
+        value: status,
+        label: t(`status-${status.toLowerCase().replace('_', '-')}`)
+    }));
+
+
+    const taskPriorityList = Object.values(TaskPriorityEnum); // ["LOW", "MEDIUM", "HIGH"]
+    const priorityOptions = taskPriorityList.map(priority => ({
+        value: priority,
+        label: t(`priority-${priority.toLowerCase().replace('_', '-')}`)
+    }));
+
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         if (isPending) return;
@@ -149,9 +169,10 @@ export default function EditTaskForm(props: {
         // Check if projectId is valid
         if (!effectiveProjectId) {
             toast({
-                title: "Error",
-                description: "Project ID is required to update the task",
+                title: t("settingboard-edit-error"),
+                description: t("taskboard-update-task-error-desc"),
                 variant: "destructive",
+                duration: 2500,
             });
             return;
         }
@@ -175,150 +196,165 @@ export default function EditTaskForm(props: {
                     queryKey: ["all-tasks", workspaceId],
                 });
                 toast({
-                    title: "Success",
-                    description: "Task updated successfully",
+                    title: t("navbar-create-project-success"),
+                    description: t("taskboard-update-task-success-desc"),
                     variant: "success",
+                    duration: 2500,
                 });
                 onClose();
             },
-            onError: (error) => {
+            onError: () => {
                 toast({
-                    title: "Error",
-                    description: error.message,
+                    title: t("settingboard-edit-error"),
+                    description: t("settingboard-edit-error-description"),
                     variant: "destructive",
+                    duration: 2500,
                 });
             },
         });
     };
 
+
+    const filteredOptions = projectOptions?.filter((option) => {
+        const projectName =
+            typeof option.label === "string"
+                ? option.label
+                : (projects.find((p) => p._id === option.value)?.name ?? "");
+        return projectName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+
+    const filteredMembersOptions = membersOptions?.filter((option) => {
+        const member = members.find((m) => m.userId._id === option.value);
+        const memberName = member?.userId?.name || "";
+        return memberName.toLowerCase().includes(searchMem.toLowerCase());
+    });
+
+    
     return (
-        <div className="w-full h-auto max-w-full">
-            <div className="h-full">
-                <div className="mb-5 pb-2 border-b">
-                    <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1 text-center sm:text-left">
-                        Edit Task
-                    </h1>
-                    <p className="text-muted-foreground text-sm leading-tight">
-                        Update task details, resources, and team assignments
-                    </p>
-                </div>
+        <div className="card">
+            <div className="card-body bg-sidebar">
+                <h4
+                    className="card-title text-center font-bold"
+                >
+                    {t("taskboard-createbtn")}
+                </h4>
                 <Form {...form}>
-                    <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-                        <div>
+                    <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
+
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
                                 name="title"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                                            Task title
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Website Redesign"
-                                                className="!h-[48px]"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                    <>
+                                        <label htmlFor="exampleInputName1">
+                                            {t("taskboard-form-create-title")}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white rounded-lg"
+                                            id="exampleInputName1"
+                                            placeholder={t("taskboard-form-create-title-placeholder")}
+                                            {...field}
+                                        />
+                                        <FormMessage className="text-red-500 text-sm" />
+                                    </>
                                 )}
                             />
                         </div>
 
-                        <div>
+
+                        {/* {Description} */}
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                                            Task description
-                                            <span className="text-xs font-extralight ml-2">
-                                                Optional
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea rows={1} placeholder="Description" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                    <>
+                                        <label htmlFor="exampleTextarea1">
+                                            {t("taskboard-create-task-description")}
+                                        </label>
+                                        <textarea
+                                            className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white rounded-lg"
+                                            id="exampleTextarea1"
+                                            rows={4}
+                                            placeholder={t("taskboard-form-create-task-description-placeholder")}
+                                            {...field}
+                                        ></textarea>
+                                    </>
                                 )}
                             />
                         </div>
 
-                        {!projectId && (
-                            <div>
-                                <FormField
-                                    control={form.control}
-                                    name="projectId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Project</FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a project" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {isLoading && (
-                                                        <div className="my-2">
-                                                            <Loader className="w-4 h-4 place-self-center flex animate-spin" />
-                                                        </div>
-                                                    )}
-                                                    <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                                                        {projectOptions?.map((option) => (
-                                                            <SelectItem
-                                                                key={option.value}
-                                                                className="!capitalize cursor-pointer"
-                                                                value={option.value}
-                                                            >
-                                                                {option.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </div>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        )}
 
-                        <div>
+                        {/* {Project} */}
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
-                                name="assignedTo"
+                                name="projectId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Assigned To</FormLabel>
+                                        <label>{t("taskboard-form-create-project")}</label>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select an assignee" />
+                                                <SelectTrigger
+                                                    className={cn(
+                                                        "p-h",
+                                                        !field.value ? "text-muted" : "text-black dark:text-white"
+                                                    )}
+                                                >
+                                                    <SelectValue placeholder={t("taskboard-form-create-project-placeholder")} />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+
+                                            {/* lay du lieu project tu db de add vao task */}
+                                            <SelectContent className="z-[9999]">
+                                                {/* Search Input */}
+                                                <ul className="navbar-nav w-100">
+                                                    <li className="nav-item w-100">
+                                                        <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                                            <div className="relative w-full">
+                                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                                    <Search className="w-4 h-4 text-muted" />
+                                                                </span>
+                                                                <input
+                                                                    type="text"
+                                                                    value={searchTerm}
+                                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                                    onKeyDown={(e) => e.stopPropagation()}
+                                                                    onKeyUp={(e) => e.stopPropagation()}
+                                                                    className="form-control w-full pl-10 rounded-lg bg-sidebar border-sidebar-border text-black dark:text-white"
+                                                                    placeholder={t("memberdashboard-search-placeholder")}
+                                                                />
+                                                            </div>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+
+                                                {/*Filtered List or No Match */}
                                                 <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                                                    {membersOptions?.map((option) => (
-                                                        <SelectItem
-                                                            className="cursor-pointer"
-                                                            key={option.value}
-                                                            value={option.value}
-                                                        >
-                                                            {option.label}
-                                                        </SelectItem>
-                                                    ))}
+                                                    {filteredOptions && filteredOptions.length > 0 ? (
+                                                        filteredOptions.map((option) => (
+                                                            <SelectItem
+                                                                className="cursor-pointer"
+                                                                key={option.value}
+                                                                value={option.value}
+                                                            >
+                                                                {option.label}
+                                                            </SelectItem>
+                                                        ))
+                                                    ) : (
+                                                        <div className="px-4 py-2 text-sm text-muted">
+                                                            {t("taskboard-create-task-no-member")}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </SelectContent>
+
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
@@ -326,37 +362,124 @@ export default function EditTaskForm(props: {
                             />
                         </div>
 
-                        <div className="!mt-2">
+
+                        {/*Members AssigneeTo*/}
+                        <div className="form-group">
+                            <FormField
+                                control={form.control}
+                                name="assignedTo"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <label>{t("taskboard-assignedto")}</label>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger
+                                                    className={cn(
+                                                        "p-h",
+                                                        !field.value ? "text-muted" : "text-black dark:text-white"
+                                                    )}
+                                                >
+                                                    <SelectValue placeholder={t("taskboard-create-task-assignedto-placeholder")} />
+                                                </SelectTrigger>
+                                            </FormControl>
+
+                                            {/* lay du lieu member tu db de add vao task */}
+                                            <SelectContent className="z-[9999]">
+                                                {/* Search Input */}
+                                                <ul className="navbar-nav w-100">
+                                                    <li className="nav-item w-100">
+                                                        <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                                            <div className="relative w-full">
+                                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                                    <Search className="w-4 h-4 text-muted" />
+                                                                </span>
+                                                                <input
+                                                                    type="text"
+                                                                    value={searchMem}
+                                                                    onChange={(e) => setSearchMem(e.target.value)}
+                                                                    onKeyDown={(e) => e.stopPropagation()}
+                                                                    onKeyUp={(e) => e.stopPropagation()}
+                                                                    className="form-control w-full pl-10 rounded-lg bg-sidebar border-sidebar-border text-black dark:text-white"
+                                                                    placeholder={t("memberdashboard-search-placeholder")}
+                                                                />
+                                                            </div>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+
+                                                {/*Filtered List or No Match */}
+                                                <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                                                    {filteredMembersOptions && filteredMembersOptions.length > 0 ? (
+                                                        filteredMembersOptions.map((option) => (
+                                                            <SelectItem
+                                                                className="cursor-pointer"
+                                                                key={option.value}
+                                                                value={option.value}
+                                                            >
+                                                                {option.label}
+                                                            </SelectItem>
+                                                        ))
+                                                    ) : (
+                                                        <div className="px-4 py-2 text-sm text-muted">
+                                                            {t("taskboard-create-task-no-member")}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </SelectContent>
+
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+
+                        {/* {Due Date} */}
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
                                 name="dueDate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Due Date</FormLabel>
-                                        <Popover>
+                                        <label>{t("taskboard-create-task-duedate")}</label>
+                                        <Popover open={open} onOpenChange={setOpen}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
-                                                        variant={"outline"}
+                                                        variant="datefield"
+                                                        size="date"
                                                         className={cn(
-                                                            "w-full flex-1 pl-3 text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
+                                                            "p-h w-full flex-1 text-left font-normal justify-between",
+                                                            !field.value ? "text-muted" : "text-black dark:text-white"
                                                         )}
                                                     >
                                                         {field.value ? (
-                                                            format(field.value, "PPP")
+                                                            format(field.value, formatStr, { locale: dateLocale })
                                                         ) : (
-                                                            <span>Pick a date</span>
+                                                            <span className="text-muted">{t("taskboard-create-task-duedate-placeholder")}</span>
                                                         )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        <CalendarIcon
+                                                            className={cn(
+                                                                "h-4 w-4",
+                                                                field.value ? "text-black dark:text-white" : "text-muted"
+                                                            )}
+                                                        />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
+                                            <PopoverContent className="w-auto p-0 z-[9999]" align="start">
                                                 <Calendar
                                                     mode="single"
                                                     selected={field.value}
-                                                    onSelect={field.onChange}
+                                                    onSelect={(date) => {
+                                                        field.onChange(date)
+                                                        setOpen(false)
+                                                    }}
+                                                    locale={getDateFnsLocale()}
                                                     disabled={(date) =>
                                                         date < new Date(new Date().setHours(0, 0, 0, 0)) ||
                                                         date > new Date("2100-12-31")
@@ -373,26 +496,32 @@ export default function EditTaskForm(props: {
                             />
                         </div>
 
-                        <div>
+
+                        {/* {Status} */}
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
                                 name="status"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Status</FormLabel>
+                                        <label>{t("dashboard-task-status")}</label>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue
-                                                        className="!text-muted-foreground !capitalize"
-                                                        placeholder="Select a status"
-                                                    />
+                                                <SelectTrigger
+                                                    className={cn(
+                                                        "p-h",
+                                                        !field.value ? "text-muted" : "text-black dark:text-white"
+                                                    )}
+                                                >
+                                                    <SelectValue placeholder={t("taskboard-create-task-status-placeholder")} />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+
+                                            {/* lay du lieu trang thai tu db de add vao task */}
+                                            <SelectContent className="z-[9999]">
                                                 {statusOptions?.map((status) => (
                                                     <SelectItem
                                                         className="!capitalize"
@@ -403,6 +532,7 @@ export default function EditTaskForm(props: {
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
+
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
@@ -410,23 +540,31 @@ export default function EditTaskForm(props: {
                             />
                         </div>
 
-                        <div>
+
+                        {/* {Priority} */}
+                        <div className="form-group">
                             <FormField
                                 control={form.control}
                                 name="priority"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Priority</FormLabel>
+                                        <label>{t("dashboard-task-priority")}</label>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a priority" />
+                                                <SelectTrigger
+                                                    className={cn(
+                                                        "p-h",
+                                                        !field.value ? "text-muted" : "text-black dark:text-white"
+                                                    )}
+                                                >
+                                                    <SelectValue placeholder={t("taskboard-create-task-priority-placeholder")} />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+
+                                            <SelectContent className="z-[9999]">
                                                 {priorityOptions?.map((priority) => (
                                                     <SelectItem
                                                         className="!capitalize"
@@ -444,14 +582,21 @@ export default function EditTaskForm(props: {
                             />
                         </div>
 
-                        <Button
-                            className="flex place-self-end h-[40px] text-white font-semibold"
-                            type="submit"
+
+                        {/* nút cập nhật task */}
+                        <button
                             disabled={isPending}
+                            type="submit"
+                            className="btn bg-sidebar-frameicon mr-2"
                         >
-                            {isPending && <Loader className="animate-spin" />}
-                            Update
-                        </Button>
+                            {isPending && <Loader />}
+                            {t("projectboard-edit-updatebtn")}
+                        </button>
+                        <button
+                            className="btn btn-dark" type="button"
+                            onClick={onClose} >{t("sidebar-createworkspace-cancelbtn")}
+                        </button>
+
                     </form>
                 </Form>
             </div>

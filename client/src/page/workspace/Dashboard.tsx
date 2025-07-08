@@ -1,56 +1,51 @@
-import { Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import useCreateProjectDialog from "@/hooks/use-create-project-dialog";
 import WorkspaceAnalytics from "@/components/workspace/workspace-analytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecentProjects from "@/components/workspace/project/recent-projects";
 import RecentTasks from "@/components/workspace/task/recent-tasks";
 import RecentMembers from "@/components/workspace/member/recent-members";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+
+
 const WorkspaceDashboard = () => {
-  const { onOpen } = useCreateProjectDialog();
+
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState("projects");
+
+
   return (
-    <main className="flex flex-1 flex-col py-4 md:pt-3">
-      <div className="flex items-center justify-between space-y-2 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Workspace Overview
-          </h2>
-          <p className="text-muted-foreground">
-            Here&apos;s an overview for this workspace!
-          </p>
-        </div>
-        <Button onClick={onOpen}>
-          <Plus />
-          New Project
-        </Button>
-      </div>
+    <div className="main-panel">
       <WorkspaceAnalytics />
-      <div className="mt-4">
-        <Tabs defaultValue="projects" className="w-full border rounded-lg p-2">
-          <TabsList className="w-full justify-start border-0 bg-gray-50 px-1 h-12">
+      
+      <div className="mt-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="card-body bg-sidebar card-border">
+          <TabsList className="d-flex flex-wrap align-items-center">
             <TabsTrigger className="py-2" value="projects">
-              Recent Projects
+              <h4 className="card-title mb-1 title-font">{t("dashboard-recent-projects")}</h4>
             </TabsTrigger>
             <TabsTrigger className="py-2" value="tasks">
-              Recent Tasks
+              <h4 className="card-title mb-1 title-font">{t("dashboard-recent-tasks")}</h4>
             </TabsTrigger>
             <TabsTrigger className="py-2" value="members">
-              Recent Members
+              <h4 className="card-title mb-1 title-font">{t("dashboard-recent-members")}</h4>
             </TabsTrigger>
+              <p className="text-muted mb-1 py-2 ms-auto">{t("dashboard-data-status")}</p>
           </TabsList>
-          <TabsContent value="projects">
-            <RecentProjects />
-          </TabsContent>
-          <TabsContent value="tasks">
-            <RecentTasks />
-          </TabsContent>
-          <TabsContent value="members">
-            <RecentMembers />
-          </TabsContent>
+
+          <div className="row">
+            <TabsContent value="projects" className="preview-list">
+              <RecentProjects />
+            </TabsContent>
+            <TabsContent value="tasks" className="preview-list">
+              <RecentTasks />
+            </TabsContent>
+            <TabsContent value="members" className="preview-list">
+              <RecentMembers />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
-    </main>
+    </div>
   );
 };
 

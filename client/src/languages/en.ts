@@ -1,0 +1,333 @@
+const en = {
+    translation: {
+        // Login & Sign Up
+        "login-title": "LOGIN",
+        "signup-title": "SIGN UP",
+        "login-email-placeholder": "Email",
+        "login-password-placeholder": "Password",
+        "login-social-title": "Or sign in with",
+        "login-email-require": "Email is required",
+        "login-email-invalid": "Invalid email address",
+        "login-password-require": "Password is required",
+        "signup-social-title": "Or sign up with",
+        "already-have-account": "Already have an account?",
+        "signin-title": "Sign in",
+        "singup-name-require": "Name is required",
+        "signup-name-placeholder": "Name",
+
+
+        // Sidebar
+        "workspace-not-select": "No Workspace selected",
+        "sub-title-workspace": "Free workspace",
+        "workspace-dialog-title": "Workspaces",
+        "workspace-dialog-add": "+ Add New Workspace",
+        "nav-title": "Navigation",
+        "sidebar-dashboard": "Dashboard",
+        "sidebar-projects": "Projects",
+        "sidebar-projects-announce": "There is no project in this Workspace yet.Projects created will be shown up here.",
+        "sidebar-projects-edit": "Edit",
+        "sidebar-projects-delete": "Delete",
+        "sidebar-tasks": "Tasks",
+        "sidebar-members": "Members",
+        "sidebar-settings": "Settings",
+        "sidebar-createworkspace-title": "Let's build a Workspace",
+        "sidebar-createworkspace-name": "Workspace name",
+        "sidebar-createworkspace-placeholdername": "Hutech's Uni",
+        "sidebar-createworkspace-decription": "Workspace description (Optional)",
+        "sidebar-createworkspace-placeholderdecription": "Our team organizes marketing projects and tasks here.",
+        "sidebar-createworkspace-btn": "Create workspace",
+        "sidebar-createworkspace-cancelbtn": "Cancel",
+        "sidebar-project-deletetitle": "Delete Project",
+        "sidebar-project-deletedescription1": "Are you sure you want to delete",
+        "sidebar-project-deletedescription3": "This action cannot be undone.",
+        "sidebar-project-deletebtn": "Delete",
+        "sidebar-project-delete-desc": "All project data has been deleted.",
+        "sidebar-workspace-name-require": "Workspace name is required",
+        "sidebar-workspace-search-placeholder": "Search workspaces...",
+        "sidebar-create-workspace-success-desc": "Workspace created successfully",
+        "sidebar-no-workspace": "No workspace found here. Create a new one or join someone else's workspace.",
+        "sidebar-create-workspace-name-require": "Workspace name is required",
+        "sidebar-create-workspace-name-duplicate": "Workspace with this name already exists",
+        "sidebar-loading": "Loading...",
+        "sidebar-workspace-not-found": "No workspace found",
+        "sidebar-workspace-show-more": "...Show more",
+        "sidebar-workspace-show-less": "...Show less",
+        "sidebar-asc": "Asc",
+        "sidebar-desc": "Desc",
+        "sidebar-hide": "Hide",
+
+
+        // Navbar
+        "navbar-search-placeholder": "Search projects...",
+        "create-project-btn": "+ Create New Project",
+        "navbar-dialog-announce": "TBA",
+        "navbar-profile-title": "Profile",
+        "navbar-profile-settings": "Profile settings (TBA)",
+        "navbar-change-theme": "Change theme",
+        "switch-language": "Change language",
+        "switch-language-en": "English",
+        "switch-language-vi": "Vietnamese",
+        "switch-language-es": "Spanish (TBA)",
+        "navbar-logout": "Log out",
+        "navbar-advanced-settings": "Advanced settings (TBA)",
+        "navbar-create-project-title1": "Create Project",
+        "navbar-create-project-title2": "Organize and manage tasks, resources, and team collaboration",
+        "navbar-create-project-icon": "Select an icon",
+        "navbar-create-project-name": "Project title",
+        "navbar-create-project-placeholder-name": "Project name",
+        "navbar-create-project-description": "Project description",
+        "navbar-create-project-placeholder-description": "Write project description here",
+        "navbar-create-project-btn": "Create project",
+        "navbar-logout-title": "Are you sure you want to log out?",
+        "navbar-logout-description": "This will end your current session and you will need to log in again to access your account.",
+        "navbar-logout-confirm": "Sign out",
+        "navbar-create-project-success": "Success",
+        "navbar-create-project-success-desc": "Project created successfully",
+        "navbar-create-project-error-desc": "There is something wrong,please try again later.",
+        "navbar-create-title-require": "Project title is required",
+        "navbar-create-name-require": "A project with this name and icon already exists",
+        "navbar-search-createdby": "Created by",
+        "navbar-search-notfound": "No projects found for",
+        "navbar-search-notfound1": "No projects found",
+        "navbar-theme-search": "Search themes...",
+        "navbar-theme-search-notfound": "No themes found",
+        "navbar-theme-light": "Light Mode",
+        "navbar-theme-light-desc": "Clean and bright interface",
+        "navbar-theme-dark": "Dark Mode",
+        "navbar-theme-dark-desc": "Easy on the eyes",
+        "navbar-theme-special": "Special Mode",
+        "navbar-theme-title-mobi": "Choose a theme",
+        "navbar-language-title-mobi": "Choose a language",
+        "navbar-language-search": "Search languages...",
+        "navbar-language-search-notfound": "No languages found",
+        "navbar-dialog-announce-system-title": "Notifications",
+        "navbar-new-notifi-title": "new",
+        // Notifications
+        "navbar-no-notifications": "No notifications",
+        "navbar-view-all-notifications": "See all notifications",
+        "navbar-search-notifications": "Search notifications...",
+        "navbar-search-notifications-notfound": "No notifications found",
+        // Member notifi
+        notifications: {
+            MEMBER_JOINED: {
+                message: "{{joinerName}} has joined your workspace \"{{workspaceName}}\""
+            },
+            MEMBER_REMOVED: {
+                message: "{{removerName}} has removed you from workspace \"{{workspaceName}}\""
+            },
+            WORKSPACE_NAME_CHANGED: {
+                "message": "{{changerName}} has changed workspace name from \"{{oldWorkspaceName}}\" to \"{{newWorkspaceName}}\""
+            },
+            WORKSPACE_DELETED: {
+                "message": "Workspace \"{{workspaceName}}\" has been deleted by {{removerName}}"
+            },
+            PROJECT_CREATED: {
+                "message": "{{creatorName}} has created \"{{projectEmoji}}{{projectName}}\" in \"{{workspaceName}}\""
+            },
+            PROJECT_NAME_CHANGED: {
+                "message": "{{changerName}} has changed project name from \"{{oldProjectEmoji}}{{oldProjectName}}\" to \"{{newProjectEmoji}}{{newProjectName}}\" in workspace \"{{workspaceName}}\""
+            },
+            PROJECT_DELETED: {
+                "message": "{{deleterName}} has deleted project \"{{projectEmoji}}{{projectName}}\" from workspace \"{{workspaceName}}\""
+            },
+            TASK_ASSIGNED: {
+                "message": "{{assignerName}} assigned you a new task: \"{{taskTitle}}\" in project \"{{projectEmoji}}{{projectName}}\" (workspace: {{workspaceName}})."
+            },
+            TASK_UNASSIGNED: {
+                "message": "{{unassignerName}} removed you from task \"{{taskTitle}}\" in project \"{{projectEmoji}}{{projectName}}\" (workspace: {{workspaceName}})."
+            },
+            TASK_STATUS_CHANGED: {
+                "message": "{{changerName}} changed status of task \"{{taskTitle}}\" in project \"{{projectEmoji}}{{projectName}}\" (workspace: {{workspaceName}})."
+            },
+            TASK_DELETED: {
+                "message": "{{deleterName}} has deleted task \"{{taskTitle}}\" from project \"{{projectEmoji}}{{projectName}}\" (workspace: {{workspaceName}})."
+            },
+        },
+        // Time notifi
+        timeAgo: {
+            justNow: "Just now",
+            minutesAgo: "{{count}} minute ago",
+            minutesAgo_plural: "{{count}} minutes ago",
+            hoursAgo: "{{count}} hour ago",
+            hoursAgo_plural: "{{count}} hours ago",
+            daysAgo: "{{count}} day ago",
+            daysAgo_plural: "{{count}} days ago",
+            weeksAgo: "{{count}} week ago",
+            weeksAgo_plural: "{{count}} weeks ago",
+            monthsAgo: "{{count}} month ago",
+            monthsAgo_plural: "{{count}} months ago",
+            yearsAgo: "{{count}} year ago",
+            yearsAgo_plural: "{{count}} years ago"
+        },
+
+
+
+        // Dashboard 
+        "dashboard-total-task": "Total Task",
+        "dashboard-overdue-task": "Overdue Task",
+        "dashboard-completed-task": "Completed Task",
+        "dashboard-recent-projects": "Recent Projects",
+        "dashboard-recent-tasks": "Recent Tasks",
+        "dashboard-recent-members": "Recent Members",
+        "dashboard-data-status": "Data status",
+        "dashboard-project-announce": "No Projects created yet",
+        "dashboard-project-created": "Created by",
+        "dashboard-task-announce": "No Tasks created yet",
+        "dashboard-task-user": "Assignee",
+        "dashboard-task-inproject": "Project",
+        "dashboard-task-code": "Task code",
+        "dashboard-task-title": "Task title",
+        "dashboard-task-created": "Created",
+        "dashboard-task-status": "Status",
+        "dashboard-task-priority": "Priority",
+        "dashboard-owner": "Owner",
+        "dashboard-admin": "Admin",
+        "dashboard-member": "Member",
+        "dashboard-member-joinday": "Joined",
+        // Dashboard recent tasks logs
+        "dashboard-status-todo": "TODO",
+        "dashboard-status-in_progress": "IN PROGRESS",
+        "dashboard-status-done": "DONE",
+        "dashboard-status-backlog": "BACKLOG",
+        "dashboard-status-in_review": "IN REVIEW",
+        "dashboard-priority-low": "LOW",
+        "dashboard-priority-medium": "MEDIUM",
+        "dashboard-priority-high": "HIGH",
+
+
+        //Project dashboard
+        "projectboard-edit-title": "Edit Project",
+        "projectboard-edit-updatebtn": "Update",
+        "projectboard-task-assign": "Assigned To",
+        "project-load-fail": "Failed to load",
+
+
+        //Task dashboard
+        "taskboard-title": "All Tasks",
+        "taskboard-createbtn": "New Task",
+        "taskboard-search-placeholder": "Filter tasks...",
+        "taskboard-status": "Status",
+        "taskboard-piority": "Priority",
+        "taskboard-assignedto": "Assigned to",
+        "taskboard-reset": "Reset",
+        "taskboard-column": "Columns",
+        "taskboard-form-create-title": "Task title",
+        "taskboard-form-create-title-placeholder": "Task name",
+        "taskboard-create-task-description": "Task description (Optional)",
+        "taskboard-form-create-task-description-placeholder": "Write task description here",
+        "taskboard-form-create-project": "Project",
+        "taskboard-form-create-project-placeholder": "Select a project",
+        "taskboard-noresult": "No task found.",
+        "taskboard-create-task-duedate": "Due date",
+        "taskboard-create-task-duedate-placeholder": "Select a due date",
+        "taskboard-create-task-assignedto-placeholder": "Select an assignee",
+        "taskboard-create-task-status-placeholder": "Select a status",
+        "taskboard-create-task-priority-placeholder": "Select a priority",
+        "taskboard-create-task-btn": "Create",
+        "taskboard-create-task-title-require": "Title is required",
+        "taskboard-create-task-project-require": "Project is required",
+        "taskboard-create-task-assignedto-require": "Assignee is required",
+        "taskboard-create-task-status-require": "Status is required",
+        "taskboard-create-task-duedate-require": "Due date is required",
+        "taskboard-create-task-priority-require": "Priority is required",
+        "taskboard-create-task-success-desc": "Task created successfully",
+        "taskboard-create-task-no-member": "No members found",
+        "taskboard-update-task-success-desc": "Task updated successfully",
+        "taskboard-update-task-error-desc": "Project ID is required to update the task",
+        "taskboard-active-filter": "Active filters:",
+        "taskboard-search": "Search task title...",
+        "taskboard-search-all": "Search",
+        "taskboard-clear-all": "Clear all",
+        "taskboard-clear-allfilter": "Clear all filters",
+        "taskboard-table-delete-desc": "Delete task successfully",
+        "taskboard-search-data-result-notfound": "No results found",
+        "taskboard-search-column": "Search columns...",
+        "taskboard-search-column-notfound": "No columns found",
+        "taskboard-delete-task-title": "Delete Task",
+        "taskboard-delete-task-description": "Are you sure you want to delete this task?",
+        "taskboard-previous": "Previous",
+        "taskboard-after": "Next",
+        "taskboard-displayrows": "Display rows",
+        //Task status and priority
+        "status-backlog": "Backlog",
+        "status-todo": "Todo",
+        "status-in-progress": "In Progress",
+        "status-in-review": "In Review",
+        "status-done": "Done",
+        "priority-low": "Low",
+        "priority-medium": "Medium",
+        "priority-high": "High",
+        //Task table
+        "taskboard-column-taskcode": "Task Code",
+        "taskboard-column-title": "Task Title",
+        "taskboard-column-project": "Project",
+        "taskboard-column-assignedto": "Assigned To",
+        "taskboard-column-duedate": "Due Date",
+        "taskboard-column-status": "Status",
+        "taskboard-column-priority": "Priority",
+        "taskboard-column-actions": "Actions",
+
+
+        //Members dashboard
+        "memberdashboard-workspace": "Workspace Members",
+        "memberdashboard-workspace-description": "Workspace members can view and join all workspace projects, tasks, and create new ones.",
+        "memberdashboard-invite-title": "Invite members to join you",
+        "memberdashboard-invite-description": "Anyone with an invite link can join this free Workspace. You can also disable and create a new invite link for this Workspace at any time.",
+        "memberdashboard-link-title": "Copied",
+        "memberdashboard-link-description": "Invite url copied to clipboard",
+        "memberdashboard-search-placeholder": "Search teammates...",
+        "memberdashboard-changerole-success": "Success",
+        "memberdashboard-changerole-success-description": "Member's role changed successfully",
+        "memberdashboard-changerole-error": "Error",
+        "memberdashboard-changerole-error-description": "You do not have permission to change this member's role.",
+        "memberdashboard-role-notfound": "No roles found.",
+        "memberdashboard-role-search": "Select new role...",
+        "memberdashboard-admin-desc": "Can view, create, edit tasks, project and manage settings.",
+        "memberdashboard-member-desc": "Can view,edit only task created by.",
+        "memberdashboard-chat": "Message (TBA)",
+        "memberdashboard-remove-user": "Remove member",
+        "memberdashboard-remove-user-deletedescription1": "Are you sure you want to remove this member?",
+        "memberdashboard-remove-user-success-desc": "This member has been removed from the workspace",
+        "memberdashboard-remove-user-error-title": "Cannot remove member",
+        "memberdashboard-remove-user-error-desc": "Member has",
+        "memberdashboard-remove-user-error-desc1": "pending tasks. Please reassign or complete these tasks first.",
+        "memberdashboard-member-task-checking": "Checking tasks for",
+        "memberdashboard-member-task-checking-desc": "Please wait while we verify if this member has any pending tasks.",
+        "memberdashboard-member-has-task-error-title": "Cannot remove",
+        // Check task
+        "tasks": {
+            "memberdashboard-member-has-pending-tasks_one": "They have {{count}} pending task. Please reassign or complete these tasks first.",
+            "memberdashboard-member-has-pending-tasks_other": "They have {{count}} pending tasks. Please reassign or complete these tasks first.",
+        },
+        // Role member
+        "role.admin": "Admin",
+        "role.member": "Member",
+        "role.owner": "Owner",
+
+
+        //Settingdashboard
+        "settingboard-title": "Workspace Settings",
+        "settingboard-title-desc": "Manage your workspace name, description, and deletion options.",
+        "settingboard-edit-workspace": "Edit Workspace",
+        "settingboard-edit-btn": "Update Workspace",
+        "settingboard-edit-success": "Update Successful",
+        "settingboard-edit-success-description": "Workspace information has been updated.",
+        "settingboard-edit-error": "Error",
+        "settingboard-edit-error-description": "You do not have permission to perform this action",
+        "settingboard-delete-title": "Danger Zone",
+        "settingboard-delete-desc": "This will delete all associated projects, tasks, and member roles. Make sure you really want to do this.",
+        "settingboard-delete-btn": "Delete Workspace",
+        "settingboard-delete-workspace-title": "Workspace",
+        "settingboard-delete-workspace-desc": "This action cannot be undone. All workspace data will be lost.",
+        "settingboard-delete-workspace-success": "Deleted Successfully",
+        "settingboard-delete-workspace-success-desc": "All workspace data has been deleted.",
+        "settingboard-delete-workspace-owner-delete-title": "You cannot delete this workspace",
+        "settingboard-delete-workspace-owner-delete-desc": "You must have at least 1 workspace",
+
+
+        //Role
+        "role-accouncement": "You do not have the permission to view this",
+    },
+};
+
+export default en;

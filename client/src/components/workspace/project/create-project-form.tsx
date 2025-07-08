@@ -3,15 +3,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../../ui/textarea";
 import EmojiPickerComponent from "@/components/emoji-picker";
 import {
   Popover,
@@ -25,165 +19,238 @@ import { useNavigate } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
+
 
 export default function CreateProjectForm({
   onClose,
-}:{
+}: {
   onClose: () => void;
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
   const [emoji, setEmoji] = useState("📊");
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useMutation({
     mutationFn: createProjectMutationFn,
   });
 
+  // Get existing projects to check for duplicates
+  const { data: projectsResponse } = useGetProjectsInWorkspaceQuery({
+    workspaceId,
+    pageSize: 100, // Get a large number to check all projects
+    pageNumber: 1,
+  });
+
+  const existingProjects = projectsResponse?.projects || [];
+
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Project title is required",
+      message: t("navbar-create-title-require"),
     }),
     description: z.string().trim(),
+    emoji: z.string().trim().min(1)
+  }).superRefine((data, ctx) => {
+    const normalizedName = data.name.toLowerCase().trim();
+    const normalizedEmoji = data.emoji;
+
+    const isDuplicate = existingProjects.some(
+      (project: any) =>
+        project.name.toLowerCase().trim() === normalizedName &&
+        project.emoji === normalizedEmoji
+    );
+
+    if (isDuplicate) {
+      ctx.addIssue({
+        path: ["name"],
+        code: z.ZodIssueCode.custom,
+        message: t("navbar-create-name-require"),
+      });
+    }
   });
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
+      emoji,
     },
   });
 
   const handleEmojiSelection = (emoji: string) => {
     setEmoji(emoji);
+    setEmojiPickerOpen(false);
+    form.setValue("emoji", emoji);
   };
-  
+
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
+
+    if (existingProjects && Array.isArray(existingProjects)) {
+      const normalizedName = values.name.toLowerCase().trim();
+
+      const isDuplicate = existingProjects.some(
+        (project: any) =>
+          project.name.toLowerCase().trim() === normalizedName &&
+          project.emoji === emoji // Chỉ cấm nếu emoji cũng giống
+      );
+
+      if (isDuplicate) {
+        form.setError("name", {
+          type: "manual",
+          message: t("navbar-create-name-require"),
+        });
+        return;
+      }
+    }
+
     const payload = {
       workspaceId,
       data: {
-        emoji,
         ...values,
       },
     };
+
     mutate(payload, {
       onSuccess: (data) => {
-        const project=data.project;
+        const project = data.project;
         queryClient.invalidateQueries({
           queryKey: ["allprojects", workspaceId],
-        })
+        });
+        // Invalidate notifications to refresh the notification list
+        queryClient.invalidateQueries({
+          queryKey: ["notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["unreadNotificationCount"],
+        });
         toast({
-          title: "Success",
-          description:"Project created successfully",
+          title: t("navbar-create-project-success"),
+          description: t("navbar-create-project-success-desc"),
           variant: "success",
+          duration: 2500,
         });
         navigate(`/workspace/${workspaceId}/project/${project._id}`);
         setTimeout(() => onClose(), 500);
-       },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+      },
+      onError: (error: any) => {
+        if (error?.response?.status === 409 || error?.message?.includes("duplicate")) {
+          form.setError("name", {
+            type: "manual",
+            message: t("navbar-create-name-require"),
+          });
+        } else {
+          toast({
+            title: t("memberdashboard-changerole-error"),
+            description: t("navbar-create-project-error-desc"),
+            variant: "destructive",
+            duration: 2500,
+          });
+        }
       },
     });
   };
 
-  return (
-    <div className="w-full h-auto max-w-full">
-      <div className="h-full">
-        <div className="mb-5 pb-2 border-b">
-          <h1
-            className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1
-           text-center sm:text-left"
-          >
-            Create Project
-          </h1>
-          <p className="text-muted-foreground text-sm leading-tight">
-            Organize and manage tasks, resources, and team collaboration
-          </p>
-        </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Emoji
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="font-normal size-[60px] !p-2 !shadow-none mt-2 items-center rounded-full "
-                  >
-                    <span className="text-4xl">{emoji}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className=" !p-0">
-                  <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="mb-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Website Redesign"
-                        className="!h-[48px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="mb-4">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={4}
-                        placeholder="Projects description"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
-            <Button
-            disabled={isPending}
-              className="flex place-self-end  h-[40px] text-white font-semibold"
-              type="submit"
-            >
-              {isPending && <Loader className="animate-spin" />}
-              Create
-            </Button>
-          </form>
-        </Form>
+  return (
+    <>
+      <div className="card">
+        <div className="card-body bg-sidebar">
+          <h4 className="card-title text-center font-bold">{t("navbar-create-project-title1")}</h4>
+          <Form {...form}>
+            <form className="forms-sample" onSubmit={form.handleSubmit(onSubmit)}>
+
+              <div className="form-group">
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <label htmlFor="exampleInputName1">{t("navbar-create-project-icon")}</label>
+                  <Popover open={emojiPickerOpen} onOpenChange={setEmojiPickerOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="font-normal size-[60px] !p-2 !shadow-none items-center rounded-full"
+                      >
+                        <span className="text-4xl">{emoji}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="!p-0 z-[9999]">
+                      <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor="exampleInputName1">{t("navbar-create-project-name")}</label>
+                      <input
+                        type="text"
+                        className={`form-control bg-sidebar-input border-sidebar-border text-black dark:text-white ${fieldState.error ? 'border-red-500' : ''
+                          }`}
+                        id="exampleInputName1"
+                        placeholder={t("navbar-create-project-placeholder-name")}
+                        maxLength={12}
+                        {...field}
+                      />
+                      <div className="flex justify-between items-center mt-1">
+                        <div>
+                          {fieldState.error && (
+                            <p className="text-red-500 text-sm">{fieldState.error.message}</p>
+                          )}
+                        </div>
+                        <span className="text-sm text-muted">
+                          {field.value?.length || 0}/12
+                        </span>
+                      </div>
+                    </>
+                  )}
+                />
+              </div>
+
+              <div className="form-group">
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <>
+                      <label htmlFor="exampleTextarea1">
+                        {t("navbar-create-project-description")}
+                      </label>
+                      <textarea
+                        className="form-control bg-sidebar-input border-sidebar-border text-black dark:text-white"
+                        id="exampleTextarea1"
+                        rows={4}
+                        placeholder={t("navbar-create-project-placeholder-description")}
+                        {...field}
+                      ></textarea>
+                    </>
+                  )}
+                />
+              </div>
+
+              <button
+                disabled={isPending}
+                type="submit"
+                className="btn bg-sidebar-frameicon mr-2"
+              >
+                {isPending && <Loader />}
+                {t("navbar-create-project-btn")}
+              </button>
+              <button className="btn btn-dark" type="button" onClick={onClose} >{t("sidebar-createworkspace-cancelbtn")}</button>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

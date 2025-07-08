@@ -18,7 +18,6 @@ import { toast } from "@/hooks/use-toast";
 const InviteUser = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
   const param = useParams();
   const inviteCode = param.inviteCode as string;
   const { data: authData, isPending } = useAuth();
@@ -52,7 +51,7 @@ const InviteUser = () => {
 
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-sidebar-input p-6 md:p-10">
       <div className="flex w-full max-w-md flex-col gap-6">
         <Link
           to="/"
@@ -75,7 +74,6 @@ const InviteUser = () => {
             <CardContent>
               {isPending ? (
                 <Loader className="!w-11 !h-11 animate-spin place-self-center flex" />
-
               ) : (
                 <div>
                   {user ? (
@@ -84,7 +82,7 @@ const InviteUser = () => {
                         <Button
                           type="submit"
                           disabled={isLoading}
-                          className="!bg-green-500 !text-white text-[23px] !h-auto"
+                          className="!text-white text-[23px] !h-auto"
                         >
                           {isLoading && (
                             <Loader className="!w-6 !h-6 animate-spin" />
@@ -99,13 +97,15 @@ const InviteUser = () => {
                         className="flex-1 text-base"
                         to={`/sign-up?returnUrl=${returnUrl}`}
                       >
-                        <Button className="w-full">Signup</Button>
+                        <Button
+                        variant={"option"}
+                        className="w-full">Signup</Button>
                       </Link>
                       <Link
                         className="flex-1 text-base"
                         to={`/?returnUrl=${returnUrl}`}
                       >
-                        <Button variant="secondary" className="w-full border">
+                        <Button variant="create" className="w-full border">
                           Login
                         </Button>
                       </Link>

@@ -1,28 +1,23 @@
-import { Edit3 } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import EditProjectForm from "./edit-project-form";
 import { ProjectType } from "@/types/api.type";
-import { useState } from "react";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 
-const EditProjectDialog = (props: { project?: ProjectType }) => {
-  const [isOpen, setIsOpen] = useState(false);
+interface EditProjectDialogProps {
+  project?: ProjectType;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const onClose = () => {
-    setIsOpen(false);
-  };
+const EditProjectDialog = ({ project, isOpen, onClose }: EditProjectDialogProps) => {
   return (
-    <div>
-      <Dialog modal={true} open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger className="mt-1.5" asChild>
-          <button>
-            <Edit3 className="w-5 h-5" />
-          </button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-lg border-0">
-          <EditProjectForm project={props.project} onClose={onClose} />
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Dialog modal={true} open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-lg border-0">
+        <DialogTitle className="sr-only">Edit Project</DialogTitle>
+        <DialogDescription className="sr-only">Change the information of Project</DialogDescription>
+        <EditProjectForm project={project} onClose={onClose} />
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -1,27 +1,11 @@
 import * as React from "react";
-import { Check, ChevronDown, Loader, Plus } from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { Loader, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import useCreateWorkspaceDialog from "@/hooks/use-create-workspace-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { getAllWorkspacesUserIsMemberQueryFn } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 type WorkspaceType = {
   _id: string;
@@ -29,13 +13,15 @@ type WorkspaceType = {
 };
 
 export function WorkspaceSwitcher() {
-  const navigate = useNavigate();
-  const { isMobile } = useSidebar();
-
+  const navigate = useNavigate()
   const { onOpen } = useCreateWorkspaceDialog();
   const workspaceId = useWorkspaceId();
-
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspaceType>();
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [showAll, setShowAll] = React.useState(false);
+  const maxVisible = 5;
+
 
   const { data, isPending } = useQuery({
     queryKey: ["userWorkspaces"],
@@ -43,7 +29,6 @@ export function WorkspaceSwitcher() {
     staleTime: 1,
     refetchOnMount: true,
   });
-
   const workspaces = data?.workspaces;
 
   React.useEffect(() => {
@@ -64,92 +49,116 @@ export function WorkspaceSwitcher() {
     navigate(`/workspace/${workspace._id}`);
   };
 
+  const filteredWorkspaces = workspaces?.filter((workspace) =>
+    workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const visibleWorkspaces = showAll
+    ? filteredWorkspaces
+    : filteredWorkspaces?.slice(0, maxVisible);
+
+    
   return (
-    <>
-      <SidebarGroupLabel className="w-full justify-between pr-0">
-        <span>Workspaces</span>
-        <button
-          onClick={onOpen}
-          className="flex size-5 items-center justify-center rounded-full border"
-        >
-          <Plus className="size-3.5" />
-        </button>
-      </SidebarGroupLabel>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-gray-10"
-              >
-                {activeWorkspace ? (
-                  <>
-                    <div className="flex aspect-square size-8 items-center font-semibold justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                      {activeWorkspace?.name?.split(" ")?.[0]?.charAt(0)}
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {activeWorkspace?.name}
-                      </span>
-                      <span className="truncate text-xs">Free</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      No Workspace selected
-                    </span>
-                  </div>
-                )}
-                <ChevronDown className="ml-auto" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-              align="start"
-              side={isMobile ? "bottom" : "right"}
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Workspaces
-              </DropdownMenuLabel>
-              {isPending ? <Loader className=" w-5 h-5 animate-spin" /> : null}
+    <li className="nav-item profile">
+      <div className="profile-desc">
+        {activeWorkspace ? (
+          <>
+            <div className="profile-pic">
+              <div className="count-indicator">
+                <div className="flex aspect-square size-8 items-center font-semibold 
+                justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  {activeWorkspace?.name?.split(" ")?.[0]?.charAt(0)}
+                </div>
+              </div>
+              <div className="profile-name">
+                <h5 className="mb-0 font-semibold">{activeWorkspace?.name}</h5>
+                <span>{t("sub-title-workspace")}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="profile-name">
+            <h5 className="mb-0 font-weight-normal">{t("workspace-not-select")}</h5>
+          </div>
+        )}
+        <a href="" id="profile-dropdown" data-toggle="dropdown">
+          <i className="mdi mdi-dots-vertical"></i>
+        </a>
+        <div className="dropdown-menu bg-sidebar text-sidebar-text border-sidebar-border dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
+          <div className="workspace-title-siderbar">
+            <div className="preview-item-content">
+              <h6 className="p-3">{t("workspace-dialog-title")}</h6>
+            </div>
+          </div>
 
-              {workspaces?.map((workspace) => (
-                <DropdownMenuItem
-                  key={workspace._id}
-                  onClick={() => onSelect(workspace)}
-                  className="gap-2 p-2 !cursor-pointer"
-                >
-                  <div className="flex size-6 items-center justify-center rounded-sm border">
-                    {workspace?.name?.split(" ")?.[0]?.charAt(0)}
-                  </div>
-                  {workspace.name}
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-sidebar-text">
+              <Search className="w-5 h-5 mt-1 text-muted" />
+            </span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-control form-custom bg-navbar border-t border-b 
+              border-sidebar-border border-l-0 border-r-0 pl-10 w-full py-4"
+              placeholder={t("sidebar-workspace-search-placeholder")}
+            />
+          </div>
 
-                  {workspace._id === workspaceId && (
-                    <DropdownMenuShortcut className="tracking-normal !opacity-100">
-                      <Check className="w-4 h-4" />
-                    </DropdownMenuShortcut>
-                  )}
-                </DropdownMenuItem>
+          {isPending ? (
+            <Loader className="w-8 h-8 animate-spin place-self-center flex" />
+          ) : (filteredWorkspaces?.length ?? 0) === 0 ? (
+            <p className="text-center text-muted mt-3 border-b border-sidebar-border pb-3">
+              {t("sidebar-workspace-not-found")}
+            </p>
+          ) : (
+            <>
+              {visibleWorkspaces?.map((workspace) => (
+                <React.Fragment key={workspace._id}>
+                  <a
+                    className="dropdown-item preview-item cursor-pointer hover:bg-dropdown-hover-bg"
+                    onClick={() => onSelect(workspace)}
+                  >
+                    <div className="preview-thumbnail">
+                      <div className="preview-icon bg-sidebar-frameicon rounded-circle">
+                        {workspace?.name?.split(" ")?.[0]?.charAt(0)}
+                      </div>
+                    </div>
+                    <div className="preview-item-content text-sidebar-text mt-2">
+                      <p className="preview-subject ellipsis mb-1 text-small">
+                        {workspace.name}
+                      </p>
+                    </div>
+                  </a>
+                  <div className="dropdown-divider"></div>
+                </React.Fragment>
               ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2 p-2 !cursor-pointer"
-                onClick={onOpen}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                  <Plus className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">
-                  Add workspace
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </>
+
+              {/* Show More / Show Less Toggle */}
+              {filteredWorkspaces && filteredWorkspaces.length > maxVisible && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowAll(!showAll);
+                  }}
+                  className="w-full text-sm text-center text-sidebar-text py-3 hover:bg-dropdown-hover-bg border-b"
+                >
+                  {showAll ? t("sidebar-workspace-show-less") : t("sidebar-workspace-show-more")}
+                </button>
+              )}
+            </>
+          )}
+
+
+          <a className="dropdown-item hover:bg-dropdown-hover-bg preview-item cursor-pointer "
+            onClick={onOpen}>
+            <div className="preview-item-content text-sidebar-text">
+              <p className="p-3 mb-0 text-center ellipsis">{t("workspace-dialog-add")}</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </li>
   );
 }

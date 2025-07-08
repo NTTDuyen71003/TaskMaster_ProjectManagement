@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, ArrowBigUp, ArrowBigDown, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AnalyticsCard = (props: {
   title: string;
@@ -7,42 +7,63 @@ const AnalyticsCard = (props: {
   isLoading: boolean;
 }) => {
   const { title, value, isLoading } = props;
+  const { t } = useTranslation();
 
-  const getArrowIcon = () => {
-    if (title === "Overdue Task") {
-      return value > 0 ? (
-        <ArrowBigDown strokeWidth={2.5} className="h-4 w-4 text-red-500" />
-      ) : (
-        <ArrowBigUp strokeWidth={2.5} className="h-4 w-4 text-green-500" />
-      );
+  const getArrowIconAndColor = () => {
+    if (title === t("dashboard-overdue-task")) {
+      if (value > 0) {
+        return {
+          icon: <i className="mdi mdi-arrow-bottom-left icon-item" />,
+          colorClass: "icon-box-danger",
+        };
+      } else {
+        return {
+          icon: <i className="mdi mdi-arrow-top-right icon-item" />,
+          colorClass: "icon-box-success",
+        };
+      }
     }
-    if (title === "Completed Task" || title === "Total Task") {
-      return value > 0 ? (
-        <ArrowBigUp strokeWidth={2.5} className="h-4 w-4 text-green-500" />
-      ) : (
-        <ArrowBigDown strokeWidth={2.5} className="h-4 w-4 text-red-500" />
-      );
+
+    if (title === t("dashboard-completed-task") || title === t("dashboard-total-task")) {
+      if (value > 0) {
+        return {
+          icon: <i className="mdi mdi-arrow-top-right icon-item" />,
+          colorClass: "icon-box-success",
+        };
+      } else {
+        return {
+          icon: <i className="mdi mdi-arrow-bottom-left icon-item" />,
+          colorClass: "icon-box-danger",
+        };
+      }
     }
-    return null;
+
+    return {
+      icon: null,
+      colorClass: "",
+    };
   };
+  const { icon, colorClass } = getArrowIconAndColor();
+
+
   return (
-    <Card className="shadow-none w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="flex items-center gap-1">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <div className="mb-[0.2px]">{getArrowIcon()}</div>
+    <div className="card bg-sidebar">
+      <div className="card-body">
+        <div className="row">
+          <div className="col-9">
+            <div className="d-flex align-items-center align-self-start">
+              <h3 className="mb-0 text-font">{isLoading ? <Loader /> : value}</h3>
+            </div>
+          </div>
+          <div className="col-3">
+            <div className={`icon ${colorClass}`}>
+              {icon}
+            </div>
+          </div>
         </div>
-        <Activity
-          strokeWidth={2.5}
-          className="h-4 w-4  text-muted-foreground"
-        />
-      </CardHeader>
-      <CardContent className="w-full">
-        <div className="text-3xl font-bold">
-          {isLoading ? <Loader className="w-6 h-6 animate-spin" /> : value}
-        </div>
-      </CardContent>
-    </Card>
+        <h6 className="text-muted font-weight-normal">{title}</h6>
+      </div>
+    </div>
   );
 };
 
